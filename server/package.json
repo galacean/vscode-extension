@@ -1,0 +1,23 @@
+{
+  "name": "lsp-server",
+  "description": "Implementation of a Galacean shader language server in node.",
+  "version": "1.0.0",
+  "author": "Galacean",
+  "license": "MIT",
+  "engines": {
+    "node": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/galacean/vscode-extension.git"
+  },
+  "dependencies": {
+    "chevrotain": "^10.5.0",
+    "galacean-shader-parser": "^1.0.2",
+    "vscode-languageserver": "^8.1.0",
+    "vscode-languageserver-textdocument": "^1.0.8"
+  },
+  "scripts": {
+    "build": "tsc && resolve-tspaths"
+  }
+}

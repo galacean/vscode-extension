@@ -1,0 +1,13 @@
+export declare const glsl_mat2: import("chevrotain").TokenType;
+export declare const glsl_mat3: import("chevrotain").TokenType;
+export declare const glsl_mat4: import("chevrotain").TokenType;
+export declare const glsl_vec2: import("chevrotain").TokenType;
+export declare const glsl_vec3: import("chevrotain").TokenType;
+export declare const glsl_vec4: import("chevrotain").TokenType;
+export declare const glsl_ivec2: import("chevrotain").TokenType;
+export declare const glsl_ivec3: import("chevrotain").TokenType;
+export declare const glsl_ivec4: import("chevrotain").TokenType;
+export declare const glsl_float: import("chevrotain").TokenType;
+export declare const glsl_int: import("chevrotain").TokenType;
+export declare const glsl_sampler2D: import("chevrotain").TokenType;
+export declare const tokenList: import("chevrotain").TokenType[];

@@ -1,0 +1,124 @@
+{
+  "name": "galacean-vscode-extension",
+  "version": "1.0.0",
+  "description": "Extension for bridging Galacean and VSCode.",
+  "main": "./client/out/extension",
+  "pnpmVersion": "8.3.1",
+  "publisher": "Galacean",
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "cd ./client && npm run build && ../server && npm run build && cd ..",
+    "watch": "tsc -b -w",
+    "lint": "eslint ./client/src ./server/src --ext .ts,.tsx",
+    "postinstall": "cd client && pnpm install && cd ../server && pnpm install && cd ..",
+    "build": "vsce package"
+  },
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "devDependencies": {
+    "@types/mocha": "^9.1.0",
+    "@types/node": "^16.18.34",
+    "@typescript-eslint/eslint-plugin": "^5.54.0",
+    "@typescript-eslint/parser": "^5.54.0",
+    "eslint": "^8.35.0",
+    "mocha": "^9.2.1",
+    "resolve-tspaths": "^0.8.13",
+    "typescript": "^5.1.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/galacean/vscode-extension.git"
+  },
+  "keywords": [
+    "galacean",
+    "vscode"
+  ],
+  "author": "yansw007@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/galacean/vscode-extension/issues"
+  },
+  "homepage": "https://github.com/galacean/vscode-extension.git",
+  "contributes": {
+    "languages": [
+      {
+        "id": "gshader",
+        "extensions": [
+          ".shader"
+        ],
+        "aliases": [
+          "Galacean Shader",
+          "gshader"
+        ],
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./assets/icons/logo-dark.png",
+          "dark": "./assets/icons/logo-light.png"
+        }
+      }
+    ],
+    "commands": [
+      {
+        "command": "galacean.test",
+        "title": "test",
+        "category": "Galacean"
+      },
+      {
+        "command": "galacean.storageCheck",
+        "title": "Storage Check",
+        "category": "Galacean"
+      },
+      {
+        "command": "galacean.storageSet",
+        "title": "Storage Set",
+        "category": "Galacean"
+      },
+      {
+        "command": "galacean.signin",
+        "title": "Sign in",
+        "category": "Galacean"
+      },
+      {
+        "command": "galacean.userInfo",
+        "title": "User Info",
+        "category": "Galacean"
+      }
+    ],
+    "configuration": [
+      {
+        "title": "Galacean",
+        "properties": {
+          "galacean.server.host": {
+            "description": "Specifies the galacean server host",
+            "type": "string",
+            "default": null
+          }
+        }
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "galacean-explorer",
+          "title": "Galacean",
+          "icon": "./assets/icons/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "galacean-explorer": [
+        {
+          "id": "galacean-project-list",
+          "name": "Projects"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "galacean-project-list",
+        "contents": "Sign in to Galacean to display project list, asset list and more\n[Sign in to Galacean](command:galacean.signin)"
+      }
+    ]
+  }
+}
