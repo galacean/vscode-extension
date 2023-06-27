@@ -60,9 +60,10 @@
     ],
     "commands": [
       {
-        "command": "galacean.test",
-        "title": "test",
-        "category": "Galacean"
+        "command": "galacean.update.project.list",
+        "title": "Update Project",
+        "category": "Galacean",
+        "icon": "$(search-refresh)"
       },
       {
         "command": "galacean.storageCheck",
@@ -119,6 +120,15 @@
         "view": "galacean-project-list",
         "contents": "Sign in to Galacean to display project list, asset list and more\n[Sign in to Galacean](command:galacean.signin)"
       }
-    ]
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "galacean.update.project.list",
+          "when": "view == galacean-project-list",
+          "group": "navigation"
+        }
+      ]
+    }
   }
 }

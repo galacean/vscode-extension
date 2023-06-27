@@ -44,3 +44,40 @@ interface IProject {
   gmtCreate: string;
   gmtModified: string;
 }
+
+interface IProjectAsset {
+  id: number;
+  name: string;
+
+  type: number;
+
+  uuid: string;
+
+  parentId?: string;
+
+  meta: string;
+
+  url?: string;
+
+  projectId: number;
+
+  status: number;
+}
+
+interface IPaginationParams {
+  /** index starts with 0 */
+  pageNo: number;
+  pageSize: number;
+}
+
+interface IPaginationResponse<T> extends IPaginationParams {
+  total: number;
+  list: Array<T>;
+}
+
+interface ITreeViewItem<D = any> {
+  id: number;
+  label: string;
+  data: D;
+  isProject: boolean;
+}

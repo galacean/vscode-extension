@@ -1,9 +1,10 @@
+import { EventEmitter } from 'vscode';
 import { getProjectList } from '../request/project';
 
 let _projectList: IProjectListItem[] | undefined = undefined;
 
-export async function getProjectListData() {
-  if (!_projectList) {
+export async function getProjectListData(refresh = false) {
+  if (!_projectList || refresh) {
     const res = await getProjectList();
     _projectList = res.data.data.list;
   }
@@ -18,3 +19,6 @@ export function updateProjectListData(data: IProjectListItem[], append = true) {
   }
   return _projectList;
 }
+
+export const ProjectListDataChangeEvent =
+  new EventEmitter<void | ITreeViewItem>();

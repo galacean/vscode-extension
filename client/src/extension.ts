@@ -10,6 +10,8 @@ import { CommandStorage, CommandStorageSet } from './commands/storage';
 import { CommandSignin } from './commands/account';
 import { isLogin } from '@data/account';
 import { initProjectView, initUserStatusBar } from './views/projectView';
+import { CommandUpdateProjectList } from './commands/project';
+import { CommandAssetShow } from './commands/asset';
 
 let client: LanguageClient;
 
@@ -38,6 +40,8 @@ export function activate(context: ExtensionContext) {
   context.subscriptions.push(CommandStorage(context));
   context.subscriptions.push(CommandStorageSet(context));
   context.subscriptions.push(CommandSignin(context));
+  context.subscriptions.push(CommandUpdateProjectList(context));
+  context.subscriptions.push(CommandAssetShow(context));
   // context.subscriptions.push(CommandFetchUserDetail(context));
   initClient(context);
 

@@ -2,6 +2,7 @@ import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { window, workspace } from 'vscode';
 import {
   ICookieContent,
+  getCookieContent,
   getCookieString,
   parseSetCookie,
   saveCookie,
@@ -30,9 +31,13 @@ instance.interceptors.request.use(async (config) => {
   config.headers['Cookie'] = cookieString;
 
   if (config.method.toLowerCase() === 'post') {
-    const ctoken = Math.random().toString();
+    const cookieContent = await getCookieContent();
+    let ctoken = cookieContent['ctoken']?.value;
+    if (!ctoken) {
+      ctoken = Math.random().toString();
+      config.headers['Cookie'] += `;ctoken=${ctoken};`;
+    }
     config.headers['x-csrf-token'] = ctoken;
-    config.headers['Cookie'] += `;ctoken=${ctoken};`;
   }
   return config;
 });

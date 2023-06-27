@@ -13,3 +13,8 @@ if (!fs.existsSync(_filePath)) {
 export const PROJ_ROOT = join(__dirname, '../../');
 
 export const OASIS_TOKEN_COOKIE_NAME = 'OasisToken';
+
+export enum EProjectAssetType {
+  file = 0,
+  directory = 1,
+}
