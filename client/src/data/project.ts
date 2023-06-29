@@ -1,4 +1,4 @@
-import { EventEmitter } from 'vscode';
+import { EventEmitter, Uri } from 'vscode';
 import { getProjectList } from '../request/project';
 
 let _projectList: IProjectListItem[] | undefined = undefined;
@@ -20,5 +20,7 @@ export function updateProjectListData(data: IProjectListItem[], append = true) {
   return _projectList;
 }
 
-export const ProjectListDataChangeEvent =
-  new EventEmitter<void | ITreeViewItem>();
+export const ProjectListDataChangeEvent = new EventEmitter<void | ITreeViewItem<
+  any,
+  Uri
+>>();

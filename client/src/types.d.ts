@@ -62,6 +62,8 @@ interface IProjectAsset {
   projectId: number;
 
   status: number;
+  gmtCreate: string;
+  gmtModified: string;
 }
 
 interface IPaginationParams {
@@ -75,9 +77,10 @@ interface IPaginationResponse<T> extends IPaginationParams {
   list: Array<T>;
 }
 
-interface ITreeViewItem<D = any> {
+interface ITreeViewItem<D = any, U = string> {
   id: number;
   label: string;
   data: D;
   isProject: boolean;
+  uri: U;
 }

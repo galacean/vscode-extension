@@ -7,7 +7,7 @@
   "publisher": "Galacean",
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "compile": "cd ./client && npm run build && ../server && npm run build && cd ..",
+    "compile": "cd ./client && npm run build && cd ../server && npm run build && cd ..",
     "watch": "tsc -b -w",
     "lint": "eslint ./client/src ./server/src --ext .ts,.tsx",
     "postinstall": "cd client && pnpm install && cd ../server && pnpm install && cd ..",

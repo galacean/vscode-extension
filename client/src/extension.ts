@@ -8,10 +8,11 @@ import {
 } from 'vscode-languageclient/node';
 import { CommandStorage, CommandStorageSet } from './commands/storage';
 import { CommandSignin } from './commands/account';
-import { isLogin } from '@data/account';
 import { initProjectView, initUserStatusBar } from './views/projectView';
 import { CommandUpdateProjectList } from './commands/project';
 import { CommandAssetShow } from './commands/asset';
+import { HttpTextDocProvider } from './TextDocProvider';
+import { getProjectFSProvider } from '@/TextDocProvider';
 
 let client: LanguageClient;
 
@@ -34,21 +35,28 @@ function initClient(context: ExtensionContext) {
   client.start();
 }
 
-export function activate(context: ExtensionContext) {
+export async function activate(context: ExtensionContext) {
   console.log('galacean plugin activated!');
 
+  const fsProvider = getProjectFSProvider();
+  context.subscriptions.push(
+    workspace.registerFileSystemProvider(fsProvider.schema, fsProvider)
+  );
+  // context.subscriptions.push(
+  //   workspace.registerTextDocumentContentProvider(
+  //     'asset',
+  //     new HttpTextDocProvider()
+  //   )
+  // );
   context.subscriptions.push(CommandStorage(context));
   context.subscriptions.push(CommandStorageSet(context));
   context.subscriptions.push(CommandSignin(context));
   context.subscriptions.push(CommandUpdateProjectList(context));
   context.subscriptions.push(CommandAssetShow(context));
-  // context.subscriptions.push(CommandFetchUserDetail(context));
   initClient(context);
 
-  if (isLogin()) {
-    initProjectView(context);
-    initUserStatusBar(context);
-  }
+  initProjectView(context);
+  initUserStatusBar(context);
 }
 
 export function deactivate(): Thenable<void> | undefined {

@@ -2,6 +2,7 @@ import { ExtensionContext, ProgressLocation, commands, window } from 'vscode';
 import { codeVerification, signinByMail, getUserInfo } from '../request';
 import { showUserInfoStatusBar } from '../utils';
 import { initProjectView } from '../views/projectView';
+import { ProjectListDataChangeEvent } from '@data/project';
 
 export function CommandSignin(context: ExtensionContext) {
   return commands.registerCommand('galacean.signin', async () => {
@@ -44,6 +45,7 @@ export function CommandSignin(context: ExtensionContext) {
           return codeVerification(authCode, email).then(() => {
             window.showInformationMessage('Login Success!');
             process.report({ increment: 100 });
+            ProjectListDataChangeEvent.fire();
           });
         }
       );

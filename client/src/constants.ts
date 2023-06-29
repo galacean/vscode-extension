@@ -18,3 +18,5 @@ export enum EProjectAssetType {
   file = 0,
   directory = 1,
 }
+
+export const FSSchema = 'galacean';

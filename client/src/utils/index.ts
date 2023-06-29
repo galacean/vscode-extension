@@ -1,3 +1,4 @@
+import axios, { AxiosRequestConfig } from 'axios';
 import {
   StatusBarAlignment,
   window,
@@ -21,4 +22,8 @@ export function showUserInfoStatusBar(
   } else {
     _statusBar.hide();
   }
+}
+
+export function fetchContentByUrl(url: string, opts?: AxiosRequestConfig) {
+  return axios.get(url, opts).then((res) => res.data);
 }
