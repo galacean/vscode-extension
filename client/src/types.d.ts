@@ -66,6 +66,17 @@ interface IProjectAsset {
   gmtModified: string;
 }
 
+interface ProjectAssetCreateInfo {
+  name: string;
+  type: number;
+  uuid: string;
+  /** 父资产uuid */
+  parentId?: string;
+  meta: string;
+  url?: string;
+  projectId: number;
+}
+
 interface IPaginationParams {
   /** index starts with 0 */
   pageNo: number;
@@ -79,8 +90,7 @@ interface IPaginationResponse<T> extends IPaginationParams {
 
 interface ITreeViewItem<D = any, U = string> {
   id: number;
-  label: string;
-  data: D;
+  name: string;
   isProject: boolean;
   uri: U;
 }

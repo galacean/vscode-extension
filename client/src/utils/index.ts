@@ -5,6 +5,10 @@ import {
   StatusBarItem,
   ExtensionContext,
 } from 'vscode';
+import * as crypto from 'crypto';
+import * as path from 'path';
+import * as fs from 'fs';
+import { PROJ_ROOT } from '@/constants';
 
 let _statusBar: StatusBarItem | undefined = undefined;
 
@@ -26,4 +30,13 @@ export function showUserInfoStatusBar(
 
 export function fetchContentByUrl(url: string, opts?: AxiosRequestConfig) {
   return axios.get(url, opts).then((res) => res.data);
+}
+
+export function hashMD5(input: string) {
+  return crypto.createHash('md5').update(input).digest('hex');
+}
+
+export function getTemplate(type?: 'script' | 'shader') {
+  const templatePath = path.join(PROJ_ROOT, 'client/templates/script.ts');
+  return fs.readFileSync(templatePath);
 }

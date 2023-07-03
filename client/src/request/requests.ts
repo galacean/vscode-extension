@@ -17,7 +17,7 @@ interface IServerResponseData<T = any> {
 }
 
 type IServerResponse<T = any> = AxiosResponse<IServerResponseData<T>>;
-type IServerErrorReponse<T = any> = AxiosError<IServerResponseData<T>>;
+type IServerErrorResponse<T = any> = AxiosError<IServerResponseData<T>>;
 
 const serverSetting = workspace.getConfiguration('galacean.server');
 
@@ -29,6 +29,7 @@ const instance = axios.create({
 instance.interceptors.request.use(async (config) => {
   const cookieString = await getCookieString();
   config.headers['Cookie'] = cookieString;
+  config.headers['User-Agent'] = 'vscode';
 
   if (config.method.toLowerCase() === 'post') {
     const cookieContent = await getCookieContent();
@@ -58,7 +59,7 @@ instance.interceptors.response.use(
     }
     return response;
   },
-  (error: IServerErrorReponse) => {
+  (error: IServerErrorResponse) => {
     console.log(error);
     const errMsg = error.response?.data?.errMsg ?? 'request error';
     window.showErrorMessage(errMsg);

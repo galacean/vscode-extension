@@ -66,6 +66,12 @@
         "icon": "$(search-refresh)"
       },
       {
+        "command": "galacean.update.asset",
+        "title": "Sync to cloud",
+        "category": "Galacean",
+        "icon": "$(cloud-upload)"
+      },
+      {
         "command": "galacean.storageCheck",
         "title": "Storage Check",
         "category": "Galacean"
@@ -84,6 +90,12 @@
         "command": "galacean.userInfo",
         "title": "User Info",
         "category": "Galacean"
+      },
+      {
+        "command": "galacean.create.script",
+        "title": "Add Script",
+        "category": "Galacean",
+        "icon": "$(file-add)"
       }
     ],
     "configuration": [
@@ -127,6 +139,16 @@
           "command": "galacean.update.project.list",
           "when": "view == galacean-project-list",
           "group": "navigation"
+        },
+        {
+          "command": "galacean.update.asset",
+          "when": "view == galacean-project-list",
+          "group": "navigation"
+        },
+        {
+          "command": "galacean.create.script",
+          "when": "view == galacean-project-list",
+          "group": "inline"
         }
       ]
     }

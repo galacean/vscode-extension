@@ -1,5 +1,6 @@
 import {
   ExtensionContext,
+  FileType,
   ThemeIcon,
   TreeDataProvider,
   TreeItem,
@@ -7,21 +8,31 @@ import {
   Uri,
   window,
 } from 'vscode';
-import { ProjectListDataChangeEvent, getProjectListData } from '@data/project';
+import { ProjectListDataChangeEvent } from '@data/project';
 import { getUserInfo } from '@/request';
-import { fetchContentByUrl, showUserInfoStatusBar } from '@/utils';
+import { fetchContentByUrl, hashMD5, showUserInfoStatusBar } from '@/utils';
 import { fetchProjectAssetList } from '@/request/project';
 import { isLogin } from '@data/account';
-import { getProjectFSProvider } from '@/TextDocProvider';
+import { Directory, getProjectFSProvider } from '@/TextDocProvider';
 
-export class ProjectListViewTreeDataProvider
+class ProjectListViewTreeDataProvider
   implements TreeDataProvider<ITreeViewItem<any, Uri>>
 {
+  private _elementMap = new Map<string, ITreeViewItem<any, Uri>>();
+
+  getElementByUri(uri: Uri | string) {
+    let uriString = uri;
+    if (uri instanceof Uri) {
+      uriString = uri.toString();
+    }
+    return this._elementMap.get(uriString as string);
+  }
+
   onDidChangeTreeData = ProjectListDataChangeEvent.event;
 
   getTreeItem(element: ITreeViewItem<any, Uri>): TreeItem {
     const item = new TreeItem(
-      element.label,
+      element.name,
       element.isProject
         ? TreeItemCollapsibleState.Collapsed
         : TreeItemCollapsibleState.None
@@ -36,7 +47,15 @@ export class ProjectListViewTreeDataProvider
         command: 'galacean.asset.show',
         arguments: [element.uri],
       };
+    } else {
+      item.contextValue = 'project';
+      item.command = {
+        command: 'galacean.project.click',
+        arguments: [element.uri],
+        title: '',
+      };
     }
+
     return item;
   }
 
@@ -46,56 +65,44 @@ export class ProjectListViewTreeDataProvider
     if (!(await isLogin())) {
       return [];
     }
-    const fsProvder = getProjectFSProvider();
+    console.log('get children: ', element?.uri.toString());
+    const fsProvider = getProjectFSProvider();
 
-    if (!element) {
-      return getProjectListData(true).then((res) => {
-        return res.map((item) => {
-          const uri = Uri.parse(`${fsProvder.schema}:/${item.id}`);
-          fsProvder.setUriData(uri.toString(), item);
-          fsProvder.createDirectory(uri);
-          return {
-            id: item.id,
-            label: item.name,
-            data: item,
-            isProject: true,
-            uri,
-          };
-        });
-      });
-    } else {
-      return fetchProjectAssetList({ projectId: element.id }).then((res) => {
-        const assetList = res.data.data.list;
-        return Promise.all(
-          assetList.map(async (item) => {
-            const uri = Uri.parse(
-              `${fsProvder.schema}:/${item.projectId}/${item.name}`
-            );
-            const assetContent: string = item.url
-              ? await fetchContentByUrl(item.url)
-              : Buffer.from('');
-            fsProvder.setUriData(uri.toString(), item);
-            fsProvder.writeFile(uri, Buffer.from(assetContent), {
-              create: true,
-              overwrite: true,
-            });
-            return {
-              id: item.id,
-              label: item.name,
-              data: item,
-              isProject: false,
-              uri,
-            };
-          })
-        );
-      });
+    const parentUri = element?.uri ?? Uri.parse(`${fsProvider.schema}:/`);
+    const parentFileInfo = fsProvider.getFileInfo(parentUri).file as Directory;
+    const ret: ITreeViewItem<any, Uri>[] = [];
+    for (const entry of parentFileInfo.entries.values()) {
+      const isDir = entry.type === FileType.Directory;
+      const uri = Uri.joinPath(
+        parentUri,
+        isDir ? entry.data.id.toString() : entry.name
+      );
+      const child = {
+        id: entry.data?.id,
+        name: entry.name,
+        isProject: isDir,
+        uri,
+      };
+      if (isDir) {
+        this._elementMap.set(uri.toString(), child);
+      }
+      ret.push(child);
     }
+    return ret;
   }
+}
+
+let _projectListTreeViewDataProvider: ProjectListViewTreeDataProvider;
+export function getProjectListTreeViewProvider() {
+  if (!_projectListTreeViewDataProvider) {
+    _projectListTreeViewDataProvider = new ProjectListViewTreeDataProvider();
+  }
+  return _projectListTreeViewDataProvider;
 }
 
 export function initProjectView(context: ExtensionContext) {
   window.createTreeView<ITreeViewItem<any, Uri>>('galacean-project-list', {
-    treeDataProvider: new ProjectListViewTreeDataProvider(),
+    treeDataProvider: getProjectListTreeViewProvider(),
   });
 }
 
