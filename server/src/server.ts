@@ -7,7 +7,7 @@ import {
   TextDocumentSyncKind,
 } from 'vscode-languageserver/node';
 import { TextDocument } from 'vscode-languageserver-textdocument';
-import { makeDocumentValidationHandler } from './utils';
+import { cachedShaderInfo, makeDocumentValidationHandler } from './utils';
 
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -27,6 +27,16 @@ connection.onInitialize((params: InitializeParams) => {
 });
 
 documents.listen(connection);
+
+connection.onNotification('client/show.glsl', () => {
+  if (!cachedShaderInfo) {
+    connection.window.showWarningMessage('No parsed shader');
+  } else {
+    connection.sendNotification('server/show.glsl', {
+      subShaders: cachedShaderInfo.subShaders,
+    });
+  }
+});
 
 connection.listen();
 

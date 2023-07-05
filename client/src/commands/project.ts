@@ -1,5 +1,4 @@
 import { ExtensionContext, FileChangeType, Uri, commands } from 'vscode';
-import { ProjectListDataChangeEvent } from '../data/project';
 import { getProjectFSProvider } from '@/TextDocProvider';
 
 export function CommandUpdateProjectList(context: ExtensionContext) {

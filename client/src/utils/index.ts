@@ -37,6 +37,7 @@ export function hashMD5(input: string) {
 }
 
 export function getTemplate(type?: 'script' | 'shader') {
-  const templatePath = path.join(PROJ_ROOT, 'client/templates/script.ts');
+  const filename = type === 'script' ? 'script.ts' : 'water.shader';
+  const templatePath = path.join(PROJ_ROOT, `client/templates/${filename}`);
   return fs.readFileSync(templatePath);
 }

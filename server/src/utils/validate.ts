@@ -7,15 +7,17 @@ import {
 import { parseShader } from '../../shaderDSL';
 import { IRecognitionException } from 'chevrotain';
 
+export let cachedShaderInfo: ReturnType<typeof parseShader> | undefined;
+
 export function makeDocumentValidationHandler(connection: _Connection) {
   return async function (event: TextDocumentChangeEvent<TextDocument>) {
     const text = event.document.getText();
     try {
-      const shaderInfo = parseShader(text);
-      if (shaderInfo.diagnostics.length > 0) {
+      cachedShaderInfo = parseShader(text);
+      if (cachedShaderInfo.diagnostics.length > 0) {
         connection.sendDiagnostics({
           uri: event.document.uri,
-          diagnostics: shaderInfo.diagnostics.map((item) => ({
+          diagnostics: cachedShaderInfo.diagnostics.map((item) => ({
             message: item.message,
             severity: item.severity,
             range: {

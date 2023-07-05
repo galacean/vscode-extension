@@ -20,3 +20,8 @@ export enum EProjectAssetType {
 }
 
 export const FSSchema = 'galacean';
+
+// Notification keys
+export const NF_CLIENT_SHOW_CODE = 'client/show.glsl';
+
+export const NF_SERVER_SHOW_CODE = 'server/show.glsl';

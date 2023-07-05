@@ -37,9 +37,10 @@ class ProjectListViewTreeDataProvider
         ? TreeItemCollapsibleState.Collapsed
         : TreeItemCollapsibleState.None
     );
-    item.iconPath = new ThemeIcon(
-      element.isProject ? 'file-directory' : 'file'
-    );
+    if (element.isProject) {
+      item.iconPath = new ThemeIcon('file-directory');
+    }
+    item.resourceUri = element.uri;
     if (!element.isProject) {
       item.contextValue = 'asset';
       item.command = {

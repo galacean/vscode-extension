@@ -15,10 +15,14 @@ import {
 } from './commands/project';
 import {
   CommandAddScript,
+  CommandAddShader,
   CommandAssetShow,
   CommandAssetSync,
 } from './commands/asset';
 import { getProjectFSProvider } from '@/TextDocProvider';
+import { NF_SERVER_SHOW_CODE } from './constants';
+import { previewCode } from './views/glslCodeView';
+import { CommandShowGLSL } from './commands/shader';
 
 let client: LanguageClient;
 
@@ -29,7 +33,10 @@ function initClient(context: ExtensionContext) {
     debug: { module: serverModule, transport: TransportKind.ipc },
   };
   const clientOpts: LanguageClientOptions = {
-    documentSelector: [{ scheme: 'file', language: 'gshader' }],
+    documentSelector: [
+      { scheme: 'file', language: 'gshader' },
+      { scheme: getProjectFSProvider().schema, language: 'gshader' },
+    ],
   };
 
   client = new LanguageClient(
@@ -38,6 +45,11 @@ function initClient(context: ExtensionContext) {
     serverOpts,
     clientOpts
   );
+
+  client.onNotification(NF_SERVER_SHOW_CODE, (e) => {
+    previewCode(e.subShaders[0]);
+  });
+
   client.start();
 }
 
@@ -51,6 +63,8 @@ export async function activate(context: ExtensionContext) {
 
   fsProvider.initData().then(() => initProjectView(context));
 
+  initClient(context);
+
   context.subscriptions.push(CommandStorage(context));
   context.subscriptions.push(CommandStorageSet(context));
   context.subscriptions.push(CommandSignin(context));
@@ -59,7 +73,8 @@ export async function activate(context: ExtensionContext) {
   context.subscriptions.push(CommandAssetSync(context));
   context.subscriptions.push(CommandAddScript(context));
   context.subscriptions.push(CommandProjectClick(context));
-  initClient(context);
+  context.subscriptions.push(CommandAddShader(context));
+  context.subscriptions.push(CommandShowGLSL(client));
 
   initUserStatusBar(context);
 }

@@ -11,6 +11,31 @@ import {
   workspace,
 } from 'vscode';
 
+async function createAsset(assetType: 'script' | 'shader') {
+  const fsProvider = getProjectFSProvider();
+  const currentDir = fsProvider.currentDir;
+  if (!currentDir) {
+    window.showWarningMessage(
+      'select the project which asset will be added against'
+    );
+    return;
+  }
+  let fileName =
+    assetType === 'script'
+      ? `script_${Date.now()}.ts`
+      : `water_${Date.now()}.shader`;
+  const newUri = Uri.joinPath(currentDir, fileName);
+  await fsProvider.writeFile(newUri, getTemplate(assetType), {
+    create: true,
+    overwrite: true,
+  });
+
+  // refresh list view
+  const listViewDataProvider = getProjectListTreeViewProvider();
+  const dirElement = listViewDataProvider.getElementByUri(currentDir);
+  ProjectListDataChangeEvent.fire(dirElement);
+}
+
 export function CommandAssetShow(context: ExtensionContext) {
   return commands.registerCommand('galacean.asset.show', async (uri: Uri) => {
     const doc = await workspace.openTextDocument(uri);
@@ -26,24 +51,13 @@ export function CommandAssetSync(context: ExtensionContext) {
 }
 
 export function CommandAddScript(context: ExtensionContext) {
-  return commands.registerCommand('galacean.create.script', async () => {
-    const fsProvider = getProjectFSProvider();
-    const currentDir = fsProvider.currentDir;
-    if (!currentDir) {
-      window.showWarningMessage(
-        'select the project which asset will be added against'
-      );
-      return;
-    }
-    const newUri = Uri.joinPath(currentDir, `script_${Date.now()}.ts`);
-    await fsProvider.writeFile(newUri, getTemplate('script'), {
-      create: true,
-      overwrite: true,
-    });
+  return commands.registerCommand('galacean.create.script', () => {
+    createAsset('script');
+  });
+}
 
-    // refresh list view
-    const listViewDataProvider = getProjectListTreeViewProvider();
-    const dirElement = listViewDataProvider.getElementByUri(currentDir);
-    ProjectListDataChangeEvent.fire(dirElement);
+export function CommandAddShader(context: ExtensionContext) {
+  return commands.registerCommand('galacean.create.shader', () => {
+    createAsset('shader');
   });
 }
