@@ -8,10 +8,9 @@ import {
   Uri,
   window,
 } from 'vscode';
-import { ProjectListDataChangeEvent } from '@data/project';
+import { ProjectListDataChangeEvent, getProjectListData } from '@data/project';
 import { getUserInfo } from '@/request';
 import { fetchContentByUrl, hashMD5, showUserInfoStatusBar } from '@/utils';
-import { fetchProjectAssetList } from '@/request/project';
 import { isLogin } from '@data/account';
 import { Directory, getProjectFSProvider } from '@/TextDocProvider';
 
@@ -63,33 +62,38 @@ class ProjectListViewTreeDataProvider
   async getChildren(
     element?: ITreeViewItem<any, Uri>
   ): Promise<ITreeViewItem<any, Uri>[]> {
-    if (!(await isLogin())) {
-      return [];
-    }
     console.log('get children: ', element?.uri.toString());
     const fsProvider = getProjectFSProvider();
 
-    const parentUri = element?.uri ?? Uri.parse(`${fsProvider.schema}:/`);
-    const parentFileInfo = fsProvider.getFileInfo(parentUri).file as Directory;
-    const ret: ITreeViewItem<any, Uri>[] = [];
-    for (const entry of parentFileInfo.entries.values()) {
-      const isDir = entry.type === FileType.Directory;
-      const uri = Uri.joinPath(
-        parentUri,
-        isDir ? entry.data.id.toString() : entry.name
-      );
-      const child = {
-        id: entry.data?.id,
-        name: entry.name,
-        isProject: isDir,
-        uri,
-      };
-      if (isDir) {
-        this._elementMap.set(uri.toString(), child);
-      }
-      ret.push(child);
+    if (!element) {
+      const projectList = await fsProvider.getProjectList();
+      return projectList.map((project) => {
+        const uri = Uri.parse(`${fsProvider.schema}:/${project.id}`);
+        const item = {
+          id: project.id,
+          name: project.name,
+          isProject: true,
+          uri,
+        };
+        this._elementMap.set(uri.toString(), item);
+        return item;
+      });
+    } else {
+      const assetList = await fsProvider.getAssetList(element.id, true);
+      return assetList.map((asset) => {
+        const uri = Uri.parse(
+          `${fsProvider.schema}:/${asset.projectId}/${asset.name}`
+        );
+        const item = {
+          id: asset.id,
+          name: asset.name,
+          isProject: false,
+          uri,
+        };
+        this._elementMap.set(uri.toString(), item);
+        return item;
+      });
     }
-    return ret;
   }
 }
 

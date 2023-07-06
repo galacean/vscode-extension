@@ -100,7 +100,12 @@ class FileInfo {
    * @return if updated
    */
   setContent(content: Uint8Array) {
-    const hash = hashMD5(content.toString());
+    const contentString = content.toString();
+    if (!contentString) {
+      this.meta.content = content;
+      return false;
+    }
+    const hash = hashMD5(contentString);
     const needUpdate = hash !== this.meta.contentHash;
     if (needUpdate) {
       this.meta.content = content;
@@ -137,7 +142,10 @@ class ProjectFSProvider implements FileSystemProvider {
 
   private _currentDir: Uri | undefined;
 
-  private _initialized = false;
+  // Cached remote data -------
+  private _projectList: Array<IProject> | undefined = undefined;
+  private _projectAssetListMap: Map<number, Array<IProjectAsset>> = new Map();
+  // --------------------------
 
   get dirtyAssets(): Array<FileInfo> {
     const ret: Array<FileInfo> = [];
@@ -166,77 +174,74 @@ class ProjectFSProvider implements FileSystemProvider {
   }
 
   constructor() {
+    this.setUriData(this.rootUri.toString(), FileInfo.from(this._rootEntry));
     this.onDidChangeFile((e) => {
       const listViewDataProvider = getProjectListTreeViewProvider();
       for (const event of e) {
         const fileInfo = this.getFileInfo(event.uri);
         if (event.uri.toString() === this.rootUri.toString()) {
-          return this.initData(true).then(() => {
+          this.getProjectList().then(() =>
             ProjectListDataChangeEvent.fire(
               listViewDataProvider.getElementByUri(event.uri)
-            );
-          });
+            )
+          );
         }
         if (fileInfo.file.type === FileType.Directory) {
-          this._initProjectListDirectory(fileInfo.file.data as IProject).then(
-            () => {
-              ProjectListDataChangeEvent.fire(
-                listViewDataProvider.getElementByUri(event.uri)
-              );
-            }
+          this.getAssetList(fileInfo.file.data.id, true).then(() =>
+            ProjectListDataChangeEvent.fire(
+              listViewDataProvider.getElementByUri(event.uri)
+            )
           );
         }
       }
     });
   }
 
-  async _initProjectListDirectory(project: IProject) {
+  async _initProjectDirectory(project: IProject) {
     const uri = Uri.parse(`${this.schema}:/${project.id}`);
     const directory = new Directory(project.name, project);
 
     const dirInfo = FileInfo.from(directory);
     this.setUriData(uri.toString(), dirInfo);
     this.createDirectory(uri, true);
-    return fetchProjectAssetList({ projectId: project.id }).then((res) => {
-      const assetList = res.data.data.list;
-      return Promise.all(
-        assetList.map((asset) => this._initAssetFile(asset, project))
-      );
-    });
   }
 
-  async _initAssetFile(asset: IProjectAsset, project: IProject) {
-    const uri = Uri.parse(`${this.schema}:/${project.id}/${asset.name}`);
+  async _initAssetFile(asset: IProjectAsset) {
+    const uri = Uri.parse(`${this.schema}:/${asset.projectId}/${asset.name}`);
     const uriString = uri.toString();
 
     const file = new File(asset.name, asset);
     const fileInfo = FileInfo.from(file);
     this.setUriData(uriString, fileInfo);
-    this.writeFile(uri, Buffer.from(''), {
-      create: true,
-      overwrite: true,
-    });
+    this.writeFile(uri, Buffer.from(''), { create: true, overwrite: true });
   }
 
-  /** fetch remote data */
-  async initData(force = false) {
-    if (!this._initialized || force) {
-      const logged = await isLogin();
-      if (!logged) return false;
-
-      this._uriMap.clear();
-      this.setUriData(this.rootUri.toString(), FileInfo.from(this._rootEntry));
-
-      const projectList = await getProjectListData();
-      await Promise.all(
-        projectList.map((project) => {
-          return this._initProjectListDirectory(project);
-        })
-      );
-
-      this._initialized = true;
+  /**
+   * @param refresh Whether force to update
+   */
+  async getProjectList(refresh = false): Promise<IProject[]> {
+    if (!this._projectList || refresh) {
+      this._projectList = await getProjectListData();
+      for (const project of this._projectList) {
+        this._initProjectDirectory(project);
+      }
     }
-    return this._initialized;
+    return this._projectList;
+  }
+
+  async getAssetList(
+    projectId: number,
+    refresh = false
+  ): Promise<IProjectAsset[]> {
+    let cachedList = this._projectAssetListMap.get(projectId);
+    if (!cachedList || refresh) {
+      cachedList = (await fetchProjectAssetList({ projectId })).data.data.list;
+      this._projectAssetListMap.set(projectId, cachedList);
+      for (const asset of cachedList) {
+        this._initAssetFile(asset);
+      }
+    }
+    return cachedList;
   }
 
   getFileInfo(uri: Uri | string) {
@@ -272,7 +277,7 @@ class ProjectFSProvider implements FileSystemProvider {
     const uriString = uri.toString();
 
     let dirFileInfo = this.getFileInfo(uriString);
-    if (!dirFileInfo) {
+    if (!dirFileInfo || override) {
       // create locally
       const directory = new Directory(basename);
       dirFileInfo = FileInfo.create(directory);
@@ -283,9 +288,6 @@ class ProjectFSProvider implements FileSystemProvider {
   }
 
   readDirectory(uri: Uri): [string, FileType][] {
-    if (!this._initialized)
-      throw FileSystemError.Unavailable('Not initialized!');
-
     const dir = this.getFileInfo(uri).file as Directory;
     if (dir.type !== FileType.Directory) {
       throw FileSystemError.FileNotADirectory(uri);
@@ -331,9 +333,6 @@ class ProjectFSProvider implements FileSystemProvider {
   }
 
   async readFile(uri: Uri): Promise<Uint8Array> {
-    if (!this._initialized)
-      throw FileSystemError.Unavailable('Not initialized!');
-
     const fileInfo = this.getFileInfo(uri);
     const file = fileInfo.file as File;
     if (fileInfo.file.type !== FileType.File) {

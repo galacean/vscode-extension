@@ -61,8 +61,6 @@ export async function activate(context: ExtensionContext) {
     workspace.registerFileSystemProvider(fsProvider.schema, fsProvider)
   );
 
-  fsProvider.initData().then(() => initProjectView(context));
-
   initClient(context);
 
   context.subscriptions.push(CommandStorage(context));
@@ -75,6 +73,8 @@ export async function activate(context: ExtensionContext) {
   context.subscriptions.push(CommandProjectClick(context));
   context.subscriptions.push(CommandAddShader(context));
   context.subscriptions.push(CommandShowGLSL(client));
+
+  initProjectView(context);
 
   initUserStatusBar(context);
 }
