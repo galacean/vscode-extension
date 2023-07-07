@@ -3,19 +3,21 @@
   "version": "1.0.0",
   "description": "Extension for bridging Galacean and VSCode.",
   "main": "./client/out/extension",
-  "pnpmVersion": "8.3.1",
   "publisher": "Galacean",
+  "icon": "./assets/icons/logo-light.png",
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "cd ./client && npm run build && cd ../server && npm run build && cd ..",
     "watch": "tsc -b -w",
     "lint": "eslint ./client/src ./server/src --ext .ts,.tsx",
-    "postinstall": "cd client && pnpm install && cd ../server && pnpm install && cd ..",
+    "postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
+    "deploy": "vsce publish",
     "build": "vsce package"
   },
   "engines": {
     "vscode": "^1.75.0"
   },
+  "activationEvents": [],
   "devDependencies": {
     "@types/mocha": "^9.1.0",
     "@types/node": "^16.18.34",
