@@ -89,7 +89,7 @@ interface IPaginationResponse<T> extends IPaginationParams {
 }
 
 interface ITreeViewItem<D = any, U = string> {
-  id: number;
+  id?: number;
   name: string;
   isProject: boolean;
   uri: U;

@@ -108,6 +108,16 @@
         "title": "Show Compiled GLSL Code",
         "category": "Galacean",
         "icon": "$(symbol-reference)"
+      },
+      {
+        "command": "galacean.asset.rename",
+        "title": "Rename",
+        "category": "Galacean"
+      },
+      {
+        "command": "galacean.asset.delete",
+        "title": "Delete",
+        "category": "Galacean"
       }
     ],
     "configuration": [
@@ -172,6 +182,21 @@
         {
           "command": "galacean.create.shader",
           "when": "view === galacean-project-list",
+          "group": "inline"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "galacean.asset.rename",
+          "when": "viewItem == asset"
+        },
+        {
+          "command": "galacean.asset.delete",
+          "when": "viewItem == asset"
+        },
+        {
+          "command": "galacean.update.project.list",
+          "when": "viewItem == project",
           "group": "inline"
         }
       ]

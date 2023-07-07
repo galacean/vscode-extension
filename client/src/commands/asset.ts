@@ -1,7 +1,8 @@
 import { getProjectFSProvider } from '@/TextDocProvider';
-import { getTemplate } from '@/utils';
+import { getParentUri, getTemplate } from '@/utils';
 import { getProjectListTreeViewProvider } from '@/views/projectView';
 import { ProjectListDataChangeEvent } from '@data/project';
+import path = require('path');
 import {
   ExtensionContext,
   ProgressLocation,
@@ -40,6 +41,9 @@ export function CommandAssetShow(context: ExtensionContext) {
   return commands.registerCommand('galacean.asset.show', async (uri: Uri) => {
     const doc = await workspace.openTextDocument(uri);
     window.showTextDocument(doc);
+    getProjectFSProvider().currentDir = uri.with({
+      path: path.dirname(uri.path),
+    });
   });
 }
 
@@ -60,4 +64,33 @@ export function CommandAddShader(context: ExtensionContext) {
   return commands.registerCommand('galacean.create.shader', () => {
     createAsset('shader');
   });
+}
+
+export function CommandRename(context: ExtensionContext) {
+  return commands.registerCommand(
+    'galacean.asset.rename',
+    async (item: ITreeViewItem<any, Uri>) => {
+      const fsProvider = getProjectFSProvider();
+      const newFileName = await window.showInputBox({
+        ignoreFocusOut: true,
+        title: 'Enter new filename without "/" character',
+      });
+      if (!newFileName) return;
+      if (newFileName.includes('/')) {
+        return window.showErrorMessage('invalid filename');
+      }
+      const newUri = Uri.joinPath(getParentUri(item.uri), newFileName);
+      fsProvider.rename(item.uri, newUri, { overwrite: true });
+    }
+  );
+}
+
+export function CommandDelete(context: ExtensionContext) {
+  return commands.registerCommand(
+    'galacean.asset.delete',
+    async (item: ITreeViewItem<any, Uri>) => {
+      const fsProvider = getProjectFSProvider();
+      fsProvider.delete(item.uri, { recursive: true });
+    }
+  );
 }

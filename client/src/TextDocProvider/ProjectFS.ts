@@ -1,10 +1,12 @@
 import { FSSchema } from '@/constants';
 import {
   createAsset,
+  deleteAsset,
   fetchProjectAssetList,
+  getProjectList,
   updateProjectAsset,
 } from '@/request/project';
-import { fetchContentByUrl, hashMD5 } from '@/utils';
+import { fetchContentByUrl, getParentUri, hashMD5 } from '@/utils';
 import * as path from 'path';
 import {
   Disposable,
@@ -19,7 +21,7 @@ import {
   window,
 } from 'vscode';
 import { v4 as uuid4 } from 'uuid';
-import { ProjectListDataChangeEvent, getProjectListData } from '@data/project';
+import { ProjectListDataChangeEvent } from '@data/project';
 import { getProjectListTreeViewProvider } from '@/views/projectView';
 import { isLogin } from '@data/account';
 
@@ -70,10 +72,14 @@ interface FileMeta {
   contentHash?: string;
   /** Remote content */
   content?: Uint8Array;
+  /** Changed props */
+  dirtyProps?: Partial<IProjectAsset>;
   /** Deleted locally */
   deleted: boolean;
-  /** uri */
+  /** Directory uri */
   dirInfo?: FileInfo;
+  /** uri */
+  uri: Uri;
 }
 
 class FileInfo {
@@ -115,13 +121,23 @@ class FileInfo {
   }
 
   /** create by server data */
-  static from(data: Entry): FileInfo {
-    return new FileInfo(data, { dirty: false, created: false, deleted: false });
+  static from(data: Entry, uri: Uri): FileInfo {
+    return new FileInfo(data, {
+      dirty: false,
+      created: false,
+      deleted: false,
+      uri,
+    });
   }
 
   /** create locally */
-  static create(data: Entry): FileInfo {
-    return new FileInfo(data, { dirty: true, created: true, deleted: false });
+  static create(data: Entry, uri: Uri): FileInfo {
+    return new FileInfo(data, {
+      dirty: true,
+      created: true,
+      deleted: false,
+      uri,
+    });
   }
 }
 
@@ -144,13 +160,13 @@ class ProjectFSProvider implements FileSystemProvider {
 
   // Cached remote data -------
   private _projectList: Array<IProject> | undefined = undefined;
-  private _projectAssetListMap: Map<number, Array<IProjectAsset>> = new Map();
+  private _projectAssetListMap: Map<string, Array<IProjectAsset>> = new Map();
   // --------------------------
 
   get dirtyAssets(): Array<FileInfo> {
     const ret: Array<FileInfo> = [];
     for (const [_, v] of this._uriMap) {
-      if (v.meta.dirty) ret.push(v);
+      if (v.meta.dirty || v.meta.dirtyProps || v.meta.deleted) ret.push(v);
     }
     return ret;
   }
@@ -174,36 +190,46 @@ class ProjectFSProvider implements FileSystemProvider {
   }
 
   constructor() {
-    this.setUriData(this.rootUri.toString(), FileInfo.from(this._rootEntry));
+    this.init();
     this.onDidChangeFile((e) => {
       const listViewDataProvider = getProjectListTreeViewProvider();
       for (const event of e) {
         const fileInfo = this.getFileInfo(event.uri);
         if (event.uri.toString() === this.rootUri.toString()) {
-          this.getProjectList().then(() =>
-            ProjectListDataChangeEvent.fire(
-              listViewDataProvider.getElementByUri(event.uri)
-            )
+          this.getProjectList(true).then(() =>
+            listViewDataProvider.refresh(event.uri)
           );
         }
         if (fileInfo.file.type === FileType.Directory) {
           this.getAssetList(fileInfo.file.data.id, true).then(() =>
-            ProjectListDataChangeEvent.fire(
-              listViewDataProvider.getElementByUri(event.uri)
-            )
+            listViewDataProvider.refresh(event.uri)
           );
         }
       }
     });
   }
 
+  init() {
+    this.setUriData(
+      this.rootUri.toString(),
+      FileInfo.from(this._rootEntry, this.rootUri)
+    );
+  }
+
+  clearCache() {
+    this._uriMap.clear();
+    this._currentDir = undefined;
+    this._projectList = undefined;
+    this._projectAssetListMap.clear();
+  }
+
   async _initProjectDirectory(project: IProject) {
     const uri = Uri.parse(`${this.schema}:/${project.id}`);
     const directory = new Directory(project.name, project);
 
-    const dirInfo = FileInfo.from(directory);
+    const dirInfo = FileInfo.from(directory, uri);
     this.setUriData(uri.toString(), dirInfo);
-    this.createDirectory(uri, true);
+    this.createDirectory(uri, { init: true, override: true });
   }
 
   async _initAssetFile(asset: IProjectAsset) {
@@ -211,7 +237,7 @@ class ProjectFSProvider implements FileSystemProvider {
     const uriString = uri.toString();
 
     const file = new File(asset.name, asset);
-    const fileInfo = FileInfo.from(file);
+    const fileInfo = FileInfo.from(file, uri);
     this.setUriData(uriString, fileInfo);
     this.writeFile(uri, Buffer.from(''), { create: true, overwrite: true });
   }
@@ -221,7 +247,7 @@ class ProjectFSProvider implements FileSystemProvider {
    */
   async getProjectList(refresh = false): Promise<IProject[]> {
     if (!this._projectList || refresh) {
-      this._projectList = await getProjectListData();
+      this._projectList = (await getProjectList()).data.data.list;
       for (const project of this._projectList) {
         this._initProjectDirectory(project);
       }
@@ -229,18 +255,24 @@ class ProjectFSProvider implements FileSystemProvider {
     return this._projectList;
   }
 
+  getProjectUriString(projectId: number) {
+    return `${this.schema}:/${projectId}`;
+  }
+
   async getAssetList(
     projectId: number,
     refresh = false
   ): Promise<IProjectAsset[]> {
-    let cachedList = this._projectAssetListMap.get(projectId);
+    // Have fetched remote data
+    let cachedList = this._projectAssetListMap.get(projectId.toString());
     if (!cachedList || refresh) {
       cachedList = (await fetchProjectAssetList({ projectId })).data.data.list;
-      this._projectAssetListMap.set(projectId, cachedList);
+      this._projectAssetListMap.set(projectId.toString(), cachedList);
       for (const asset of cachedList) {
         this._initAssetFile(asset);
       }
     }
+
     return cachedList;
   }
 
@@ -263,7 +295,10 @@ class ProjectFSProvider implements FileSystemProvider {
     return this.getFileInfo(uri).file;
   }
 
-  createDirectory(uri: Uri, override = false): void {
+  createDirectory(
+    uri: Uri,
+    opts?: { init?: boolean; override?: boolean }
+  ): void {
     const basename = path.basename(uri.path);
     const dirUri = uri.with({ path: path.dirname(uri.path) });
     let parentDir = this.getFileInfo(dirUri).file as Directory;
@@ -271,16 +306,18 @@ class ProjectFSProvider implements FileSystemProvider {
       throw FileSystemError.FileNotADirectory(dirUri);
     }
 
-    if (parentDir.entries.has(basename) && !override) {
+    if (parentDir.entries.has(basename) && !opts?.override) {
       throw FileSystemError.FileExists(uri);
     }
     const uriString = uri.toString();
 
     let dirFileInfo = this.getFileInfo(uriString);
-    if (!dirFileInfo || override) {
+    if (!dirFileInfo || opts?.override) {
       // create locally
-      const directory = new Directory(basename);
-      dirFileInfo = FileInfo.create(directory);
+      const directory = new Directory(basename, dirFileInfo?.file.data);
+      dirFileInfo = opts?.init
+        ? FileInfo.from(directory, uri)
+        : FileInfo.create(directory, uri);
       this._uriMap.set(uriString, dirFileInfo);
     }
 
@@ -320,7 +357,7 @@ class ProjectFSProvider implements FileSystemProvider {
     if (!fileInfo) {
       // create locally
       const file = new File(basename);
-      fileInfo = FileInfo.create(file);
+      fileInfo = FileInfo.create(file, uri);
       fileInfo.meta.dirty = fileInfo.setContent(content);
       fileInfo.meta.dirInfo = parentInfo;
     } else if (fileInfo.meta.content) {
@@ -347,9 +384,9 @@ class ProjectFSProvider implements FileSystemProvider {
 
   delete(uri: Uri, options: { readonly recursive: boolean }): void {
     const dirUri = uri.with({ path: path.dirname(uri.path) });
-    const basename = path.basename(uri.path);
+    const uriString = uri.toString();
     const parentDir = this.getFileInfo(dirUri).file as Directory;
-    if (!parentDir.entries.has(basename)) {
+    if (!parentDir.entries.has(uriString)) {
       throw FileSystemError.FileNotFound(uri);
     }
     const fileInfo = this.getFileInfo(uri);
@@ -358,7 +395,9 @@ class ProjectFSProvider implements FileSystemProvider {
     }
     fileInfo.meta.deleted = true;
 
-    parentDir.entries.delete(basename);
+    parentDir.entries.delete(uriString);
+
+    getProjectListTreeViewProvider().refresh(dirUri);
   }
 
   rename(
@@ -366,7 +405,36 @@ class ProjectFSProvider implements FileSystemProvider {
     newUri: Uri,
     options: { readonly overwrite: boolean }
   ): void {
-    throw FileSystemError.Unavailable('Not Supported');
+    const fileInfo = this.getFileInfo(oldUri);
+    const parentUri = getParentUri(oldUri);
+    if (getParentUri(newUri).toString() !== parentUri.toString()) {
+      throw FileSystemError.Unavailable('Rename only support same directory');
+    }
+
+    if (this.getFileInfo(newUri.toString())) {
+      window.showErrorMessage('Filename exist');
+      return;
+    }
+    const newUriString = newUri.toString();
+    const oldUriString = oldUri.toString();
+
+    const newFileName = path.basename(newUriString);
+
+    fileInfo.file.data.name = newFileName;
+    fileInfo.meta.dirtyProps = fileInfo.meta.dirtyProps ?? {};
+    fileInfo.meta.dirtyProps.name = newFileName;
+
+    this._uriMap.delete(oldUriString);
+    this._uriMap.set(newUriString, fileInfo);
+
+    const parentDirectory = this.getFileInfo(parentUri).file as Directory;
+    const file = parentDirectory.entries.get(oldUriString);
+    file.name = newFileName;
+
+    parentDirectory.entries.delete(oldUriString);
+    parentDirectory.entries.set(newUriString, file);
+
+    getProjectListTreeViewProvider().refresh(parentUri);
   }
 
   syncAsset() {
@@ -388,14 +456,30 @@ class ProjectFSProvider implements FileSystemProvider {
               filename: asset.file.name,
             },
           });
+        } else if (asset.meta.deleted) {
+          return deleteAsset((asset.file.data as IProjectAsset).uuid);
         } else {
-          return updateProjectAsset(asset.file.data.id, undefined, {
-            buffer: Buffer.from(asset.meta.content),
-            filename: asset.file.name,
-          });
+          return updateProjectAsset(
+            asset.file.data.id,
+            asset.meta.dirtyProps,
+            asset.meta.dirty
+              ? {
+                  buffer: Buffer.from(asset.meta.content),
+                  filename: asset.file.name,
+                }
+              : undefined
+          );
         }
       })
     ).then(() => {
+      for (const f of files) {
+        f.meta.dirty = false;
+        f.meta.created = false;
+        f.meta.dirtyProps = undefined;
+        if (f.meta.deleted) {
+          this._uriMap.delete(f.meta.uri.toString());
+        }
+      }
       if (files.length > 0) {
         window.showInformationMessage(
           `Sync ${files.length} files successfully`

@@ -84,3 +84,11 @@ export function createAsset(params: {
     });
   }
 }
+
+export function deleteAsset(uuid: string) {
+  return request({
+    method: 'DELETE',
+    url: '/api/project/asset/delete',
+    data: { uuid: [uuid] },
+  });
+}

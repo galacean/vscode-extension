@@ -31,7 +31,7 @@ instance.interceptors.request.use(async (config) => {
   config.headers['Cookie'] = cookieString;
   config.headers['User-Agent'] = 'vscode';
 
-  if (config.method.toLowerCase() === 'post') {
+  if (config.method.toLowerCase() !== 'get') {
     const cookieContent = await getCookieContent();
     let ctoken = cookieContent['ctoken']?.value;
     if (!ctoken) {
@@ -52,7 +52,7 @@ instance.interceptors.response.use(
         const cookie = parseSetCookie(setCookie);
         cookieContent = await saveCookie({ cookie, content: cookieContent });
       }
-      saveCookie({
+      await saveCookie({
         content: cookieContent,
         persist: cookieContent && Object.keys(cookieContent).length > 0,
       });

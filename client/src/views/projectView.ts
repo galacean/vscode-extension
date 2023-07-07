@@ -8,7 +8,7 @@ import {
   Uri,
   window,
 } from 'vscode';
-import { ProjectListDataChangeEvent, getProjectListData } from '@data/project';
+import { ProjectListDataChangeEvent } from '@data/project';
 import { getUserInfo } from '@/request';
 import { fetchContentByUrl, hashMD5, showUserInfoStatusBar } from '@/utils';
 import { isLogin } from '@data/account';
@@ -62,38 +62,56 @@ class ProjectListViewTreeDataProvider
   async getChildren(
     element?: ITreeViewItem<any, Uri>
   ): Promise<ITreeViewItem<any, Uri>[]> {
+    if (!(await isLogin())) return [];
     console.log('get children: ', element?.uri.toString());
     const fsProvider = getProjectFSProvider();
 
     if (!element) {
       const projectList = await fsProvider.getProjectList();
-      return projectList.map((project) => {
-        const uri = Uri.parse(`${fsProvider.schema}:/${project.id}`);
-        const item = {
-          id: project.id,
-          name: project.name,
-          isProject: true,
-          uri,
-        };
-        this._elementMap.set(uri.toString(), item);
-        return item;
-      });
+      return projectList
+        .map((project) => {
+          const uri = Uri.parse(`${fsProvider.schema}:/${project.id}`);
+          const item = {
+            id: project.id,
+            name: project.name,
+            isProject: true,
+            uri,
+          };
+          this._elementMap.set(uri.toString(), item);
+          return item;
+        })
+        .sort((a, b) => a.name.localeCompare(b.name));
     } else {
-      const assetList = await fsProvider.getAssetList(element.id, true);
-      return assetList.map((asset) => {
+      await fsProvider.getAssetList(element.id);
+      const projectDirectory = fsProvider.getFileInfo(
+        fsProvider.getProjectUriString(element.id)
+      ).file as Directory;
+      const ret: ITreeViewItem<any, Uri>[] = [];
+      for (const file of projectDirectory.entries.values()) {
         const uri = Uri.parse(
-          `${fsProvider.schema}:/${asset.projectId}/${asset.name}`
+          `${fsProvider.schema}:/${element.id}/${file.name}`
         );
         const item = {
-          id: asset.id,
-          name: asset.name,
+          name: file.name,
           isProject: false,
           uri,
         };
+        ret.push(item);
         this._elementMap.set(uri.toString(), item);
-        return item;
-      });
+      }
+      return ret.sort((a, b) => a.name.localeCompare(b.name));
     }
+  }
+
+  refresh(uri?: Uri) {
+    if (!uri || uri.toString() === getProjectFSProvider().rootUri.toString()) {
+      return ProjectListDataChangeEvent.fire();
+    }
+    const element = this.getElementByUri(uri);
+    if (!element) {
+      throw Error(`Not found uri ${uri.toString()}`);
+    }
+    ProjectListDataChangeEvent.fire(element);
   }
 }
 

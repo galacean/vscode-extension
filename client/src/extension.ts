@@ -18,6 +18,8 @@ import {
   CommandAddShader,
   CommandAssetShow,
   CommandAssetSync,
+  CommandDelete,
+  CommandRename,
 } from './commands/asset';
 import { getProjectFSProvider } from '@/TextDocProvider';
 import { NF_SERVER_SHOW_CODE } from './constants';
@@ -73,6 +75,8 @@ export async function activate(context: ExtensionContext) {
   context.subscriptions.push(CommandProjectClick(context));
   context.subscriptions.push(CommandAddShader(context));
   context.subscriptions.push(CommandShowGLSL(client));
+  context.subscriptions.push(CommandRename(context));
+  context.subscriptions.push(CommandDelete(context));
 
   initProjectView(context);
 

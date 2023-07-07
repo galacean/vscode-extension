@@ -4,6 +4,7 @@ import {
   window,
   StatusBarItem,
   ExtensionContext,
+  Uri,
 } from 'vscode';
 import * as crypto from 'crypto';
 import * as path from 'path';
@@ -40,4 +41,8 @@ export function getTemplate(type?: 'script' | 'shader') {
   const filename = type === 'script' ? 'script.ts' : 'water.shader';
   const templatePath = path.join(PROJ_ROOT, `client/templates/${filename}`);
   return fs.readFileSync(templatePath);
+}
+
+export function getParentUri(uri: Uri): Uri {
+  return uri.with({ path: path.dirname(uri.path) });
 }
