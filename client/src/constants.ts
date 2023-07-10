@@ -3,13 +3,6 @@ import { join } from 'path';
 import { Uri, workspace } from 'vscode';
 import * as fs from 'fs';
 
-const _filePath = join(homedir(), '.galacean-vse');
-export const COOKIE_FILE = Uri.file(_filePath);
-
-if (!fs.existsSync(_filePath)) {
-  workspace.fs.writeFile(COOKIE_FILE, Buffer.from('{}'));
-}
-
 export const PROJ_ROOT = join(__dirname, '../../');
 
 export const OASIS_TOKEN_COOKIE_NAME = 'OasisToken';

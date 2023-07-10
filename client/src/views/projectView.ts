@@ -10,7 +10,7 @@ import {
 } from 'vscode';
 import { ProjectListDataChangeEvent } from '@data/project';
 import { getUserInfo } from '@/request';
-import { fetchContentByUrl, hashMD5, showUserInfoStatusBar } from '@/utils';
+import { showUserInfoStatusBar } from '@/utils';
 import { isLogin } from '@data/account';
 import { Directory, getProjectFSProvider } from '@/TextDocProvider';
 
@@ -83,9 +83,8 @@ class ProjectListViewTreeDataProvider
         .sort((a, b) => a.name.localeCompare(b.name));
     } else {
       await fsProvider.getAssetList(element.id);
-      const projectDirectory = fsProvider.getFileInfo(
-        fsProvider.getProjectUriString(element.id)
-      ).file as Directory;
+      const projectDirectory = fsProvider.getFileInfo(element.uri)
+        .file as Directory;
       const ret: ITreeViewItem<any, Uri>[] = [];
       for (const file of projectDirectory.entries.values()) {
         const uri = Uri.parse(

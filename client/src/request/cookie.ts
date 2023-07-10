@@ -1,7 +1,7 @@
 import * as fs from 'fs';
-import { COOKIE_FILE } from '../constants';
-import { workspace } from 'vscode';
-
+import { homedir } from 'os';
+import { join } from 'path';
+import { Uri, workspace } from 'vscode';
 interface ICookie {
   name: string;
   value: string;
@@ -13,7 +13,14 @@ export type ICookieContent = Record<string, ICookie>;
 let _currentCookieDirtyFlag = true;
 let _currentCookieContent: ICookieContent;
 
+const _filePath = join(homedir(), '.galacean-vse');
+export const COOKIE_FILE = Uri.file(_filePath);
+
 export async function getCookieContent() {
+  if (!fs.existsSync(_filePath)) {
+    await workspace.fs.writeFile(COOKIE_FILE, Buffer.from('{}'));
+  }
+
   if (_currentCookieDirtyFlag) {
     _currentCookieContent = JSON.parse(
       (await workspace.fs.readFile(COOKIE_FILE)).toString()

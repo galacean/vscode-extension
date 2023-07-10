@@ -255,20 +255,33 @@ class ProjectFSProvider implements FileSystemProvider {
     return this._projectList;
   }
 
-  getProjectUriString(projectId: number) {
+  getProjectUriString(projectId: number | string) {
     return `${this.schema}:/${projectId}`;
   }
 
+  private _clearProjectAssets(projectId: number | string) {
+    const projectUriString = this.getProjectUriString(projectId);
+    this._projectAssetListMap.delete(projectUriString);
+    (this.getFileInfo(projectUriString).file as Directory).entries.clear();
+    for (const uri of this._uriMap.keys()) {
+      if (uri.startsWith(projectUriString + '/')) {
+        this._uriMap.delete(uri);
+      }
+    }
+  }
+
   async getAssetList(
-    projectId: number,
+    projectId: number | string,
     refresh = false
   ): Promise<IProjectAsset[]> {
     // Have fetched remote data
     let cachedList = this._projectAssetListMap.get(projectId.toString());
     if (!cachedList || refresh) {
+      this._clearProjectAssets(projectId);
       cachedList = (await fetchProjectAssetList({ projectId })).data.data.list;
       this._projectAssetListMap.set(projectId.toString(), cachedList);
       for (const asset of cachedList) {
+        // if (existAssetList.includes(asset.id)) continue;
         this._initAssetFile(asset);
       }
     }
@@ -420,7 +433,6 @@ class ProjectFSProvider implements FileSystemProvider {
 
     const newFileName = path.basename(newUriString);
 
-    fileInfo.file.data.name = newFileName;
     fileInfo.meta.dirtyProps = fileInfo.meta.dirtyProps ?? {};
     fileInfo.meta.dirtyProps.name = newFileName;
 

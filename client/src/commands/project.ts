@@ -6,6 +6,7 @@ import {
   window,
 } from 'vscode';
 import { getProjectFSProvider } from '@/TextDocProvider';
+import path = require('path');
 
 export function CommandUpdateProjectList(context: ExtensionContext) {
   return commands.registerCommand(
@@ -24,6 +25,9 @@ export function CommandUpdateProjectList(context: ExtensionContext) {
       if (!event) {
         fsProvider.clearCache();
         fsProvider.init();
+      } else {
+        // force update project asset list
+        await fsProvider.getAssetList(path.basename(event.uri.path), true);
       }
 
       fsProvider._fileChangeEventEmitter.fire([

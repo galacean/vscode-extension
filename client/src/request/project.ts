@@ -12,7 +12,7 @@ export function getProjectList(pageNo = 0, pageSize = 20) {
 }
 
 export function fetchProjectAssetList(params: {
-  projectId: number;
+  projectId: number | string;
   type?: EProjectAssetType;
   pagination?: IPaginationParams;
 }) {
