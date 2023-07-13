@@ -49,7 +49,7 @@ export function CommandSignin(context: ExtensionContext) {
           return codeVerification(authCode, email).then(() => {
             window.showInformationMessage('Login Success!');
             process.report({ increment: 100 });
-            getProjectListTreeViewProvider().refresh();
+            getProjectListTreeViewProvider().refresh(undefined, false);
             initUserStatusBar(context);
           });
         }

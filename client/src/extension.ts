@@ -1,5 +1,5 @@
 import path = require('path');
-import { window, ExtensionContext, commands, workspace, Uri } from 'vscode';
+import { ExtensionContext, workspace } from 'vscode';
 import {
   LanguageClient,
   LanguageClientOptions,
@@ -21,10 +21,11 @@ import {
   CommandDelete,
   CommandRename,
 } from './commands/asset';
-import { getProjectFSProvider } from '@/TextDocProvider';
+import { getProjectFSProvider } from '@/FSDocProvider';
 import { NF_SERVER_SHOW_CODE } from './constants';
 import { previewCode } from './views/glslCodeView';
 import { CommandShowGLSL } from './commands/shader';
+import { CommandScriptEdit } from './commands/script';
 
 let client: LanguageClient;
 
@@ -77,6 +78,7 @@ export async function activate(context: ExtensionContext) {
   context.subscriptions.push(CommandShowGLSL(client));
   context.subscriptions.push(CommandRename(context));
   context.subscriptions.push(CommandDelete(context));
+  context.subscriptions.push(CommandScriptEdit(context));
 
   initProjectView(context);
 

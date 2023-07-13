@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import { Script } from '@galacean/engine';
 /**
  * 使用时再重写，性能可以得到提升

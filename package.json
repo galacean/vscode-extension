@@ -120,6 +120,12 @@
         "command": "galacean.asset.delete",
         "title": "Delete",
         "category": "Galacean"
+      },
+      {
+        "command": "galacean.script.edit",
+        "title": "Edit In Workspace",
+        "category": "Galacean",
+        "icon": "$(edit)"
       }
     ],
     "configuration": [
@@ -190,15 +196,20 @@
       "view/item/context": [
         {
           "command": "galacean.asset.rename",
-          "when": "viewItem == asset"
+          "when": "viewItem == asset || viewItem == script"
         },
         {
           "command": "galacean.asset.delete",
-          "when": "viewItem == asset"
+          "when": "viewItem == asset || viewItem == script"
         },
         {
           "command": "galacean.update.project.list",
           "when": "viewItem == project",
+          "group": "inline"
+        },
+        {
+          "command": "galacean.script.edit",
+          "when": "viewItem == script",
           "group": "inline"
         }
       ]

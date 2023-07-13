@@ -9,7 +9,7 @@ import {
 import * as crypto from 'crypto';
 import * as path from 'path';
 import * as fs from 'fs';
-import { PROJ_ROOT } from '@/constants';
+import { TEMPLATE_DIR_PATH } from '@/constants';
 
 let _statusBar: StatusBarItem | undefined = undefined;
 
@@ -30,7 +30,12 @@ export function showUserInfoStatusBar(
 }
 
 export function fetchContentByUrl(url: string, opts?: AxiosRequestConfig) {
-  return axios.get(url, opts).then((res) => res.data);
+  return axios
+    .get(url, opts)
+    .then((res) => res.data)
+    .catch(() => {
+      window.showErrorMessage(`failed to fetch content: ${url}`);
+    });
 }
 
 export function hashMD5(input: string) {
@@ -39,10 +44,14 @@ export function hashMD5(input: string) {
 
 export function getTemplate(type?: 'script' | 'shader') {
   const filename = type === 'script' ? 'script.ts' : 'water.shader';
-  const templatePath = path.join(PROJ_ROOT, `templates/${filename}`);
+  const templatePath = path.join(TEMPLATE_DIR_PATH, filename);
   return fs.readFileSync(templatePath);
 }
 
 export function getParentUri(uri: Uri): Uri {
   return uri.with({ path: path.dirname(uri.path) });
+}
+
+export function isScript(uri: Uri): boolean {
+  return path.extname(uri.path) === '.ts';
 }

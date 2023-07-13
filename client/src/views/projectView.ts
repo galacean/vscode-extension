@@ -10,9 +10,10 @@ import {
 } from 'vscode';
 import { ProjectListDataChangeEvent } from '@data/project';
 import { getUserInfo } from '@/request';
-import { showUserInfoStatusBar } from '@/utils';
+import { isScript, showUserInfoStatusBar } from '@/utils';
 import { isLogin } from '@data/account';
-import { Directory, getProjectFSProvider } from '@/TextDocProvider';
+import { Directory, getProjectFSProvider } from '@/FSDocProvider';
+import path = require('path');
 
 class ProjectListViewTreeDataProvider
   implements TreeDataProvider<ITreeViewItem<any, Uri>>
@@ -41,7 +42,7 @@ class ProjectListViewTreeDataProvider
     }
     item.resourceUri = element.uri;
     if (!element.isProject) {
-      item.contextValue = 'asset';
+      item.contextValue = isScript(element.uri) ? 'script' : 'asset';
       item.command = {
         title: '',
         command: 'galacean.asset.show',
@@ -76,13 +77,14 @@ class ProjectListViewTreeDataProvider
             name: project.name,
             isProject: true,
             uri,
+            payload: { cache: false },
           };
           this._elementMap.set(uri.toString(), item);
           return item;
         })
         .sort((a, b) => a.name.localeCompare(b.name));
     } else {
-      await fsProvider.getAssetList(element.id);
+      await fsProvider.getAssetList(element.id, !element.payload?.cache);
       const projectDirectory = fsProvider.getFileInfo(element.uri)
         .file as Directory;
       const ret: ITreeViewItem<any, Uri>[] = [];
@@ -93,7 +95,9 @@ class ProjectListViewTreeDataProvider
         const item = {
           name: file.name,
           isProject: false,
+          cache: false,
           uri,
+          payload: { cache: false },
         };
         ret.push(item);
         this._elementMap.set(uri.toString(), item);
@@ -102,7 +106,8 @@ class ProjectListViewTreeDataProvider
     }
   }
 
-  refresh(uri?: Uri) {
+  refresh(uri: Uri | undefined, cache: boolean) {
+    console.log(uri, cache);
     if (!uri || uri.toString() === getProjectFSProvider().rootUri.toString()) {
       return ProjectListDataChangeEvent.fire();
     }
@@ -110,6 +115,7 @@ class ProjectListViewTreeDataProvider
     if (!element) {
       throw Error(`Not found uri ${uri.toString()}`);
     }
+    element.payload.cache = cache;
     ProjectListDataChangeEvent.fire(element);
   }
 }

@@ -1,11 +1,12 @@
 import {
   ExtensionContext,
   FileChangeType,
+  TabInputText,
   Uri,
   commands,
   window,
 } from 'vscode';
-import { getProjectFSProvider } from '@/TextDocProvider';
+import { getProjectFSProvider } from '@/FSDocProvider';
 import path = require('path');
 
 export function CommandUpdateProjectList(context: ExtensionContext) {
@@ -25,9 +26,6 @@ export function CommandUpdateProjectList(context: ExtensionContext) {
       if (!event) {
         fsProvider.clearCache();
         fsProvider.init();
-      } else {
-        // force update project asset list
-        await fsProvider.getAssetList(path.basename(event.uri.path), true);
       }
 
       fsProvider._fileChangeEventEmitter.fire([

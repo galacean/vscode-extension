@@ -93,4 +93,8 @@ interface ITreeViewItem<D = any, U = string> {
   name: string;
   isProject: boolean;
   uri: U;
+  payload: {
+    /** Whether to force sync when refreshing */
+    cache: boolean;
+  };
 }

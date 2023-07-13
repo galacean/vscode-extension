@@ -17,6 +17,7 @@ import {
   FileSystemError,
   FileSystemProvider,
   FileType,
+  TabInputText,
   Uri,
   window,
 } from 'vscode';
@@ -24,6 +25,8 @@ import { v4 as uuid4 } from 'uuid';
 import { ProjectListDataChangeEvent } from '@data/project';
 import { getProjectListTreeViewProvider } from '@/views/projectView';
 import { isLogin } from '@data/account';
+import { LocalProjectManager } from '@/LocalProjectManager';
+import { INIT_FILE_STRING } from './constants';
 
 export class Directory implements FileStat {
   type = FileType.Directory;
@@ -55,8 +58,8 @@ class File implements FileStat {
   constructor(name: string, data?: IProjectAsset) {
     this.size = 0;
     this.name = name;
-    this.ctime = data ? Date.parse(data.gmtCreate) : Date.now();
-    this.mtime = data ? Date.parse(data.gmtModified) : Date.now();
+    this.ctime = Date.now();
+    this.mtime = Date.now();
     this.data = data;
   }
 }
@@ -118,6 +121,14 @@ class FileInfo {
       this.meta.contentHash = hash;
     }
     return needUpdate;
+  }
+
+  /** update mtime */
+  touch() {
+    if (this.file.mtime >= Date.now()) {
+      debugger;
+    }
+    this.file.mtime = Date.now();
   }
 
   /** create by server data */
@@ -197,13 +208,20 @@ class ProjectFSProvider implements FileSystemProvider {
         const fileInfo = this.getFileInfo(event.uri);
         if (event.uri.toString() === this.rootUri.toString()) {
           this.getProjectList(true).then(() =>
-            listViewDataProvider.refresh(event.uri)
+            listViewDataProvider.refresh(event.uri, false)
           );
-        }
-        if (fileInfo.file.type === FileType.Directory) {
-          this.getAssetList(fileInfo.file.data.id, true).then(() =>
-            listViewDataProvider.refresh(event.uri)
-          );
+        } else if (fileInfo.file.type === FileType.Directory) {
+          this.getAssetList(fileInfo.file.data.id, true).then(() => {
+            listViewDataProvider.refresh(event.uri, false);
+            // close all opened project files
+            // const tabs = window.tabGroups.all.map((item) => item.tabs).flat();
+            // for (const tab of tabs) {
+            //   const uri = (tab.input as TabInputText).uri;
+            //   if (uri && path.dirname(uri.path) === event.uri.path) {
+            //     window.tabGroups.close(tab);
+            //   }
+            // }
+          });
         }
       }
     });
@@ -239,7 +257,10 @@ class ProjectFSProvider implements FileSystemProvider {
     const file = new File(asset.name, asset);
     const fileInfo = FileInfo.from(file, uri);
     this.setUriData(uriString, fileInfo);
-    this.writeFile(uri, Buffer.from(''), { create: true, overwrite: true });
+    await this.writeFile(uri, Buffer.from(INIT_FILE_STRING), {
+      create: true,
+      overwrite: true,
+    });
   }
 
   /**
@@ -281,8 +302,7 @@ class ProjectFSProvider implements FileSystemProvider {
       cachedList = (await fetchProjectAssetList({ projectId })).data.data.list;
       this._projectAssetListMap.set(projectId.toString(), cachedList);
       for (const asset of cachedList) {
-        // if (existAssetList.includes(asset.id)) continue;
-        this._initAssetFile(asset);
+        await this._initAssetFile(asset);
       }
     }
 
@@ -373,12 +393,30 @@ class ProjectFSProvider implements FileSystemProvider {
       fileInfo = FileInfo.create(file, uri);
       fileInfo.meta.dirty = fileInfo.setContent(content);
       fileInfo.meta.dirInfo = parentInfo;
-    } else if (fileInfo.meta.content) {
+    } else if (content.toString() === INIT_FILE_STRING) {
+      // refresh, init
+      fileInfo.meta.dirty = false;
+      fileInfo.meta.dirtyProps = undefined;
+      const remoteContent = await fetchContentByUrl(
+        (fileInfo.file.data as IProjectAsset).url
+      );
+      fileInfo.setContent(Buffer.from(remoteContent));
+    } else {
+      // local save
       fileInfo.meta.dirty = fileInfo.setContent(content);
+      // same content
+      if (!fileInfo.meta.dirty) {
+        return;
+      }
+    }
+
+    if (fileInfo.meta.dirty && path.extname(basename) === '.ts') {
+      LocalProjectManager.writeScriptLocally(uri);
     }
 
     this._uriMap.set(uriString, fileInfo);
     parent.entries.set(uriString, fileInfo.file);
+    fileInfo.touch();
     return;
   }
 
@@ -388,6 +426,7 @@ class ProjectFSProvider implements FileSystemProvider {
     if (fileInfo.file.type !== FileType.File) {
       throw FileSystemError.FileIsADirectory(uri);
     }
+    if (fileInfo.meta.content) return fileInfo.meta.content;
     if (file.data?.url) {
       const content = await fetchContentByUrl(file.data.url);
       fileInfo.setContent(Buffer.from(content));
@@ -410,7 +449,7 @@ class ProjectFSProvider implements FileSystemProvider {
 
     parentDir.entries.delete(uriString);
 
-    getProjectListTreeViewProvider().refresh(dirUri);
+    getProjectListTreeViewProvider().refresh(dirUri, true);
   }
 
   rename(
@@ -446,7 +485,7 @@ class ProjectFSProvider implements FileSystemProvider {
     parentDirectory.entries.delete(oldUriString);
     parentDirectory.entries.set(newUriString, file);
 
-    getProjectListTreeViewProvider().refresh(parentUri);
+    getProjectListTreeViewProvider().refresh(parentUri, true);
   }
 
   syncAsset() {

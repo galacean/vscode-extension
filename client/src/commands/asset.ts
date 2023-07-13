@@ -1,5 +1,5 @@
-import { getProjectFSProvider } from '@/TextDocProvider';
-import { getParentUri, getTemplate } from '@/utils';
+import { getProjectFSProvider } from '@/FSDocProvider';
+import { getParentUri, getTemplate, isScript } from '@/utils';
 import { getProjectListTreeViewProvider } from '@/views/projectView';
 import { ProjectListDataChangeEvent } from '@data/project';
 import path = require('path');

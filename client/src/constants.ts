@@ -4,6 +4,7 @@ import { Uri, workspace } from 'vscode';
 import * as fs from 'fs';
 
 export const PROJ_ROOT = join(__dirname, '../../');
+export const TEMPLATE_DIR_PATH = join(PROJ_ROOT, 'templates');
 
 export const OASIS_TOKEN_COOKIE_NAME = 'OasisToken';
 
