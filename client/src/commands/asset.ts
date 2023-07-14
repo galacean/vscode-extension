@@ -1,16 +1,10 @@
 import { getProjectFSProvider } from '@/FSDocProvider';
-import { getParentUri, getTemplate, isScript } from '@/utils';
+import { LocalProjectManager } from '@/LocalProjectManager';
+import { getParentUri, getTemplate, isScript, openTexDoc } from '@/utils';
 import { getProjectListTreeViewProvider } from '@/views/projectView';
 import { ProjectListDataChangeEvent } from '@data/project';
 import path = require('path');
-import {
-  ExtensionContext,
-  ProgressLocation,
-  Uri,
-  commands,
-  window,
-  workspace,
-} from 'vscode';
+import { ExtensionContext, Uri, commands, window } from 'vscode';
 
 async function createAsset(assetType: 'script' | 'shader') {
   const fsProvider = getProjectFSProvider();
@@ -30,20 +24,28 @@ async function createAsset(assetType: 'script' | 'shader') {
     create: true,
     overwrite: true,
   });
+  await LocalProjectManager.writeScriptLocally(newUri);
 
   // refresh list view
   const listViewDataProvider = getProjectListTreeViewProvider();
   const dirElement = listViewDataProvider.getElementByUri(currentDir);
+  dirElement.payload.cache = true;
   ProjectListDataChangeEvent.fire(dirElement);
 }
 
 export function CommandAssetShow(context: ExtensionContext) {
   return commands.registerCommand('galacean.asset.show', async (uri: Uri) => {
-    const doc = await workspace.openTextDocument(uri);
-    window.showTextDocument(doc);
-    getProjectFSProvider().currentDir = uri.with({
-      path: path.dirname(uri.path),
-    });
+    if (isScript(uri)) {
+      commands.executeCommand(
+        'galacean.script.edit',
+        getProjectListTreeViewProvider().getElementByUri(uri)
+      );
+    } else {
+      await openTexDoc(uri);
+      getProjectFSProvider().currentDir = uri.with({
+        path: path.dirname(uri.path),
+      });
+    }
   });
 }
 
@@ -91,6 +93,7 @@ export function CommandDelete(context: ExtensionContext) {
     async (item: ITreeViewItem<any, Uri>) => {
       const fsProvider = getProjectFSProvider();
       fsProvider.delete(item.uri, { recursive: true });
+      LocalProjectManager.deleteScriptLocally(item.uri);
     }
   );
 }

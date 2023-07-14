@@ -5,11 +5,13 @@ import {
   StatusBarItem,
   ExtensionContext,
   Uri,
+  workspace,
 } from 'vscode';
 import * as crypto from 'crypto';
 import * as path from 'path';
 import * as fs from 'fs';
 import { TEMPLATE_DIR_PATH } from '@/constants';
+import { getProjectFSProvider } from '@/FSDocProvider';
 
 let _statusBar: StatusBarItem | undefined = undefined;
 
@@ -54,4 +56,23 @@ export function getParentUri(uri: Uri): Uri {
 
 export function isScript(uri: Uri): boolean {
   return path.extname(uri.path) === '.ts';
+}
+
+export async function openTexDoc(uri: Uri) {
+  const doc = await workspace.openTextDocument(uri);
+  return window.showTextDocument(doc);
+}
+
+export function fsUri2MemUriInfo(uri: Uri) {
+  const regex = /.+\/galacean\/([^\/]+)\/src\/(.+)/;
+  const result = uri.path.match(regex);
+  const projectId = result[1];
+  const path = result[2];
+  const fsProvider = getProjectFSProvider();
+  const memUri = Uri.joinPath(fsProvider.rootUri, projectId, path);
+  return {
+    memUri,
+    projectId,
+    path,
+  };
 }

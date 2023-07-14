@@ -17,14 +17,11 @@ import {
   FileSystemError,
   FileSystemProvider,
   FileType,
-  TabInputText,
   Uri,
   window,
 } from 'vscode';
 import { v4 as uuid4 } from 'uuid';
-import { ProjectListDataChangeEvent } from '@data/project';
 import { getProjectListTreeViewProvider } from '@/views/projectView';
-import { isLogin } from '@data/account';
 import { LocalProjectManager } from '@/LocalProjectManager';
 import { INIT_FILE_STRING } from './constants';
 
@@ -125,7 +122,7 @@ class FileInfo {
 
   /** update mtime */
   touch() {
-    if (this.file.mtime >= Date.now()) {
+    if (this.file.mtime > Date.now()) {
       debugger;
     }
     this.file.mtime = Date.now();
@@ -213,14 +210,6 @@ class ProjectFSProvider implements FileSystemProvider {
         } else if (fileInfo.file.type === FileType.Directory) {
           this.getAssetList(fileInfo.file.data.id, true).then(() => {
             listViewDataProvider.refresh(event.uri, false);
-            // close all opened project files
-            // const tabs = window.tabGroups.all.map((item) => item.tabs).flat();
-            // for (const tab of tabs) {
-            //   const uri = (tab.input as TabInputText).uri;
-            //   if (uri && path.dirname(uri.path) === event.uri.path) {
-            //     window.tabGroups.close(tab);
-            //   }
-            // }
           });
         }
       }
@@ -410,13 +399,12 @@ class ProjectFSProvider implements FileSystemProvider {
       }
     }
 
-    if (fileInfo.meta.dirty && path.extname(basename) === '.ts') {
-      LocalProjectManager.writeScriptLocally(uri);
-    }
-
     this._uriMap.set(uriString, fileInfo);
     parent.entries.set(uriString, fileInfo.file);
     fileInfo.touch();
+    if (fileInfo.meta.dirty && path.extname(basename) === '.ts') {
+      LocalProjectManager.writeScriptLocally(uri);
+    }
     return;
   }
 

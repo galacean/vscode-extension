@@ -196,11 +196,11 @@
       "view/item/context": [
         {
           "command": "galacean.asset.rename",
-          "when": "viewItem == asset || viewItem == script"
+          "when": "viewItem == asset"
         },
         {
           "command": "galacean.asset.delete",
-          "when": "viewItem == asset || viewItem == script"
+          "when": "viewItem == asset"
         },
         {
           "command": "galacean.update.project.list",

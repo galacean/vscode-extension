@@ -9,16 +9,32 @@ import { FSWatcherManager } from '@/LocalProjectManager/FSWatcher';
 import { LocalProjectManager } from '@/LocalProjectManager';
 import { getProjectFSProvider } from '@/FSDocProvider';
 import * as path from 'path';
-import * as fs from 'fs';
+import { fsUri2MemUriInfo, isScript, openTexDoc } from '@/utils';
 
 export function CommandScriptEdit(context: ExtensionContext) {
+  workspace.onDidRenameFiles((e) => {
+    for (const file of e.files) {
+      if (isScript(file.oldUri)) {
+        const oldMemUri = fsUri2MemUriInfo(file.oldUri).memUri;
+        const newMemUri = fsUri2MemUriInfo(file.newUri).memUri;
+
+        const fsProvider = getProjectFSProvider();
+        fsProvider.rename(oldMemUri, newMemUri, { overwrite: true });
+      }
+    }
+  });
+
   return commands.registerCommand(
     'galacean.script.edit',
     async (item: ITreeViewItem<any, Uri>) => {
       const projectUri = item.uri.with({ path: path.dirname(item.uri.path) });
-      await LocalProjectManager.openProjectLocally(projectUri);
+      const localTempProjectUri = await LocalProjectManager.openProjectLocally(
+        projectUri
+      );
+      openTexDoc(
+        Uri.joinPath(localTempProjectUri, 'src', path.basename(item.uri.path))
+      );
 
-      commands.executeCommand('galacean.asset.show', item.uri);
       FSWatcherManager.disposeAll();
       const projectInfo = LocalProjectManager.getProjectInfo(projectUri);
       const fsWatcherManager = FSWatcherManager.create(
@@ -29,13 +45,10 @@ export function CommandScriptEdit(context: ExtensionContext) {
         )
       );
       fsWatcherManager.watcher.onDidChange(async (uri) => {
-        const regex = /.+\/galacean\/([^\/]+)\/src\/(.+)/;
-        const result = uri.path.match(regex);
-        const projectId = result[1];
-        const path = result[2];
+        const memUriInfo = fsUri2MemUriInfo(uri);
 
         const fsProvider = getProjectFSProvider();
-        const memUri = Uri.joinPath(fsProvider.rootUri, projectId, path);
+        const memUri = memUriInfo.memUri;
         const localContent = await workspace.fs.readFile(uri);
         fsProvider.writeFile(memUri, localContent, {
           create: false,
