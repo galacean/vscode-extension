@@ -1,13 +1,20 @@
-import { FSSchema } from '@/constants';
+import {
+  BUILTIN_PKGS,
+  FSSchema,
+  URI_QUERY_CREATE_LOCALLY,
+  URI_QUERY_EDIT_LOCALLY,
+} from '@/constants';
 import {
   createAsset,
   deleteAsset,
   fetchProjectAssetList,
   getProjectList,
   updateProjectAsset,
+  updateProjectDependencies,
 } from '@/request/project';
 import { fetchContentByUrl, getParentUri, hashMD5 } from '@/utils';
 import * as path from 'path';
+import * as fs from 'fs';
 import {
   Disposable,
   Event,
@@ -19,6 +26,7 @@ import {
   FileType,
   Uri,
   window,
+  workspace,
 } from 'vscode';
 import { v4 as uuid4 } from 'uuid';
 import { getProjectListTreeViewProvider } from '@/views/projectView';
@@ -174,7 +182,8 @@ class ProjectFSProvider implements FileSystemProvider {
   get dirtyAssets(): Array<FileInfo> {
     const ret: Array<FileInfo> = [];
     for (const [_, v] of this._uriMap) {
-      if (v.meta.dirty || v.meta.dirtyProps || v.meta.deleted) ret.push(v);
+      if (v.meta.dirty || v.meta.dirtyProps || v.meta.deleted || v.meta.created)
+        ret.push(v);
     }
     return ret;
   }
@@ -241,7 +250,7 @@ class ProjectFSProvider implements FileSystemProvider {
 
   async _initAssetFile(asset: IProjectAsset) {
     const uri = Uri.parse(`${this.schema}:/${asset.projectId}/${asset.name}`);
-    const uriString = uri.toString();
+    const uriString = uri.with({ query: '' }).toString();
 
     const file = new File(asset.name, asset);
     const fileInfo = FileInfo.from(file, uri);
@@ -272,10 +281,9 @@ class ProjectFSProvider implements FileSystemProvider {
   private _clearProjectAssets(projectId: number | string) {
     const projectUriString = this.getProjectUriString(projectId);
     this._projectAssetListMap.delete(projectUriString);
-    (this.getFileInfo(projectUriString).file as Directory).entries.clear();
     for (const uri of this._uriMap.keys()) {
       if (uri.startsWith(projectUriString + '/')) {
-        this._uriMap.delete(uri);
+        this.delete(Uri.parse(uri), { recursive: true });
       }
     }
   }
@@ -299,6 +307,9 @@ class ProjectFSProvider implements FileSystemProvider {
   }
 
   getFileInfo(uri: Uri | string) {
+    if (uri instanceof Uri) {
+      uri = uri.with({ query: '' });
+    }
     return this._uriMap.get(uri.toString());
   }
 
@@ -372,7 +383,7 @@ class ProjectFSProvider implements FileSystemProvider {
     if (parent.type !== FileType.Directory) {
       throw FileSystemError.FileNotADirectory(parentUri);
     }
-    const uriString = uri.toString();
+    const uriString = uri.with({ query: '' }).toString();
 
     let fileInfo = this.getFileInfo(uriString);
 
@@ -402,7 +413,11 @@ class ProjectFSProvider implements FileSystemProvider {
     this._uriMap.set(uriString, fileInfo);
     parent.entries.set(uriString, fileInfo.file);
     fileInfo.touch();
-    if (fileInfo.meta.dirty && path.extname(basename) === '.ts') {
+    if (
+      path.extname(basename) === '.ts' &&
+      !uri.query.includes(URI_QUERY_CREATE_LOCALLY) &&
+      !uri.query.includes(URI_QUERY_EDIT_LOCALLY)
+    ) {
       LocalProjectManager.writeScriptLocally(uri);
     }
     return;
@@ -424,7 +439,7 @@ class ProjectFSProvider implements FileSystemProvider {
 
   delete(uri: Uri, options: { readonly recursive: boolean }): void {
     const dirUri = uri.with({ path: path.dirname(uri.path) });
-    const uriString = uri.toString();
+    const uriString = uri.with({ query: '' }).toString();
     const parentDir = this.getFileInfo(dirUri).file as Directory;
     if (!parentDir.entries.has(uriString)) {
       throw FileSystemError.FileNotFound(uri);
@@ -478,9 +493,40 @@ class ProjectFSProvider implements FileSystemProvider {
 
   syncAsset() {
     const files = this.dirtyAssets;
+    // update dependencies
+    if (LocalProjectManager.openedProjectUriInfo) {
+      const extraPkgs = getProjectDependencies(
+        LocalProjectManager.openedProjectUriInfo.localTempUri
+      );
+      const projectInfo = this.getFileInfo(
+        LocalProjectManager.openedProjectUriInfo.memoUri
+      ).file as Directory;
+      const dependencies = JSON.parse(
+        (projectInfo.data as IProject).dependencies ?? '{}'
+      ) as Object;
+      let needUpdate = false;
+      for (const dep in extraPkgs) {
+        if (!dependencies.hasOwnProperty(dep)) {
+          needUpdate = true;
+          dependencies[dep] = extraPkgs[dep];
+        }
+      }
+      if (needUpdate) {
+        updateProjectDependencies(
+          projectInfo.data.id,
+          JSON.stringify(dependencies)
+        ).then((res) => {
+          window.showInformationMessage('update dependencies successfully');
+          projectInfo.data = res.data.data;
+        });
+      }
+    }
+
     return Promise.all(
       files.map((asset) => {
         if (asset.meta.created) {
+          // skip empty file
+          if (!asset.meta.content.toString()) return;
           const assetInfo: ProjectAssetCreateInfo = {
             name: asset.file.name,
             type: 0,
@@ -534,4 +580,19 @@ export function getProjectFSProvider(): ProjectFSProvider {
     _FSProvider = new ProjectFSProvider();
   }
   return _FSProvider;
+}
+
+function getProjectDependencies(projectFsUri: Uri) {
+  const pkgJsonUri = path.join(projectFsUri.path, 'package.json');
+  if (!fs.existsSync(pkgJsonUri)) {
+    throw FileSystemError.FileNotFound(pkgJsonUri);
+  }
+  const pkgJson = JSON.parse(fs.readFileSync(pkgJsonUri).toString());
+
+  const extraPkgs = {} as Record<string, string>;
+  for (const depend in pkgJson.dependencies) {
+    if (BUILTIN_PKGS.includes(depend)) continue;
+    extraPkgs[depend] = pkgJson.dependencies[depend];
+  }
+  return extraPkgs;
 }

@@ -35,8 +35,10 @@ export function fetchContentByUrl(url: string, opts?: AxiosRequestConfig) {
   return axios
     .get(url, opts)
     .then((res) => res.data)
-    .catch(() => {
+    .catch((e) => {
+      console.error(e);
       window.showErrorMessage(`failed to fetch content: ${url}`);
+      return '';
     });
 }
 

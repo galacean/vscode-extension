@@ -106,8 +106,11 @@ class ProjectListViewTreeDataProvider
     }
   }
 
+  /**
+   * @param cache Whether need to synchronize remote data
+   */
   refresh(uri: Uri | undefined, cache: boolean) {
-    console.log(uri, cache);
+    console.log('uri: ', uri, cache);
     if (!uri || uri.toString() === getProjectFSProvider().rootUri.toString()) {
       return ProjectListDataChangeEvent.fire();
     }

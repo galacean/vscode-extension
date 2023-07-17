@@ -6,14 +6,27 @@ import { TEMPLATE_DIR_PATH } from '@/constants';
 import { getProjectFSProvider } from '@/FSDocProvider';
 import { exec } from 'child_process';
 
+interface LocalUriInfo {
+  memoUri: Uri;
+  localTempUri: Uri;
+}
+
 export class LocalProjectManager {
-  private static _uriMap: Map<string, { fsUri: Uri; localTempUri: Uri }> =
-    new Map();
+  private static _uriMap: Map<string, LocalUriInfo> = new Map();
 
   static _tmpDir = os.tmpdir();
+  static openedProjectUriInfo: LocalUriInfo | undefined;
 
   static getProjectInfo(projectUri: string | Uri) {
     return this._uriMap.get(projectUri.toString());
+  }
+
+  static clear(projectUri?: string | Uri) {
+    if (projectUri) {
+      this._uriMap.delete(projectUri.toString());
+    } else {
+      this._uriMap.clear();
+    }
   }
 
   static getProjectTempPath(projectId) {
@@ -29,17 +42,19 @@ export class LocalProjectManager {
       const content = await fsProvider.readFile(gUri);
       const name = path.basename(gUri.path);
       localUriString = path.join(projectTempDirPath, 'src', name);
-      fs.writeFileSync(localUriString, content, {
-        flag: 'w+',
-      });
+      if (fs.existsSync(projectTempDirPath + '/src')) {
+        fs.writeFileSync(localUriString, content, {
+          flag: 'w+',
+        });
+      }
     }
     return localUriString;
   }
 
-  static async deleteScriptLocally(gUri: Uri) {
-    const projectId = path.basename(path.dirname(gUri.path));
+  static async deleteScriptLocally(memUri: Uri) {
+    const projectId = path.basename(path.dirname(memUri.path));
     const projectTempDirPath = this.getProjectTempPath(projectId);
-    const name = path.basename(gUri.path);
+    const name = path.basename(memUri.path);
     fs.rmSync(path.join(projectTempDirPath, 'src', name));
   }
 
@@ -77,16 +92,17 @@ export class LocalProjectManager {
       }
 
       projectInfo = {
-        fsUri: projectUri,
+        memoUri: projectUri,
         localTempUri: Uri.file(projectTempDirPath),
       };
       LocalProjectManager._uriMap.set(projectUriString, projectInfo);
+      this.openedProjectUriInfo = projectInfo;
 
       // Prompt the user to install dependency
       if (!fs.existsSync(path.join(projectTempDirPath, 'node_modules'))) {
         window
           .showInformationMessage(
-            'Install dependencies ?',
+            'Install dependencies? (Or try preferred npm manager to install manually - pnpm install)',
             { modal: true },
             'Yes'
           )
@@ -95,7 +111,7 @@ export class LocalProjectManager {
               window.withProgress(
                 {
                   location: ProgressLocation.Notification,
-                  title: 'Installing',
+                  title: 'Installing dependencies',
                 },
                 (progress, token) => {
                   let current = 0;

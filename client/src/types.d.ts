@@ -43,6 +43,7 @@ interface IProject {
   id: number;
   gmtCreate: string;
   gmtModified: string;
+  dependencies: string;
 }
 
 interface IProjectAsset {

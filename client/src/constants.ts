@@ -19,3 +19,10 @@ export const FSSchema = 'galacean';
 export const NF_CLIENT_SHOW_CODE = 'client/show.glsl';
 
 export const NF_SERVER_SHOW_CODE = 'server/show.glsl';
+
+// Builtin Dependencies
+export const BUILTIN_PKGS = ['@galacean/engine', 'react', 'react-dom'];
+
+export const URI_QUERY_CREATE_LOCALLY = 'createLocally';
+
+export const URI_QUERY_EDIT_LOCALLY = 'editLocally';

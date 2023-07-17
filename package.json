@@ -1,6 +1,6 @@
 {
   "name": "galacean-vscode-extension",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Extension for bridging Galacean and VSCode.",
   "main": "./client/out/extension",
   "publisher": "Galacean",
@@ -120,12 +120,6 @@
         "command": "galacean.asset.delete",
         "title": "Delete",
         "category": "Galacean"
-      },
-      {
-        "command": "galacean.script.edit",
-        "title": "Edit In Workspace",
-        "category": "Galacean",
-        "icon": "$(edit)"
       }
     ],
     "configuration": [
@@ -205,11 +199,6 @@
         {
           "command": "galacean.update.project.list",
           "when": "viewItem == project",
-          "group": "inline"
-        },
-        {
-          "command": "galacean.script.edit",
-          "when": "viewItem == script",
           "group": "inline"
         }
       ]

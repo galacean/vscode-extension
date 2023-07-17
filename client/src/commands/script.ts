@@ -9,7 +9,9 @@ import { FSWatcherManager } from '@/LocalProjectManager/FSWatcher';
 import { LocalProjectManager } from '@/LocalProjectManager';
 import { getProjectFSProvider } from '@/FSDocProvider';
 import * as path from 'path';
-import { fsUri2MemUriInfo, isScript, openTexDoc } from '@/utils';
+import { fsUri2MemUriInfo, getParentUri, isScript, openTexDoc } from '@/utils';
+import { URI_QUERY_CREATE_LOCALLY, URI_QUERY_EDIT_LOCALLY } from '@/constants';
+import { getProjectListTreeViewProvider } from '@/views/projectView';
 
 export function CommandScriptEdit(context: ExtensionContext) {
   workspace.onDidRenameFiles((e) => {
@@ -20,6 +22,39 @@ export function CommandScriptEdit(context: ExtensionContext) {
 
         const fsProvider = getProjectFSProvider();
         fsProvider.rename(oldMemUri, newMemUri, { overwrite: true });
+      }
+    }
+  });
+
+  workspace.onDidCreateFiles(async (e) => {
+    for (const file of e.files) {
+      if (isScript(file)) {
+        console.log('file create: ', file.toString());
+        const fsProvider = getProjectFSProvider();
+        const memUri = fsUri2MemUriInfo(file).memUri;
+        await fsProvider.writeFile(
+          memUri.with({ query: URI_QUERY_CREATE_LOCALLY }),
+          await workspace.fs.readFile(file),
+          {
+            create: true,
+            overwrite: true,
+          }
+        );
+        getProjectListTreeViewProvider().refresh(getParentUri(memUri), true);
+      }
+    }
+  });
+
+  workspace.onDidDeleteFiles((e) => {
+    for (const uri of e.files) {
+      if (isScript(uri)) {
+        console.log('delete file: ', uri);
+        const fsProvider = getProjectFSProvider();
+        const memUri = fsUri2MemUriInfo(uri).memUri;
+
+        if (fsProvider.getFileInfo(memUri)) {
+          fsProvider.delete(memUri, { recursive: true });
+        }
       }
     }
   });
@@ -50,10 +85,14 @@ export function CommandScriptEdit(context: ExtensionContext) {
         const fsProvider = getProjectFSProvider();
         const memUri = memUriInfo.memUri;
         const localContent = await workspace.fs.readFile(uri);
-        fsProvider.writeFile(memUri, localContent, {
-          create: false,
-          overwrite: true,
-        });
+        fsProvider.writeFile(
+          memUri.with({ query: URI_QUERY_EDIT_LOCALLY }),
+          localContent,
+          {
+            create: false,
+            overwrite: true,
+          }
+        );
         console.log(uri.toString(), ' change!');
       });
     }

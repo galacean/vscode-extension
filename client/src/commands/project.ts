@@ -8,6 +8,7 @@ import {
 } from 'vscode';
 import { getProjectFSProvider } from '@/FSDocProvider';
 import path = require('path');
+import { LocalProjectManager } from '@/LocalProjectManager';
 
 export function CommandUpdateProjectList(context: ExtensionContext) {
   return commands.registerCommand(
@@ -28,6 +29,7 @@ export function CommandUpdateProjectList(context: ExtensionContext) {
         fsProvider.init();
       }
 
+      LocalProjectManager.clear(event?.uri);
       fsProvider._fileChangeEventEmitter.fire([
         { type: FileChangeType.Changed, uri: event?.uri ?? fsProvider.rootUri },
       ]);

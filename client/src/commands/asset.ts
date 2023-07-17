@@ -24,7 +24,6 @@ async function createAsset(assetType: 'script' | 'shader') {
     create: true,
     overwrite: true,
   });
-  await LocalProjectManager.writeScriptLocally(newUri);
 
   // refresh list view
   const listViewDataProvider = getProjectListTreeViewProvider();

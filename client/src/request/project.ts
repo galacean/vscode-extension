@@ -92,3 +92,23 @@ export function deleteAsset(uuid: string) {
     data: { uuid: [uuid] },
   });
 }
+
+export function updateProjectProps(
+  projectId: number,
+  props: { key: string; value: string }[]
+) {
+  return request<IProject>({
+    method: 'POST',
+    url: '/api/project/update/props',
+    data: { projectId, props },
+  });
+}
+
+export function updateProjectDependencies(
+  project: number,
+  dependencies: string
+) {
+  return updateProjectProps(project, [
+    { key: 'dependencies', value: dependencies },
+  ]);
+}
