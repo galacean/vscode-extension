@@ -1,0 +1,20 @@
+{
+  "name": "galacean-lsp-server",
+  "description": "Galacean ShaderLab language server",
+  "version": "0.0.1",
+  "author": "Galacean",
+  "license": "MIT",
+  "engines": {
+    "node": "*"
+  },
+  "dependencies": {
+    "@galacean/engine-shader-lab": "^1.1.0-alpha.1",
+    "vscode-languageserver": "^8.1.0",
+    "vscode-languageserver-textdocument": "^1.0.8"
+  },
+  "scripts": {},
+  "devDependencies": {
+    "@galacean/engine-design": "^1.0.4",
+    "chevrotain": "^11.0.3"
+  }
+}

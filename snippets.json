@@ -1,0 +1,105 @@
+{
+  "For Loop": {
+    "prefix": "for",
+    "body": [
+      "for(${1:int} ${2:i} = ${3:0}; ${2:i} < ${4:max}; ${2:i}++) {",
+      "\t$0",
+      "}"
+    ],
+    "description": "Creates a for loop"
+  },
+  "main": {
+    "prefix": "main",
+    "body": ["void main(){", "\t$0", "}"],
+    "description": "Creates the main function"
+  },
+  "if": {
+    "prefix": "if",
+    "body": ["if(${1:true}) {", "\t$0", "}"],
+    "description": "Creates an if statement"
+  },
+  "struct": {
+    "prefix": "struct",
+    "body": ["struct ${1:Type} {", "\t${2:vec3} ${3:vec};$0", "};"],
+    "description": "Creates a struct"
+  },
+  "EditorProperties": {
+    "prefix": "EditorProperties",
+    "body": ["EditorProperties {", "\t$0", "}"],
+    "description": "Creates Editor Properties"
+  },
+  "shader": {
+    "prefix": "Shader",
+    "body": ["Shader \"$0:shaderName\" {", "\t$1", "}"],
+    "description": "Creates Shader Block"
+  },
+  "subShader": {
+    "prefix": "SubShader",
+    "body": ["SubShader \"$0:subShaderName\" {", "\t$1", "}"],
+    "description": "Creates SubShader Block"
+  },
+  "Pass": {
+    "prefix": "Pass",
+    "body": ["Pass \"$0:passName\" {", "\t$1", "}"],
+    "description": "Creates Pass Block"
+  },
+  "Declare RasterState": {
+    "prefix": "RasterState",
+    "body": [
+      "RasterState ${0:rasterState} {",
+      "\tCullMode = $1;",
+      "\tDepthBias = $2;",
+      "\tSlopeScaledDepthBias = $3;",
+      "}"
+    ],
+    "description": "Create RasterState"
+  },
+  "Declare BlendState": {
+    "prefix": "BlendState",
+    "body": [
+      "BlendState ${0:blendState} {",
+      "\tEnabled = $1;",
+      "\tColorBlendOperation = $2",
+      "\tAlphaBlendOperation = $3",
+      "\tSrcColorBlendFactor = $4",
+      "\tSrcAlphaBlendFactor = $5",
+      "\tDestColorBlendFactor = $6",
+      "\tDestAlphaBlendFactor = $7",
+      "\tColorWriteMask = $8",
+      "\tBlendColor = $9",
+      "\tAlphaToCoverage = $10",
+      "}"
+    ],
+    "description": "Create BlendState"
+  },
+  "Declare DepthState": {
+    "prefix": "DepthState",
+    "body": [
+      "DepthState ${0:depthState} {",
+      "\tEnabled = $1;",
+      "\tWriteEnabled = $2",
+      "\tCompareFunction = $3",
+      "}"
+    ],
+    "description": "Create DepthState"
+  },
+  "Declare StencilState": {
+    "prefix": "DepthState",
+    "body": [
+      "DepthState ${0:DepthState} {",
+      "\tEnabled = $1;",
+      "ReferenceValue = $2;",
+      "Mask = $3;",
+      "WriteMask = $4",
+      "CompareFunctionFront = $5",
+      "CompareFunctionBack = $6",
+      "PassOperationFront = $7",
+      "PassOperationBack = $8",
+      "FailOperationFront = $9",
+      "FailOperationBack = $10",
+      "ZFailOperationFront = $11",
+      "ZFailOperationBack = $12"
+    ],
+    "description": "Create StencilState"
+  }
+}

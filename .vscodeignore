@@ -1,0 +1,12 @@
+**/*.ts
+**/tsconfig.json
+.github
+.husky
+.vscode
+**/src/**
+**/node_modules/**
+.gitignore
+**/*.map
+**/.md
+**/.vscodeignore
+**/package-lock.json

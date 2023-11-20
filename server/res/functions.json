@@ -1,0 +1,1644 @@
+{
+  "acos": {
+    "name": "acos",
+    "summary": "Return the arccosine of the parameter.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specify the value whose arccosine to return.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "asin": {
+    "name": "asin",
+    "summary": "Return the arcsine of the parameter.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specify the value whose arcsine to return.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "atan": {
+    "name": "atan",
+    "summary": "Return the arc-tangent of the parameters.",
+    "parameters": [
+      {
+        "name": "y",
+        "summary": "Specify the numerator of the fraction whose arctangent to return.",
+        "type": "genType"
+      },
+      {
+        "name": "x",
+        "summary": "Specify the denominator of the fraction whose arctangent to return.",
+        "type": "genType"
+      },
+      {
+        "name": "y_over_x",
+        "summary": "Specify the fraction whose arctangent to return.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "cos": {
+    "name": "cos",
+    "summary": "Return the cosine of the parameter.",
+    "parameters": [
+      {
+        "name": "angle",
+        "summary": "Specify the quantity, in radians, of which to return the cosine.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "degrees": {
+    "name": "degrees",
+    "summary": "Convert a quantity in radians to degrees.",
+    "parameters": [
+      {
+        "name": "radians",
+        "summary": "Specify the quantity, in radians, to be converted to degrees.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "radians": {
+    "name": "radians",
+    "summary": "Convert a quantity in degrees to radians.",
+    "parameters": [
+      {
+        "name": "degrees",
+        "summary": "Specify the quantity, in degrees, to be converted to radians.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "sin": {
+    "name": "sin",
+    "summary": "Return the sine of the parameter.",
+    "parameters": [
+      {
+        "name": "angle",
+        "summary": "Specify the quantity, in radians, of which to return the sine.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "tan": {
+    "name": "tan",
+    "summary": "Return the tangent of the parameter.",
+    "parameters": [
+      {
+        "name": "angle",
+        "summary": "Specify the quantity, in radians, of which to return the tangent.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "abs": {
+    "name": "abs",
+    "summary": "Return the absolute value of the parameter.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specify the value of which to return the absolute.",
+        "type": "genIType"
+      }
+    ],
+    "returnType": "genIType"
+  },
+  "ceil": {
+    "name": "ceil",
+    "summary": "Find the nearest integer that is greater than or equal to the parameter.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specify the value to evaluate.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "clamp": {
+    "name": "clamp",
+    "summary": "Constrain a value to lie between two further values.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specify the value to constrain.",
+        "type": "genUType"
+      },
+      {
+        "name": "minVal",
+        "summary": "Specify the lower end of the range into which to constrain x.",
+        "type": "uint"
+      },
+      {
+        "name": "maxVal",
+        "summary": "Specify the upper end of the range into which to constrain x.",
+        "type": "uint"
+      }
+    ],
+    "returnType": "genUType"
+  },
+  "exp": {
+    "name": "exp",
+    "summary": "Return the natural exponentiation of the parameter.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specify the value to exponentiate.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "exp2": {
+    "name": "exp2",
+    "summary": "Return 2 raised to the power of the parameter.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specify the value of the power to which 2 will be raised.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "floor": {
+    "name": "floor",
+    "summary": "Find the nearest integer less than or equal to the parameter.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specify the value to evaluate.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "fract": {
+    "name": "fract",
+    "summary": "Compute the fractional part of the argument.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specify the value to evaluate.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "inversesqrt": {
+    "name": "inversesqrt",
+    "summary": "Return the inverse of the square root of the parameter.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specify the value of which to take the inverse of the square root.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "log": {
+    "name": "log",
+    "summary": "Return the natural logarithm of the parameter.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specify the value of which to take the natural logarithm.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "log2": {
+    "name": "log2",
+    "summary": "Return the base 2 logarithm of the parameter.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specify the value of which to take the base 2 logarithm.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "max": {
+    "name": "max",
+    "summary": "Return the greater of two values.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specify the first value to compare.",
+        "type": "genUType"
+      },
+      {
+        "name": "y",
+        "summary": "Specify the second value to compare.",
+        "type": "uint"
+      }
+    ],
+    "returnType": "genUType"
+  },
+  "min": {
+    "name": "min",
+    "summary": "Return the lesser of two values.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specify the first value to compare.",
+        "type": "genUType"
+      },
+      {
+        "name": "y",
+        "summary": "Specify the second value to compare.",
+        "type": "uint"
+      }
+    ],
+    "returnType": "genUType"
+  },
+  "mix": {
+    "name": "mix",
+    "summary": "Linearly interpolate between two values.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specify the start of the range in which to interpolate.",
+        "type": "genType"
+      },
+      {
+        "name": "y",
+        "summary": "Specify the end of the range in which to interpolate.",
+        "type": "genType"
+      },
+      {
+        "name": "a",
+        "summary": "Specify the value to use to interpolate between x and y.",
+        "type": "genBType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "mod": {
+    "name": "mod",
+    "summary": "Compute value of one parameter modulo another.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specify the value to evaluate.",
+        "type": "genType"
+      },
+      {
+        "name": "y",
+        "summary": "Specify the value by which to perform the modulo.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "pow": {
+    "name": "pow",
+    "summary": "Return the value of the first parameter raised to the power of the second.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specify the value to raise to the power y.",
+        "type": "genType"
+      },
+      {
+        "name": "y",
+        "summary": "Specify the power to which to raise x.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "sign": {
+    "name": "sign",
+    "summary": "Extract the sign of the parameter.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specify the value from which to extract the sign.",
+        "type": "genIType"
+      }
+    ],
+    "returnType": "genIType"
+  },
+  "smoothstep": {
+    "name": "smoothstep",
+    "summary": "Perform Hermite interpolation between two values.",
+    "parameters": [
+      {
+        "name": "edge0",
+        "summary": "Specifies the value of the lower edge of the Hermite function.",
+        "type": "float"
+      },
+      {
+        "name": "edge1",
+        "summary": "Specifies the value of the upper edge of the Hermite function.",
+        "type": "float"
+      },
+      {
+        "name": "x",
+        "summary": "Specifies the source value for interpolation.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "sqrt": {
+    "name": "sqrt",
+    "summary": "Return the square root of the parameter.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specify the value of which to take the square root.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "step": {
+    "name": "step",
+    "summary": "Generate a step function by comparing two values.",
+    "parameters": [
+      {
+        "name": "edge",
+        "summary": "Specifies the location of the edge of the step function.",
+        "type": "float"
+      },
+      {
+        "name": "x",
+        "summary": "Specify the value to be used to generate the step function.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "cross": {
+    "name": "cross",
+    "summary": "Calculate the cross product of two vectors.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specifies the first of two vectors.",
+        "type": "vec3"
+      },
+      {
+        "name": "y",
+        "summary": "Specifies the second of two vectors.",
+        "type": "vec3"
+      }
+    ],
+    "returnType": "vec3"
+  },
+  "distance": {
+    "name": "distance",
+    "summary": "Calculate the distance between two points.",
+    "parameters": [
+      {
+        "name": "p0",
+        "summary": "Specifies the first of two points.",
+        "type": "genType"
+      },
+      {
+        "name": "p1",
+        "summary": "Specifies the second of two points.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "float"
+  },
+  "dot": {
+    "name": "dot",
+    "summary": "Calculate the dot product of two vectors.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specifies the first of two vectors.",
+        "type": "genType"
+      },
+      {
+        "name": "y",
+        "summary": "Specifies the second of two vectors.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "float"
+  },
+  "equal": {
+    "name": "equal",
+    "summary": "Perform a component-wise equal-to comparison of two vectors.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specifies the first vector to be used in the comparison operation.",
+        "type": "uvec"
+      },
+      {
+        "name": "y",
+        "summary": "Specifies the second vector to be used in the comparison operation.",
+        "type": "uvec"
+      }
+    ],
+    "returnType": "bvec"
+  },
+  "faceforward": {
+    "name": "faceforward",
+    "summary": "Return a vector pointing in the same direction as another.",
+    "parameters": [
+      {
+        "name": "N",
+        "summary": "Specifies the vector to orient.",
+        "type": "genType"
+      },
+      {
+        "name": "I",
+        "summary": "Specifies the incident vector.",
+        "type": "genType"
+      },
+      {
+        "name": "Nref",
+        "summary": "Specifies the reference vector.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "length": {
+    "name": "length",
+    "summary": "Calculate the length of a vector.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specifies a vector of which to calculate the length.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "float"
+  },
+  "normalize": {
+    "name": "normalize",
+    "summary": "Calculate the normalize product of two vectors.",
+    "parameters": [
+      {
+        "name": "v",
+        "summary": "Specifies the vector to normalize.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "notEqual": {
+    "name": "notEqual",
+    "summary": "Perform a component-wise not-equal-to comparison of two vectors.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specifies the first vector to be used in the comparison operation.",
+        "type": "uvec"
+      },
+      {
+        "name": "y",
+        "summary": "Specifies the second vector to be used in the comparison operation.",
+        "type": "uvec"
+      }
+    ],
+    "returnType": "bvec"
+  },
+  "reflect": {
+    "name": "reflect",
+    "summary": "Calculate the reflection direction for an incident vector.",
+    "parameters": [
+      {
+        "name": "I",
+        "summary": "Specifies the incident vector.",
+        "type": "genType"
+      },
+      {
+        "name": "N",
+        "summary": "Specifies the normal vector.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "refract": {
+    "name": "refract",
+    "summary": "Calculate the refraction direction for an incident vector.",
+    "parameters": [
+      {
+        "name": "I",
+        "summary": "Specifies the incident vector.",
+        "type": "genType"
+      },
+      {
+        "name": "N",
+        "summary": "Specifies the normal vector.",
+        "type": "genType"
+      },
+      {
+        "name": "eta",
+        "summary": "Specifies the ratio of indices of refraction.",
+        "type": "float"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "all": {
+    "name": "all",
+    "summary": "Check whether all elements of a boolean vector are true.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specifies the vector to be tested for truth.",
+        "type": "bvec"
+      }
+    ],
+    "returnType": "bool"
+  },
+  "any": {
+    "name": "any",
+    "summary": "Check whether any element of a boolean vector is true.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specifies the vector to be tested for truth.",
+        "type": "bvec"
+      }
+    ],
+    "returnType": "bool"
+  },
+  "greaterThan": {
+    "name": "greaterThan",
+    "summary": "Perform a component-wise greater-than comparison of two vectors.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specifies the first vector to be used in the comparison operation.",
+        "type": "uvec"
+      },
+      {
+        "name": "y",
+        "summary": "Specifies the second vector to be used in the comparison operation.",
+        "type": "uvec"
+      }
+    ],
+    "returnType": "bvec"
+  },
+  "greaterThanEqual": {
+    "name": "greaterThanEqual",
+    "summary": "Perform a component-wise greater-than-or-equal comparison of two vectors.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specifies the first vector to be used in the comparison operation.",
+        "type": "uvec"
+      },
+      {
+        "name": "y",
+        "summary": "Specifies the second vector to be used in the comparison operation.",
+        "type": "uvec"
+      }
+    ],
+    "returnType": "bvec"
+  },
+  "lessThan": {
+    "name": "lessThan",
+    "summary": "Perform a component-wise less-than comparison of two vectors.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specifies the first vector to be used in the comparison operation.",
+        "type": "uvec"
+      },
+      {
+        "name": "y",
+        "summary": "Specifies the second vector to be used in the comparison operation.",
+        "type": "uvec"
+      }
+    ],
+    "returnType": "bvec"
+  },
+  "lessThanEqual": {
+    "name": "lessThanEqual",
+    "summary": "Perform a component-wise less-than-or-equal comparison of two vectors.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specifies the first vector to be used in the comparison operation.",
+        "type": "uvec"
+      },
+      {
+        "name": "y",
+        "summary": "Specifies the second vector to be used in the comparison operation.",
+        "type": "uvec"
+      }
+    ],
+    "returnType": "bvec"
+  },
+  "not": {
+    "name": "not",
+    "summary": "Logically invert a boolean vector.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specifies the vector to be inverted.",
+        "type": "bvec"
+      }
+    ],
+    "returnType": "bvec"
+  },
+  "texture2D": {
+    "name": "texture2D",
+    "summary": "Retrieves texels from a texture.",
+    "parameters": [
+      {
+        "name": "sampler",
+        "summary": "Specifies the sampler to which the texture from which texels will be retrieved is bound.",
+        "type": "sampler2D"
+      },
+      {
+        "name": "coord",
+        "summary": "Specifies the texture coordinates at which texture will be sampled.",
+        "type": "vec2"
+      },
+      {
+        "name": "bias",
+        "summary": "Specifies an optional bias to be applied during level-of-detail computation.",
+        "type": "float"
+      }
+    ],
+    "returnType": "vec4"
+  },
+  "texture2DProj": {
+    "name": "texture2DProj",
+    "summary": "Perform a texture lookup with projection.",
+    "parameters": [
+      {
+        "name": "sampler",
+        "summary": "Specifies the sampler to which the texture from which texels will be retrieved is bound.",
+        "type": "sampler2D"
+      },
+      {
+        "name": "coord",
+        "summary": "Specifies the texture coordinates at which texture will be sampled.",
+        "type": "vec4"
+      },
+      {
+        "name": "bias",
+        "summary": "Specifies an optional bias to be applied during level-of-detail computation.",
+        "type": "float"
+      }
+    ],
+    "returnType": "vec4"
+  },
+  "texture2DLod": {
+    "name": "texture2DLod",
+    "summary": "Perform a texture lookup with explicit level-of-detail.",
+    "parameters": [
+      {
+        "name": "sampler",
+        "summary": "Specifies the sampler to which the texture from which texels will be retrieved is bound.",
+        "type": "sampler2D"
+      },
+      {
+        "name": "coord",
+        "summary": "Specifies the texture coordinates at which texture will be sampled.",
+        "type": "vec2"
+      },
+      {
+        "name": "lod",
+        "summary": "Specifies the explicit level-of-detail.",
+        "type": "float"
+      }
+    ],
+    "returnType": "vec4"
+  },
+  "texture2DProjLod": {
+    "name": "texture2DProjLod",
+    "summary": "Perform a texture lookup with projection and explicit level-of-detail.",
+    "parameters": [
+      {
+        "name": "sampler",
+        "summary": "Specifies the sampler to which the texture from which texels will be retrieved is bound.",
+        "type": "sampler2D"
+      },
+      {
+        "name": "coord",
+        "summary": "Specifies the texture coordinates at which texture will be sampled.",
+        "type": "vec4"
+      },
+      {
+        "name": "lod",
+        "summary": "Specifies the explicit level-of-detail from which to fetch texels.",
+        "type": "float"
+      }
+    ],
+    "returnType": "vec4"
+  },
+  "textureCube": {
+    "name": "textureCube",
+    "summary": "Retrieves texels from a texture.",
+    "parameters": [
+      {
+        "name": "sampler",
+        "summary": "Specifies the sampler to which the texture from which texels will be retrieved is bound.",
+        "type": "samplerCube"
+      },
+      {
+        "name": "coord",
+        "summary": "Specifies the texture coordinates at which texture will be sampled.",
+        "type": "vec3"
+      },
+      {
+        "name": "bias",
+        "summary": "Specifies an optional bias to be applied during level-of-detail computation.",
+        "type": "float"
+      }
+    ],
+    "returnType": "vec4"
+  },
+  "textureCubeLod": {
+    "name": "textureCubeLod",
+    "summary": "Perform a texture lookup with explicit level-of-detail.",
+    "parameters": [
+      {
+        "name": "sampler",
+        "summary": "Specifies the sampler to which the texture from which texels will be retrieved is bound.",
+        "type": "samplerCube"
+      },
+      {
+        "name": "coord",
+        "summary": "Specifies the texture coordinates at which texture will be sampled.",
+        "type": "vec3"
+      },
+      {
+        "name": "lod",
+        "summary": "Specifies the explicit level-of-detail.",
+        "type": "float"
+      }
+    ],
+    "returnType": "vec4"
+  },
+  "matrixCompMult": {
+    "name": "matrixCompMult",
+    "summary": "Perform a component-wise multiplication of two matrices.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specifies the first matrix multiplicand.",
+        "type": "mat"
+      },
+      {
+        "name": "y",
+        "summary": "Specifies the second matrix multiplicand.",
+        "type": "mat"
+      }
+    ],
+    "returnType": "mat"
+  },
+  "fwidth": {
+    "name": "fwidth",
+    "summary": "Return the sum of the absolute derivatives in x and y.",
+    "stage": "fragment",
+    "parameters": [
+      {
+        "name": "p",
+        "summary": "Specifies the expression of which to take the partial derivative.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "dFdx": {
+    "name": "dFdx",
+    "summary": "Returns the derivative in x using local differencing for the input argument p.",
+    "stage": "fragment",
+    "parameters": [
+      {
+        "name": "p",
+        "summary": "Specifies the expression of which to take the partial derivative.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "dFdy": {
+    "name": "dFdy",
+    "summary": "Returns the derivative in y using local differencing for the input argument p.",
+    "stage": "fragment",
+    "parameters": [
+      {
+        "name": "p",
+        "summary": "Specifies the expression of which to take the partial derivative.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "texture2DLodEXT": {
+    "name": "texture2DLodEXT",
+    "parameters": [
+      { "name": "sampler", "type": "sampler2D" },
+      { "name": "coord", "type": "vec2" },
+      { "name": "lod", "type": "float" }
+    ],
+    "stage": "fragment",
+    "extension": "GL_EXT_shader_texture_lod",
+    "returnType": "vec4"
+  },
+  "texture2DProjLodEXT": {
+    "name": "texture2DProjLodEXT",
+    "parameters": [
+      { "name": "sampler", "type": "sampler2D" },
+      { "name": "coord", "type": "vec4" },
+      { "name": "lod", "type": "float" }
+    ],
+    "stage": "fragment",
+    "extension": "GL_EXT_shader_texture_lod",
+    "returnType": "vec4"
+  },
+  "textureCubeLodEXT": {
+    "name": "textureCubeLodEXT",
+    "parameters": [
+      { "name": "sampler", "type": "samplerCube" },
+      { "name": "coord", "type": "vec3" },
+      { "name": "lod", "type": "float" }
+    ],
+    "stage": "fragment",
+    "extension": "GL_EXT_shader_texture_lod",
+    "returnType": "vec4"
+  },
+  "texture2DGradEXT": {
+    "name": "texture2DGradEXT",
+    "parameters": [
+      { "name": "sampler", "type": "sampler2D" },
+      { "name": "P", "type": "vec2" },
+      { "name": "dPdx", "type": "vec2" },
+      { "name": "dPdy", "type": "vec2" }
+    ],
+    "stage": "fragment",
+    "extension": "GL_EXT_shader_texture_lod",
+    "returnType": "vec4"
+  },
+  "texture2DProjGradEXT": {
+    "name": "texture2DProjGradEXT",
+    "parameters": [
+      { "name": "sampler", "type": "sampler2D" },
+      { "name": "P", "type": "vec4" },
+      { "name": "dPdx", "type": "vec2" },
+      { "name": "dPdy", "type": "vec2" }
+    ],
+    "stage": "fragment",
+    "extension": "GL_EXT_shader_texture_lod",
+    "returnType": "vec4"
+  },
+  "textureCubeGradEXT": {
+    "name": "textureCubeGradEXT",
+    "parameters": [
+      { "name": "sampler", "type": "samplerCube" },
+      { "name": "P", "type": "vec3" },
+      { "name": "dPdx", "type": "vec3" },
+      { "name": "dPdy", "type": "vec3" }
+    ],
+    "stage": "fragment",
+    "extension": "GL_EXT_shader_texture_lod",
+    "returnType": "vec4"
+  },
+  "acosh": {
+    "name": "acosh",
+    "summary": "Return the arc hyperbolic cosine of the parameter.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specify the value whose arc hyperbolic cosine to return.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "asinh": {
+    "name": "asinh",
+    "summary": "Return the arc hyperbolic sine of the parameter.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specify the value whose arc hyperbolic sine to return.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "atanh": {
+    "name": "atanh",
+    "summary": "Return the arc hyperbolic tangent of the parameter.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specify the value whose arc hyperbolic tangent to return.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "cosh": {
+    "name": "cosh",
+    "summary": "Return the hyperbolic cosine of the parameter.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specify the value whose hyperbolic cosine to return.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "sinh": {
+    "name": "sinh",
+    "summary": "Return the hyperbolic sine of the parameter.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specify the value whose hyperbolic sine to return.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "tanh": {
+    "name": "tanh",
+    "summary": "Return the hyperbolic tangent of the parameter.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specify the value whose hyperbolic tangent to return.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "isinf": {
+    "name": "isinf",
+    "summary": "Determine whether the parameter is positive or negative infinity.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specifies the value to test for infinity.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genBType"
+  },
+  "isnan": {
+    "name": "isnan",
+    "summary": "Determine whether the parameter is a number.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specifies the value to test for NaN.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genBType"
+  },
+  "modf": {
+    "name": "modf",
+    "summary": "Separate a value into its integer and fractional components.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specify the value to separate.",
+        "type": "genType"
+      },
+      {
+        "name": "i",
+        "summary": "A variable that receives the integer part of the argument.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "round": {
+    "name": "round",
+    "summary": "Find the nearest integer to the parameter.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specify the value to evaluate.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "roundEven": {
+    "name": "roundEven",
+    "summary": "Find the nearest even integer to the parameter.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specify the value to evaluate.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "trunc": {
+    "name": "trunc",
+    "summary": "Find the truncated value of the parameter.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specify the value of which to take the square root.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "floatBitsToInt": {
+    "name": "floatBitsToInt",
+    "summary": "Produce the encoding of a floating point value as an integer.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specifies the value whose floating point encoding to return.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genIType"
+  },
+  "floatBitsToUint": {
+    "name": "floatBitsToUint",
+    "summary": "Produce the encoding of a floating point value as an integer.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specifies the value whose floating point encoding to return.",
+        "type": "genType"
+      }
+    ],
+    "returnType": "genUType"
+  },
+  "intBitsToFloat": {
+    "name": "intBitsToFloat",
+    "summary": "Produce a floating point using an encoding supplied as an integer.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specifies the bit encoding to return as a floating point value.",
+        "type": "genIType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "uintBitsToFloat": {
+    "name": "uintBitsToFloat",
+    "summary": "Produce a floating point using an encoding supplied as an integer.",
+    "parameters": [
+      {
+        "name": "x",
+        "summary": "Specifies the bit encoding to return as a floating point value.",
+        "type": "genUType"
+      }
+    ],
+    "returnType": "genType"
+  },
+  "packHalf2x16": {
+    "name": "packHalf2x16",
+    "summary": "Convert two 32-bit floating-point quantities to 16-bit quantities and pack them into a single 32-bit integer.",
+    "parameters": [
+      {
+        "name": "v",
+        "summary": "Specify a vector of two 32-bit floating point values that are to be converted to 16-bit representation and packed into the result.",
+        "type": "vec2"
+      }
+    ],
+    "returnType": "uint"
+  },
+  "packUnorm2x16": {
+    "name": "packUnorm2x16",
+    "summary": "Pack floating-point values into an unsigned integer.",
+    "parameters": [
+      {
+        "name": "v",
+        "summary": "Specifies a vector of values to be packed into an unsigned integer.",
+        "type": "vec2"
+      }
+    ],
+    "returnType": "uint"
+  },
+  "packSnorm2x16": {
+    "name": "packSnorm2x16",
+    "summary": "Pack floating-point values into an unsigned integer.",
+    "parameters": [
+      {
+        "name": "v",
+        "summary": "Specifies a vector of values to be packed into an unsigned integer.",
+        "type": "vec2"
+      }
+    ],
+    "returnType": "uint"
+  },
+  "unpackHalf2x16": {
+    "name": "unpackHalf2x16",
+    "summary": "Convert two 16-bit floating-point values packed into a single 32-bit integer into a vector of two 32-bit floating-point quantities.",
+    "parameters": [
+      {
+        "name": "v",
+        "summary": "Specify a single 32-bit unsigned integer values that contains two 16-bit floating point values to be unpacked.",
+        "type": "uint"
+      }
+    ],
+    "returnType": "vec2"
+  },
+  "unpackUnorm2x16": {
+    "name": "unpackUnorm2x16",
+    "summary": "Unpack floating-point values from an unsigned integer.",
+    "parameters": [
+      {
+        "name": "p",
+        "summary": "Specifies an unsigned integer containing packed floating-point values.",
+        "type": "uint"
+      }
+    ],
+    "returnType": "vec2"
+  },
+  "unpackSnorm2x16": {
+    "name": "unpackSnorm2x16",
+    "summary": "Unpack floating-point values from an unsigned integer.",
+    "parameters": [
+      {
+        "name": "p",
+        "summary": "Specifies an unsigned integer containing packed floating-point values.",
+        "type": "uint"
+      }
+    ],
+    "returnType": "vec2"
+  },
+  "texelFetch": {
+    "name": "texelFetch",
+    "summary": "Perform a lookup of a single texel within a texture.",
+    "parameters": [
+      {
+        "name": "sampler",
+        "summary": "Specifies the sampler to which the texture from which texels will be retrieved is bound.",
+        "type": "gsampler2DArray"
+      },
+      {
+        "name": "P",
+        "summary": "Specifies the texture coordinates at which texture will be sampled.",
+        "type": "ivec3"
+      },
+      {
+        "name": "lod",
+        "summary": "If present, specifies the level-of-detail within the texture from which the texel will be fetched.",
+        "type": "int"
+      }
+    ],
+    "returnType": "gvec4"
+  },
+  "texelFetchOffset": {
+    "name": "texelFetchOffset",
+    "summary": "Perform a lookup of a single texel within a texture with an offset.",
+    "parameters": [
+      {
+        "name": "sampler",
+        "summary": "Specifies the sampler to which the texture from which texels will be retrieved is bound.",
+        "type": "gsampler2DArray"
+      },
+      {
+        "name": "P",
+        "summary": "Specifies the texture coordinates at which texture will be sampled.",
+        "type": "ivec3"
+      },
+      {
+        "name": "lod",
+        "summary": "If present, specifies the level-of-detail within the texture from which the texel will be fetched.",
+        "type": "int"
+      },
+      {
+        "name": "offset",
+        "summary": "Specifies offset, in texels that will be applied to P before looking up the texel.",
+        "type": "ivec2"
+      }
+    ],
+    "returnType": "gvec4"
+  },
+  "texture": {
+    "name": "texture",
+    "summary": "Retrieves texels from a texture.",
+    "parameters": [
+      {
+        "name": "sampler",
+        "summary": "Specifies the sampler to which the texture from which texels will be retrieved is bound.",
+        "type": "sampler2DArrayShadow"
+      },
+      {
+        "name": "P",
+        "summary": "Specifies the texture coordinates at which texture will be sampled.",
+        "type": "vec4"
+      },
+      {
+        "name": "bias",
+        "summary": "Specifies an optional bias to be applied during level-of-detail computation.",
+        "type": "float"
+      }
+    ],
+    "returnType": "float"
+  },
+  "textureGrad": {
+    "name": "textureGrad",
+    "summary": "Perform a texture lookup with explicit gradients.",
+    "parameters": [
+      {
+        "name": "sampler",
+        "summary": "Specifies the sampler to which the texture from which texels will be retrieved is bound.",
+        "type": "sampler2DArrayShadow"
+      },
+      {
+        "name": "P",
+        "summary": "Specifies the texture coordinates at which texture will be sampled.",
+        "type": "vec4"
+      },
+      {
+        "name": "dPdx",
+        "summary": "Specifies the partial derivative of P with respect to window x.",
+        "type": "vec2"
+      },
+      {
+        "name": "dPdy",
+        "summary": "Specifies the partial derivative of P with respect to window y.",
+        "type": "vec2"
+      }
+    ],
+    "returnType": "float"
+  },
+  "textureGradOffset": {
+    "name": "textureGradOffset",
+    "summary": "Perform a texture lookup with explicit gradients and offset.",
+    "parameters": [
+      {
+        "name": "sampler",
+        "summary": "Specifies the sampler to which the texture from which texels will be retrieved is bound.",
+        "type": "sampler2DArrayShadow"
+      },
+      {
+        "name": "P",
+        "summary": "Specifies the texture coordinates at which texture will be sampled.",
+        "type": "vec4"
+      },
+      {
+        "name": "dPdx",
+        "summary": "Specifies the partial derivative of P with respect to window x.",
+        "type": "vec2"
+      },
+      {
+        "name": "dPdy",
+        "summary": "Specifies the partial derivative of P with respect to window y.",
+        "type": "vec2"
+      },
+      {
+        "name": "offset",
+        "summary": "Specifies the offset to be applied to the texture coordinates before sampling.",
+        "type": "ivec2"
+      }
+    ],
+    "returnType": "float"
+  },
+  "textureLod": {
+    "name": "textureLod",
+    "summary": "Perform a texture lookup with explicit level-of-detail.",
+    "parameters": [
+      {
+        "name": "sampler",
+        "summary": "Specifies the sampler to which the texture from which texels will be retrieved is bound.",
+        "type": "gsampler2DArray"
+      },
+      {
+        "name": "P",
+        "summary": "Specifies the texture coordinates at which texture will be sampled.",
+        "type": "vec3"
+      },
+      {
+        "name": "lod",
+        "summary": "Specifies the explicit level-of-detail.",
+        "type": "float"
+      }
+    ],
+    "returnType": "gvec4"
+  },
+  "textureLodOffset": {
+    "name": "textureLodOffset",
+    "summary": "Perform a texture lookup with explicit level-of-detail and offset.",
+    "parameters": [
+      {
+        "name": "sampler",
+        "summary": "Specifies the sampler to which the texture from which texels will be retrieved is bound.",
+        "type": "gsampler2DArray"
+      },
+      {
+        "name": "P",
+        "summary": "Specifies the texture coordinates at which the texture will be sampled.",
+        "type": "vec3"
+      },
+      {
+        "name": "lod",
+        "summary": "Specifies the explicit level-of-detail from which texels will be fetched.",
+        "type": "float"
+      },
+      {
+        "name": "offset",
+        "summary": "Specifies the offset that will be applied to P before texels are fetched.",
+        "type": "ivec2"
+      }
+    ],
+    "returnType": "gvec4"
+  },
+  "textureOffset": {
+    "name": "textureOffset",
+    "summary": "Perform a texture lookup with offset.",
+    "parameters": [
+      {
+        "name": "sampler",
+        "summary": "Specifies the sampler to which the texture from which texels will be retrieved is bound.",
+        "type": "gsampler2DArray"
+      },
+      {
+        "name": "P",
+        "summary": "Specifies the texture coordinates at which texture will be sampled.",
+        "type": "vec3"
+      },
+      {
+        "name": "offset",
+        "summary": "Specifies offset, in texels that will be applied to P before looking up the texel.",
+        "type": "ivec2"
+      },
+      {
+        "name": "bias",
+        "summary": "Specifies an optional bias to be applied during level-of-detail computation.",
+        "type": "float"
+      }
+    ],
+    "returnType": "gvec4"
+  },
+  "textureProj": {
+    "name": "textureProj",
+    "summary": "Perform a texture lookup with projection.",
+    "parameters": [
+      {
+        "name": "sampler",
+        "summary": "Specifies the sampler to which the texture from which texels will be retrieved is bound.",
+        "type": "sampler2DShadow"
+      },
+      {
+        "name": "P",
+        "summary": "Specifies the texture coordinates at which texture will be sampled.",
+        "type": "vec4"
+      },
+      {
+        "name": "bias",
+        "summary": "Specifies an optional bias to be applied during level-of-detail computation.",
+        "type": "float"
+      }
+    ],
+    "returnType": "float"
+  },
+  "textureProjGrad": {
+    "name": "textureProjGrad",
+    "summary": "Perform a texture lookup with projection and explicit gradients.",
+    "parameters": [
+      {
+        "name": "sampler",
+        "summary": "Specifies the sampler to which the texture from which texels will be retrieved is bound.",
+        "type": "sampler2DShadow"
+      },
+      {
+        "name": "P",
+        "summary": "Specifies the texture coordinates at which texture will be sampled.",
+        "type": "vec4"
+      },
+      {
+        "name": "dPdx",
+        "summary": "Specifies the partial derivative of P with respect to window x.",
+        "type": "vec2"
+      },
+      {
+        "name": "dPdy",
+        "summary": "Specifies the partial derivative of P with respect to window y.",
+        "type": "vec2"
+      }
+    ],
+    "returnType": "float"
+  },
+  "textureProjGradOffset": {
+    "name": "textureProjGradOffset",
+    "summary": "Perform a texture lookup with projection, explicit gradients and offset.",
+    "parameters": [
+      {
+        "name": "sampler",
+        "summary": "Specifies the sampler to which the texture from which texels will be retrieved is bound.",
+        "type": "sampler2DShadow"
+      },
+      {
+        "name": "P",
+        "summary": "Specifies the texture coordinates at which texture will be sampled.",
+        "type": "vec4"
+      },
+      {
+        "name": "dPdx",
+        "summary": "Specifies the partial derivative of P with respect to window x.",
+        "type": "vec2"
+      },
+      {
+        "name": "dPdy",
+        "summary": "Specifies the partial derivative of P with respect to window y.",
+        "type": "vec2"
+      },
+      {
+        "name": "offset",
+        "summary": "Specifies the offsets, in texels at which the texture will be sampled relative to the projection of P.",
+        "type": "ivec2"
+      }
+    ],
+    "returnType": "float"
+  },
+  "textureProjLod": {
+    "name": "textureProjLod",
+    "summary": "Perform a texture lookup with projection and explicit level-of-detail.",
+    "parameters": [
+      {
+        "name": "sampler",
+        "summary": "Specifies the sampler to which the texture from which texels will be retrieved is bound.",
+        "type": "sampler2DShadow"
+      },
+      {
+        "name": "P",
+        "summary": "Specifies the texture coordinates at which texture will be sampled.",
+        "type": "vec4"
+      },
+      {
+        "name": "lod",
+        "summary": "Specifies the explicit level-of-detail from which to fetch texels.",
+        "type": "float"
+      }
+    ],
+    "returnType": "float"
+  },
+  "textureProjLodOffset": {
+    "name": "textureProjLodOffset",
+    "summary": "Perform a texture lookup with projection and explicit level-of-detail and offset.",
+    "parameters": [
+      {
+        "name": "sampler",
+        "summary": "Specifies the sampler to which the texture from which texels will be retrieved is bound.",
+        "type": "sampler2DShadow"
+      },
+      {
+        "name": "P",
+        "summary": "Specifies the texture coordinates at which texture will be sampled.",
+        "type": "vec4"
+      },
+      {
+        "name": "lod",
+        "summary": "Specifies the explicit level-of-detail from which to fetch texels.",
+        "type": "float"
+      },
+      {
+        "name": "offset",
+        "summary": "Specifies the offset, in texels, to be applied to P before fetching texels.",
+        "type": "ivec2"
+      }
+    ],
+    "returnType": "float"
+  },
+  "textureProjOffset": {
+    "name": "textureProjOffset",
+    "summary": "Perform a texture lookup with projection and offset.",
+    "parameters": [
+      {
+        "name": "sampler",
+        "summary": "Specifies the sampler to which the texture from which texels will be retrieved is bound.",
+        "type": "sampler2DShadow"
+      },
+      {
+        "name": "P",
+        "summary": "Specifies the texture coordinates at which the texture will be sampled.",
+        "type": "vec4"
+      },
+      {
+        "name": "offset",
+        "summary": "Specifies the offset that is applied to P before sampling occurs.",
+        "type": "ivec2"
+      },
+      {
+        "name": "bias",
+        "summary": "Specifies an optional bias to be applied during level-of-detail computation.",
+        "type": "float"
+      }
+    ],
+    "returnType": "float"
+  },
+  "textureSize": {
+    "name": "textureSize",
+    "summary": "Retrieve the dimensions of a level of a texture.",
+    "parameters": [
+      {
+        "name": "sampler",
+        "summary": "Specifies the sampler to which the texture whose dimensions to retrieve is bound.",
+        "type": "sampler2DArrayShadow"
+      },
+      {
+        "name": "lod",
+        "summary": "Specifies the level of the texture for which to retrieve the dimensions.",
+        "type": "int"
+      }
+    ],
+    "returnType": "ivec3"
+  },
+  "determinant": {
+    "name": "determinant",
+    "summary": "Calculate the determinant of a matrix.",
+    "parameters": [
+      {
+        "name": "m",
+        "summary": "Specifies the matrix of which to take the determinant.",
+        "type": "mat4"
+      }
+    ],
+    "returnType": "float"
+  },
+  "inverse": {
+    "name": "inverse",
+    "summary": "Calculate the inverse of a matrix.",
+    "parameters": [
+      {
+        "name": "m",
+        "summary": "Specifies the matrix of which to take the inverse.",
+        "type": "mat4"
+      }
+    ],
+    "returnType": "mat4"
+  },
+  "outerProduct": {
+    "name": "outerProduct",
+    "summary": "Calculate the outer product of a pair of vectors.",
+    "parameters": [
+      {
+        "name": "c",
+        "summary": "Specifies the parameter to be treated as a column vector.",
+        "type": "vec3"
+      },
+      {
+        "name": "r",
+        "summary": "Specifies the parameter to be treated as a row vector.",
+        "type": "vec4"
+      }
+    ],
+    "returnType": "mat4x3"
+  },
+  "transpose": {
+    "name": "transpose",
+    "summary": "Calculate the transpose of a matrix.",
+    "parameters": [
+      {
+        "name": "m",
+        "summary": "Specifies the matrix of which to take the transpose.",
+        "type": "mat3x4"
+      }
+    ],
+    "returnType": "mat4x3"
+  },
+  "vec2": {
+    "name": "vec2",
+    "summary": "",
+    "parameters": [{ "name": "x" }, { "name": "y" }]
+  },
+  "vec3": {
+    "name": "vec3",
+    "summary": "",
+    "parameters": [{ "name": "x" }, { "name": "y" }, { "name": "z" }]
+  },
+  "vec4": {
+    "name": "vec4",
+    "summary": "",
+    "parameters": [
+      { "name": "x" },
+      { "name": "y" },
+      { "name": "z" },
+      { "name": "w" }
+    ]
+  }
+}

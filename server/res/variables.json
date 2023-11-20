@@ -1,0 +1,107 @@
+{
+  "gl_Position": {
+    "summary": "Contains the position of the current vertex.",
+    "name": "gl_Position",
+    "type": "vec4"
+  },
+  "gl_PointSize": {
+    "summary": "Contains size of rasterized points, in pixels.",
+    "name": "gl_PointSize",
+    "type": "float"
+  },
+  "gl_FragCoord": {
+    "summary": "Contains the window-relative coordinates of the current fragment.",
+    "name": "gl_FragCoord",
+    "type": "vec4"
+  },
+  "gl_FrontFacing": {
+    "summary": "Indicates whether a primitive is front or back facing.",
+    "name": "gl_FrontFacing",
+    "type": "bool"
+  },
+  "gl_PointCoord": {
+    "summary": "Contains the coordinate of a fragment within a point.",
+    "name": "gl_PointCoord",
+    "type": "vec2"
+  },
+  "gl_FragColor": {
+    "summary": "Writing to gl_FragColor specifies the fragment color that will be used by the subsequent fixed functionality pipeline.",
+    "name": "gl_FragColor",
+    "type": "vec4"
+  },
+  "gl_FragData": {
+    "summary": "The variable gl_FragData is an array. Writing to gl_FragData[n] specifies the fragment data that will be used by the subsequent fixed functionality pipeline for data n. The array's length is gl_MaxDrawBuffers.",
+    "name": "gl_FragData",
+    "type": "vec4"
+  },
+  "gl_DepthRange": {
+    "summary": "Depth range in window coordinates",
+    "name": "gl_DepthRange",
+    "type": "gl_DepthRangeParameters"
+  },
+  "gl_MaxVertexAttribs": { "name": "gl_MaxVertexAttribs", "type": "int" },
+  "gl_MaxVertexUniformVectors": {
+    "name": "gl_MaxVertexUniformVectors",
+    "type": "int"
+  },
+  "gl_MaxVertexTextureImageUnits": {
+    "name": "gl_MaxVertexTextureImageUnits",
+    "type": "int"
+  },
+  "gl_MaxCombinedTextureImageUnits": {
+    "name": "gl_MaxCombinedTextureImageUnits",
+    "type": "int"
+  },
+  "gl_MaxTextureImageUnits": {
+    "name": "gl_MaxTextureImageUnits",
+    "type": "int"
+  },
+  "gl_MaxFragmentUniformVectors": {
+    "name": "gl_MaxFragmentUniformVectors",
+    "type": "int"
+  },
+  "gl_MaxDrawBuffers": { "name": "gl_MaxDrawBuffers", "type": "int" },
+  "gl_MaxVaryingVectors": { "name": "gl_MaxVaryingVectors", "type": "int" },
+  "gl_DrawID": { "name": "gl_DrawID", "type": "int" },
+  "gl_FragDepthEXT": { "name": "gl_FragDepthEXT", "type": "float" },
+  "gl_VertexID": {
+    "summary": "Contains the index of the current vertex.",
+    "name": "gl_VertexID",
+    "type": "int"
+  },
+  "gl_InstanceID": {
+    "summary": "Contains the index of the current primitive in an instanced draw command.",
+    "name": "gl_InstanceID",
+    "type": "int"
+  },
+  "gl_FragDepth": {
+    "summary": "Establishes a depth value for the current fragment.",
+    "name": "gl_FragDepth",
+    "type": "float"
+  },
+  "gl_MaxVertexOutputVectors": {
+    "name": "gl_MaxVertexOutputVectors",
+    "type": "int"
+  },
+  "gl_MaxFragmentInputVectors": {
+    "name": "gl_MaxFragmentInputVectors",
+    "type": "int"
+  },
+  "gl_MinProgramTexelOffset": {
+    "name": "gl_MinProgramTexelOffset",
+    "type": "int"
+  },
+  "gl_MaxProgramTexelOffset": {
+    "name": "gl_MaxProgramTexelOffset",
+    "type": "int"
+  },
+
+  "VertexShader": {
+    "name": "VertexShader",
+    "summary": "Declare vertex shader"
+  },
+  "FragmentShader": {
+    "name": "FragmentShader",
+    "summary": "Declare fragment shader"
+  }
+}

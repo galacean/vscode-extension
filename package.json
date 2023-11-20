@@ -1,0 +1,60 @@
+{
+  "name": "Galacean",
+  "displayName": "Galacean VSCode Extension",
+  "description": "VSCode tool plugin for galacean",
+  "version": "0.0.2",
+  "author": "Sway007",
+  "publisher": "Galacean",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.65.0"
+  },
+  "categories": [
+    "Snippets"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "shaderlab",
+        "extensions": [
+          ".shader"
+        ]
+      }
+    ],
+    "grammars": [
+      {
+        "language": "shaderlab",
+        "scopeName": "source.shaderlab",
+        "path": "./shaderlab.language.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "shaderlab",
+        "path": "./snippets.json"
+      }
+    ]
+  },
+  "main": "client/out/main",
+  "scripts": {
+    "vscode:prepublish": "npm run clear && npm run compile -- --mode production",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "clean": "rm -rf ./node_modules ./client/node_modules ./server/node_modules",
+    "install": "cd ./client && npm install && cd ../server && npm install && cd ..",
+    "build": "webpack",
+    "clear": "rm -rf ./client/out/* ./server/out/*"
+  },
+  "activationEvents": [
+    "onLanguage:shaderlab"
+  ],
+  "devDependencies": {
+    "@types/node": "^20.8.7",
+    "@types/vscode": "1.65.0",
+    "path-browserify": "^1.0.1",
+    "ts-loader": "^9.5.0",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4"
+  }
+}

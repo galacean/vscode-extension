@@ -1,0 +1,19 @@
+{
+  "name": "galacean-lsp-server",
+  "description": "Galacean ShaderLab plugin client",
+  "author": "Galacean",
+  "license": "MIT",
+  "version": "0.0.1",
+  "publisher": "Galacean",
+  "engines": {
+    "vscode": "*"
+  },
+  "dependencies": {
+    "prettydiff": "^101.2.6",
+    "vscode-languageclient": "^8.1.0"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.75.1",
+    "@vscode/test-electron": "^2.2.3"
+  }
+}
