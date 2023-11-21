@@ -10,3 +10,4 @@
 **/.md
 **/.vscodeignore
 **/package-lock.json
+**/*.vsix

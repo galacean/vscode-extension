@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { ExtensionContext, languages } from 'vscode';
+import { ExtensionContext, languages, commands } from 'vscode';
 import {
   LanguageClient,
   LanguageClientOptions,
@@ -9,6 +9,7 @@ import {
 import { SHADER_LAG_ID } from './constants';
 import { FormatterProvider } from './providers/Formatter';
 import { EditorPropertiesCompletionProvider } from './providers/EditorPropertiesCompletionProvider';
+import { Commands } from './commands';
 
 let _singleton: Client;
 const selector = { language: 'shaderlab' };
@@ -60,6 +61,26 @@ export default class Client {
 
   private constructor(context: ExtensionContext) {
     this.init(context);
+    this.registerProviders(context);
+
+    Commands.forEach((command) => {
+      context.subscriptions.push(
+        commands.registerCommand(command.name, command.callback.bind(command))
+      );
+    });
+  }
+
+  deactivate(): Thenable<void> | undefined {
+    return this._instance.stop();
+  }
+
+  private registerCommands(context: ExtensionContext) {
+    context.subscriptions.push(
+      commands.registerCommand('galacean.login', () => {})
+    );
+  }
+
+  private registerProviders(context: ExtensionContext) {
     context.subscriptions.push(
       languages.registerDocumentRangeFormattingEditProvider(
         selector,
@@ -73,9 +94,5 @@ export default class Client {
         new EditorPropertiesCompletionProvider()
       )
     );
-  }
-
-  deactivate(): Thenable<void> | undefined {
-    return this._instance.stop();
   }
 }

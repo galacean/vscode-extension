@@ -1,5 +1,5 @@
 {
-  "name": "Galacean",
+  "name": "galacean",
   "displayName": "Galacean VSCode Extension",
   "description": "VSCode tool plugin for galacean",
   "version": "0.0.2",
@@ -8,6 +8,10 @@
   "license": "MIT",
   "engines": {
     "vscode": "^1.65.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/galacean/vscode-extension"
   },
   "categories": [
     "Snippets"
@@ -33,6 +37,51 @@
         "language": "shaderlab",
         "path": "./snippets.json"
       }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "galacean-explorer",
+          "title": "Galacean",
+          "icon": "res/icons/logo.svg"
+        }
+      ]
+    },
+    "views": {
+      "galacean-explorer": [
+        {
+          "id": "project-list",
+          "name": "Project List"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "project-list",
+        "contents": "Sign in to Galacean to display project list, edit and sync your scripts and shaders.\n[Sign in](command:galacean.login)"
+      }
+    ],
+    "configuration": {
+      "title": "Galacean",
+      "properties": {
+        "galacean.root": {
+          "type": "string",
+          "default": "",
+          "description": "The galacean workspace root path"
+        },
+        "galacean.user.mail": {
+          "type": "string",
+          "default": "",
+          "description": "The sign mail"
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "galacean.login",
+        "title": "Login to Galacean",
+        "category": "Galacean"
+      }
     ]
   },
   "main": "client/out/main",
@@ -56,5 +105,8 @@
     "ts-loader": "^9.5.0",
     "webpack": "^5.89.0",
     "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "form-data": "^4.0.0"
   }
 }
