@@ -5,6 +5,11 @@ import { ProviderContext } from './ProviderContext';
 export function validateShader(shader: string): Diagnostic[] {
   const shaderLab = ProviderContext.shaderLab;
 
+  /** builtin shader */
+  if (/^\s*\/\/\s*@builtin ([\w-]+)/.test(shader.split('\n')[0])) {
+    return [];
+  }
+
   if (!shader) return [];
   try {
     shaderLab.parseShader(shader);

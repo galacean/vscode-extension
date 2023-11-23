@@ -14,3 +14,13 @@ export const ASSET_TYPE = ['Shader', 'script'];
 export enum EViewID {
   ProjectList = 'project-list',
 }
+
+export const BUILTIN_SHADERS = [
+  'pbr',
+  'pbr-specular',
+  'blinn-phon',
+  'unlit',
+  'bake-pbr',
+  'skybox',
+  'SkyProcedural',
+];

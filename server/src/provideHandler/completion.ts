@@ -42,8 +42,6 @@ function getShaderLabUserGlobalList() {
   return ret;
 }
 
-function isInEditorProperties() {}
-
 export function provideCompletion(
   docUri: DocumentUri,
   position: Position,

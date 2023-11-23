@@ -20,6 +20,7 @@ import HostContext from './context/HostContext';
 import { fetchProjectList, fetchUserInfo } from './request';
 import ProjectListViewProvider from './providers/ProjectListViewProvider';
 import Project from './models/Project';
+import SimpleCompletionItemProvider from './providers/CompletionProvider';
 
 let _singleton: Client;
 const selector = { language: 'shaderlab' };
@@ -122,6 +123,13 @@ export default class Client {
       languages.registerCompletionItemProvider(
         selector,
         new EditorPropertiesCompletionProvider()
+      )
+    );
+
+    context.subscriptions.push(
+      languages.registerCompletionItemProvider(
+        selector,
+        new SimpleCompletionItemProvider()
       )
     );
   }

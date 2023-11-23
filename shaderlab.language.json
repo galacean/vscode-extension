@@ -1,7 +1,8 @@
 {
-  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
-  "name": "GLSL",
   "scopeName": "source.shaderlab",
+  "fileTypes": ".shaderlab",
+  "foldingStartMarker": "{s*$",
+  "foldingStopMarker": "^s*}",
   "patterns": [
     {
       "comment": "BLOCK COMMENT",
@@ -10,10 +11,26 @@
       "end": "\\*\\/"
     },
     {
+      "comment": "Builtin shader",
+      "match": "//\\s*(@builtin)\\s*([\\w-]+)",
+      "captures": {
+        "1": { "name": "storage.modifier.shaderlab" },
+        "2": { "name": "keyword.other.language.shaderlab" }
+      }
+    },
+    {
       "comment": "SINGLE LINE COMMENT",
       "name": "comment.line.double-slash.shaderlab",
       "begin": "//",
       "end": "$"
+    },
+    {
+      "comment": "Shader Line",
+      "match": "(Shader|SubShader|Pass)\\s*\"([\\w-]+)\"",
+      "captures": {
+        "1": { "name": "entity.name.type.shaderlab" },
+        "2": { "name": "entity.name.function.shaderlab" }
+      }
     },
     {
       "comment": "PREPROCESSOR",
@@ -49,21 +66,6 @@
       "comment": "KEYWORD",
       "name": "keyword.control.shaderlab",
       "match": "\\b(discard|return|break|continue|do|for|while|switch|case|default|if|else)\\b"
-    },
-    {
-      "comment": "INTERFACE_BLOCK",
-      "match": "(uniform)(\\s|(\\/\\*.*?\\*\\/))+([a-zA-Z_]\\w*)(?=(\\s|(\\/\\*.*?\\*\\/))*{)",
-      "captures": {
-        "1": {
-          "name": "storage.modifier.shaderlab"
-        },
-        "3": {
-          "name": "comment.block.shaderlab"
-        },
-        "4": {
-          "name": "entity.name.type.shaderlab"
-        }
-      }
     },
     {
       "comment": "QUALIFIER",
@@ -145,22 +147,6 @@
           "name": "entity.name.function.shaderlab"
         },
         "8": {
-          "patterns": [
-            {
-              "include": "$self"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "comment": "USER TYPE",
-      "match": "([_a-zA-Z]\\w*)((\\s|(\\[.*?\\])|(\\/\\*.*?\\*\\/))+[_a-zA-Z]\\w*)",
-      "captures": {
-        "1": {
-          "name": "entity.name.type.shaderlab"
-        },
-        "2": {
           "patterns": [
             {
               "include": "$self"
