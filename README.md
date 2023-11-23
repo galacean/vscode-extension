@@ -2,12 +2,22 @@
 
 ## TODO
 
+#### shaderlab 语言相关
+
 - ✅ completion
 - ✅ signature
 - ✅ hover
-- ✅ highlight
+- ✅ grammar highlight
 - ✅ snippets
 - ✅ formatting
+
+#### 项目同步相关
+
+- ✅ 与服务端通讯
+- ✅ http client mock (cookie)
+- ✅ 登录
+- ✅ data pull
+- ⬜ data push
 
 ## Notes
 

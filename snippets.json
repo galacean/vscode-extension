@@ -20,8 +20,19 @@
   },
   "struct": {
     "prefix": "struct",
-    "body": ["struct ${1:Type} {", "\t${2:vec3} ${3:vec};$0", "};"],
+    "body": ["struct ${1:Type} {", "\t${2:vec4} ${3:POSITION};$0", "}"],
     "description": "Creates a struct"
+  },
+  "Create Attributes": {
+    "prefix": "@attribute",
+    "body": [
+      "struct ${0:a2v} {",
+      "\t${1:vec4} ${2:POSITION};",
+      "\t${3:vec2} ${4:TEXCOORD_0};",
+      "\t${5:vec3} ${6:NORMAL};",
+      "\t${7:vec4} ${8:TANGENT};",
+      "}"
+    ]
   },
   "EditorProperties": {
     "prefix": "EditorProperties",

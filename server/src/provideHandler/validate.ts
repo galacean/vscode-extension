@@ -31,6 +31,17 @@ export function validateShader(shader: string): Diagnostic[] {
           },
         },
       }));
-    } else throw errors;
+    } else {
+      return [
+        {
+          severity: DiagnosticSeverity.Error,
+          message: 'Validation failed.',
+          range: {
+            start: { line: 0, character: 0 },
+            end: { line: 0, character: 1 },
+          },
+        },
+      ];
+    }
   }
 }

@@ -14,6 +14,7 @@ const prettyOpts = prettydiff.options;
 prettyOpts.brace_padding = true;
 prettyOpts.indent_size = 2;
 prettyOpts.mode = 'beautify';
+prettyOpts.preserve = 1;
 
 // Align
 export class FormatterProvider implements DocumentRangeFormattingEditProvider {

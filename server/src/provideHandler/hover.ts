@@ -15,7 +15,7 @@ export function provideHover(
   );
   if (word) {
     const hints = provideCompletion(docUir, position)?.filter(
-      (item) => item.label === word
+      (item) => item.label === word && !!item.data
     );
     return {
       contents:

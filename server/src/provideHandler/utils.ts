@@ -27,9 +27,11 @@ function createStructPropertiesCompletion(astNode: any): CompletionItem[] {
 
 function createUserDefineFunctionDescribe(astNode: any) {
   const paramString = astNode.content.args
-    .map((arg: any) => `${arg.content.type.text} ${arg.content.name}`)
+    ?.map((arg: any) => `${arg.content.type.text} ${arg.content.name}`)
     .join(', ');
-  return `${astNode.content.returnType.content.text} ${astNode.content.name}(${paramString})`;
+  return `${astNode.content.returnType.content.text} ${astNode.content.name}(${
+    paramString ?? 'void'
+  })`;
 }
 
 function createUserDefineFunctionSignature(astNode: any) {
