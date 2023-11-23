@@ -1,20 +1,35 @@
-import { ENV_PATH, SERVER_HOST, SERVER_PORT } from '../constants';
-import { Uri, window, workspace } from 'vscode';
+import { SERVER_HOST, SERVER_PORT } from '../constants';
+import { StatusBarItem, TreeView, Uri, workspace } from 'vscode';
 import ContextUtils from './ContextUtils';
 import RequestContext from './RequestContext';
+import UserContext from './UserContext';
+import UIController from '../controllers/UIController';
+import ProjectListViewProvider from '../providers/ProjectListViewProvider';
 
 export default class HostContext {
   private static _singleton: HostContext;
 
+  static init(statusBar: StatusBarItem, projectListView: TreeView<any>) {
+    this._singleton = new HostContext(statusBar, projectListView);
+  }
+
   static get instance() {
     if (!this._singleton) {
-      this._singleton = new HostContext();
+      throw 'host context not initialized.';
     }
     return this._singleton;
   }
 
+  static get userId() {
+    return this.userContext.userId;
+  }
+
   static get requestContext() {
     return this.instance.requestContext;
+  }
+
+  static get userContext() {
+    return this.instance.userContext;
   }
 
   static get serverHost() {
@@ -27,8 +42,6 @@ export default class HostContext {
 
   private envConfig: IHostEnv;
 
-  private cacheRootUri: Uri;
-
   private get serverHost() {
     return this.envConfig.host ?? SERVER_HOST;
   }
@@ -38,26 +51,23 @@ export default class HostContext {
   }
 
   requestContext: RequestContext;
+  userContext: UserContext;
 
-  private _userInfo: IUserInfo;
-
-  get userInfo() {
-    return this._userInfo;
-  }
-
-  set userInfo(info: IUserInfo) {
-    this._userInfo = info;
-    // TODO: update ui
-  }
-
-  private constructor() {
+  private constructor(
+    statusBar: StatusBarItem,
+    projectListView: TreeView<any>
+  ) {
     this.envConfig = ContextUtils.loadEnv();
     this.requestContext = new RequestContext(
       this.envConfig.cookies,
       ContextUtils.updateEnv.bind(null, this.envConfig)
     );
-
-    this.cacheRootUri = Uri.file(this.getConfig('root'));
+    const uiContext = new UIController(
+      statusBar,
+      projectListView,
+      ProjectListViewProvider.instance
+    );
+    this.userContext = new UserContext(uiContext);
   }
 
   getConfig<T>(key: string) {

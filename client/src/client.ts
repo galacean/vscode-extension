@@ -1,5 +1,11 @@
 import * as path from 'path';
-import { ExtensionContext, languages, commands } from 'vscode';
+import {
+  ExtensionContext,
+  languages,
+  commands,
+  window,
+  StatusBarAlignment,
+} from 'vscode';
 import {
   LanguageClient,
   LanguageClientOptions,
@@ -10,6 +16,10 @@ import { SHADER_LAG_ID } from './constants';
 import { FormatterProvider } from './providers/Formatter';
 import { EditorPropertiesCompletionProvider } from './providers/EditorPropertiesCompletionProvider';
 import { Commands } from './commands';
+import HostContext from './context/HostContext';
+import { fetchProjectList, fetchUserInfo } from './request';
+import ProjectListViewProvider from './providers/ProjectListViewProvider';
+import Project from './models/Project';
 
 let _singleton: Client;
 const selector = { language: 'shaderlab' };
@@ -27,7 +37,7 @@ export default class Client {
     return _singleton;
   }
 
-  init(context: ExtensionContext) {
+  private initClient(context: ExtensionContext) {
     const serverModule = context.asAbsolutePath(
       path.join('server', 'out', 'main.js')
     );
@@ -59,8 +69,34 @@ export default class Client {
     this._instance = client;
   }
 
+  private async initViews(context: ExtensionContext) {
+    const statusBar = window.createStatusBarItem(StatusBarAlignment.Left, 100);
+    const projectListView = window.createTreeView('project-list', {
+      treeDataProvider: ProjectListViewProvider.instance,
+      canSelectMany: false,
+    });
+    projectListView.message = 'click on the project you want to inspect';
+    projectListView.title = 'Project List';
+
+    HostContext.init(statusBar, projectListView);
+    context.subscriptions.push(statusBar);
+    if (HostContext.instance.isLogin()) {
+      const [userInfo, projectList] = await window.withProgress(
+        { location: { viewId: 'project-list' }, title: 'logging in' },
+        () => {
+          return Promise.all([fetchUserInfo(), fetchProjectList()]);
+        }
+      );
+      HostContext.userContext.userInfo = userInfo;
+      HostContext.userContext.projectList = projectList.map(
+        (item) => new Project(item)
+      );
+    }
+  }
+
   private constructor(context: ExtensionContext) {
-    this.init(context);
+    this.initClient(context);
+    this.initViews(context);
     this.registerProviders(context);
 
     Commands.forEach((command) => {
@@ -72,12 +108,6 @@ export default class Client {
 
   deactivate(): Thenable<void> | undefined {
     return this._instance.stop();
-  }
-
-  private registerCommands(context: ExtensionContext) {
-    context.subscriptions.push(
-      commands.registerCommand('galacean.login', () => {})
-    );
   }
 
   private registerProviders(context: ExtensionContext) {

@@ -9,3 +9,8 @@ export const SERVER_HOST = 'localhost';
 export const SERVER_PORT = 8443;
 
 export const OASIS_TOKEN_KEY = 'OasisToken';
+export const ASSET_TYPE = ['Shader', 'script'];
+
+export enum EViewID {
+  ProjectList = 'project-list',
+}

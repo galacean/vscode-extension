@@ -1,13 +1,14 @@
-import { ExtensionContext, window } from 'vscode';
-import Command from './command';
+import { window } from 'vscode';
+import Command from './Command';
 import HostContext from '../context/HostContext';
-import { authCode, login } from '../request';
+import { authCode, fetchProjectList, login } from '../request';
+import Project from '../models/Project';
 
 export default class Login extends Command {
   name: string = 'galacean.login';
   mailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
 
-  async callback(context: ExtensionContext) {
+  async callback() {
     let userMail = HostContext.instance.getConfig<string>('user.mail');
     const userInfo = await window.withProgress<IUserInfo>(
       { location: { viewId: 'project-list' }, title: 'logging in' },
@@ -41,6 +42,9 @@ export default class Login extends Command {
     );
 
     window.showInformationMessage('login success');
-    HostContext.instance.userInfo = userInfo;
+    HostContext.userContext.userInfo = userInfo;
+    HostContext.userContext.projectList = (await fetchProjectList()).map(
+      (item) => new Project(item)
+    );
   }
 }

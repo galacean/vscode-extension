@@ -2,7 +2,7 @@
   "name": "galacean",
   "displayName": "Galacean VSCode Extension",
   "description": "VSCode tool plugin for galacean",
-  "version": "0.0.2",
+  "version": "0.1.1",
   "author": "Sway007",
   "publisher": "Galacean",
   "license": "MIT",
@@ -55,6 +55,32 @@
         }
       ]
     },
+    "menus": {
+      "view/title": [
+        {
+          "command": "galacean.pull.project_list",
+          "when": "view == project-list",
+          "group": "navigation"
+        },
+        {
+          "command": "galacean.push.project_list",
+          "when": "view == project-list",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "galacean.pull.project",
+          "when": "view == project-list",
+          "group": "inline"
+        },
+        {
+          "command": "galacean.push.project",
+          "when": "view == project-list",
+          "group": "inline"
+        }
+      ]
+    },
     "viewsWelcome": [
       {
         "view": "project-list",
@@ -81,6 +107,30 @@
         "command": "galacean.login",
         "title": "Login to Galacean",
         "category": "Galacean"
+      },
+      {
+        "command": "galacean.pull.project_list",
+        "title": "Pull project list",
+        "category": "Galacean",
+        "icon": "$(git-fetch)"
+      },
+      {
+        "command": "galacean.push.project_list",
+        "title": "Push project list",
+        "category": "Galacean",
+        "icon": "$(repo-push)"
+      },
+      {
+        "command": "galacean.pull.project",
+        "title": "Pull project assets",
+        "category": "Galacean",
+        "icon": "$(git-fetch)"
+      },
+      {
+        "command": "galacean.push.project",
+        "title": "Push project assets",
+        "category": "Galacean",
+        "icon": "$(repo-push)"
       }
     ]
   },

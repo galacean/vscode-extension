@@ -115,11 +115,6 @@ export function login(mail: string) {
     method: 'POST',
   });
   return instance.makeRequest({ mail });
-  // return new Promise((res) => {
-  //   setTimeout(() => {
-  //     res('ok');
-  //   }, 5000);
-  // });
 }
 
 export async function authCode(code: string, mail: string): Promise<IUserInfo> {
@@ -129,4 +124,51 @@ export async function authCode(code: string, mail: string): Promise<IUserInfo> {
   });
   const res = await instance.makeRequest({ mail, code });
   return JSON.parse(res).data;
+}
+
+export async function fetchUserInfo(): Promise<IUserInfo> {
+  const instance = new Request({ path: '/api2/account/auth/detail' });
+  const res = await instance.makeRequest();
+  return JSON.parse(res).data;
+}
+
+export async function fetchProjectList(): Promise<IProject[]> {
+  const instance = new Request({ path: '/api/project/list' });
+  const res = JSON.parse(await instance.makeRequest()) as ISuccessResponse<
+    IPaginationResponse<IProject>
+  >;
+  return res.data.list;
+}
+
+export async function fetchProjectDetail(
+  projectId: string
+): Promise<IProjectDetail> {
+  const instance = new Request({ path: `/api/project/detail/${projectId}` });
+  const res = JSON.parse(
+    await instance.makeRequest()
+  ) as ISuccessResponse<IProjectDetail>;
+  return res.data;
+}
+
+export async function curl(
+  url: string,
+  options?: https.RequestOptions
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const req = https.get(url, options, (res) => {
+      let body = '';
+
+      res.setEncoding('utf8');
+      res.on('data', (chunk) => (body += chunk));
+      res.on('end', () => {
+        resolve(body);
+      });
+    });
+
+    req.on('error', (e) => {
+      console.error(e);
+      reject(e);
+    });
+    req.end();
+  });
 }
