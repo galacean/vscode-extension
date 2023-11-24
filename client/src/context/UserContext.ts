@@ -94,10 +94,11 @@ export default class UserContext {
       tmpMap.set(asset.id, asset);
     }
     const getParentPathPrefix = (asset: Asset) => {
+      if (asset.pathPrefix.length > 0) return asset.pathPrefix;
       if (asset.data.parentId) {
         const parent = tmpMap.get(asset.data.parentId);
         getParentPathPrefix(parent);
-        asset.pathPrefix.unshift(parent.data.name, ...parent.pathPrefix);
+        asset.pathPrefix.unshift(...parent.pathPrefix, parent.data.name);
       }
     };
 
