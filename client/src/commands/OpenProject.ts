@@ -1,7 +1,6 @@
 import Command from './Command';
-import { fetchProjectDetail } from '../request';
 import HostContext from '../context/HostContext';
-import LocalFileManager from '../controllers/LocalFileManager';
+import LocalFileManager from '../models/LocalFileManager';
 import { Uri, commands, window } from 'vscode';
 import { EViewID } from '../constants';
 
@@ -13,24 +12,29 @@ export default class OpenProject extends Command {
     const userContext = HostContext.userContext;
 
     const project = userContext.getProjectById(projectId);
-    const assets = LocalFileManager.instance.readProjectFiles(
-      userContext.userId,
-      project
-    );
-    if (assets?.length === 0) {
-      await window.withProgress(
-        { location: { viewId: EViewID.ProjectList }, title: 'syncing' },
-        async () => {
-          const projectData = await fetchProjectDetail(projectId);
-          await userContext.setCurrentProject(projectData);
-        }
-      );
+    if (!project) {
+      throw 'project not found';
     }
-    commands.executeCommand(
-      'vscode.openFolder',
-      Uri.file(
-        project.getLocalPath(LocalFileManager.localRootPath, userContext.userId)
-      )
+
+    await window.withProgress(
+      {
+        location: { viewId: EViewID.ProjectList },
+        title: 'pulling',
+      },
+      () => {
+        if (LocalFileManager.existProject(project)) {
+          return project.initAssetsFromLocal();
+        }
+        return project.updateAssetsFromServer();
+      }
     );
+
+    userContext.currentProject = project;
+
+    await commands.executeCommand(
+      'vscode.openFolder',
+      Uri.file(project.getLocalPath())
+    );
+    commands.executeCommand('workbench.view.explorer');
   }
 }

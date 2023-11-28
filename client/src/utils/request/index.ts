@@ -1,6 +1,6 @@
 import * as https from 'https';
 import { IncomingMessage, ClientRequest } from 'http';
-import HostContext from '../context/HostContext';
+import HostContext from '../../context/HostContext';
 import * as FormData from 'form-data';
 
 export default class Request {

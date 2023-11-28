@@ -17,10 +17,13 @@ import { FormatterProvider } from './providers/Formatter';
 import { EditorPropertiesCompletionProvider } from './providers/EditorPropertiesCompletionProvider';
 import { Commands } from './commands';
 import HostContext from './context/HostContext';
-import { fetchProjectList, fetchUserInfo } from './request';
-import ProjectListViewProvider from './providers/ProjectListViewProvider';
+import { fetchProjectList, fetchUserInfo } from './utils/request';
+import ProjectListViewProvider from './providers/viewData/ProjectListViewProvider';
 import Project from './models/Project';
 import SimpleCompletionItemProvider from './providers/CompletionProvider';
+import CommitViewDataProvider from './providers/viewData/CommitViewProvider';
+import LocalFileManager from './models/LocalFileManager';
+// import FileWatcher from './models/FileWatcher';
 
 let _singleton: Client;
 const selector = { language: 'shaderlab' };
@@ -36,6 +39,18 @@ export default class Client {
   static create(context: ExtensionContext) {
     _singleton = new Client(context);
     return _singleton;
+  }
+
+  private constructor(context: ExtensionContext) {
+    this.initClient(context);
+    this.initViews(context);
+    this.registerProviders(context);
+
+    Commands.forEach((command) => {
+      context.subscriptions.push(
+        commands.registerCommand(command.name, command.callback.bind(command))
+      );
+    });
   }
 
   private initClient(context: ExtensionContext) {
@@ -79,32 +94,30 @@ export default class Client {
     projectListView.message = 'click on the project you want to inspect';
     projectListView.title = 'Project List';
 
+    const commitListView = window.createTreeView('commit-list', {
+      treeDataProvider: CommitViewDataProvider.instance,
+    });
+    commitListView.title = 'Commits';
+
     HostContext.init(statusBar, projectListView);
     context.subscriptions.push(statusBar);
     if (HostContext.instance.isLogin()) {
-      const [userInfo, projectList] = await window.withProgress(
+      await window.withProgress(
         { location: { viewId: 'project-list' }, title: 'logging in' },
-        () => {
-          return Promise.all([fetchUserInfo(), fetchProjectList()]);
+        async () => {
+          HostContext.userContext.userInfo = await fetchUserInfo();
+          if (!LocalFileManager.existUserProjectList()) {
+            const projectList = await fetchProjectList();
+            HostContext.userContext.projectList = projectList.map(
+              (item) => new Project(item)
+            );
+          } else {
+            HostContext.userContext.projectList =
+              await LocalFileManager.readUserProjectListFromLocal();
+          }
         }
       );
-      HostContext.userContext.userInfo = userInfo;
-      HostContext.userContext.projectList = projectList.map(
-        (item) => new Project(item)
-      );
     }
-  }
-
-  private constructor(context: ExtensionContext) {
-    this.initClient(context);
-    this.initViews(context);
-    this.registerProviders(context);
-
-    Commands.forEach((command) => {
-      context.subscriptions.push(
-        commands.registerCommand(command.name, command.callback.bind(command))
-      );
-    });
   }
 
   deactivate(): Thenable<void> | undefined {

@@ -52,6 +52,11 @@
         {
           "id": "project-list",
           "name": "Project List"
+        },
+        {
+          "id": "commit-list",
+          "name": "Commits",
+          "when": "galacean.project.selected"
         }
       ]
     },
@@ -59,11 +64,6 @@
       "view/title": [
         {
           "command": "galacean.pull.project_list",
-          "when": "view == project-list",
-          "group": "navigation"
-        },
-        {
-          "command": "galacean.push.project_list",
           "when": "view == project-list",
           "group": "navigation"
         }
@@ -85,6 +85,10 @@
       {
         "view": "project-list",
         "contents": "Sign in to Galacean to display project list, edit and sync your scripts and shaders.\n[Sign in](command:galacean.login)"
+      },
+      {
+        "view": "commit-list",
+        "contents": "No project selected."
       }
     ],
     "configuration": {
@@ -113,12 +117,6 @@
         "title": "Pull project list",
         "category": "Galacean",
         "icon": "$(git-fetch)"
-      },
-      {
-        "command": "galacean.push.project_list",
-        "title": "Push project list",
-        "category": "Galacean",
-        "icon": "$(repo-push)"
       },
       {
         "command": "galacean.pull.project",

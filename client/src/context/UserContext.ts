@@ -1,20 +1,49 @@
-import { window } from 'vscode';
-import { ASSET_TYPE, EViewID } from '../constants';
-import LocalFileManager from '../controllers/LocalFileManager';
+import { commands, window } from 'vscode';
 import UIController from '../controllers/UIController';
-import Asset from '../models/Asset';
-import Project from '../models/Project';
+import Project, { IDirtyAsset } from '../models/Project';
+import LocalFileManager from '../models/LocalFileManager';
+import { join } from 'path';
+import { pick } from '../utils';
 
 export default class UserContext {
   private _userInfo: IUserInfo;
   private _projectList: Project[];
   private _uiController: UIController;
-  private _currentProject: IProjectDetail;
-  private _projectAssetList: Asset[];
+  /**
+   * Current opened project
+   */
+  private _currentProject: Project;
+  /**
+   * Project selected for push data
+   */
+  private _pushProject?: Project;
+
+  private _dirtyAssets: IDirtyAsset[];
+
+  private static _userInfoMetaFilename = '.user.meta';
+  private static _projectListMetaFilename = '.projects.meta';
+
+  get dirtyAssets() {
+    return this._dirtyAssets;
+  }
+
+  set dirtyAssets(assets: IDirtyAsset[]) {
+    this._dirtyAssets = assets;
+    // TODO: update ui
+  }
 
   set userInfo(info: IUserInfo) {
     this._userInfo = info;
+    this.updateUserInfoMeta();
     this._uiController.updateUserStatus(info);
+  }
+
+  get currentProject() {
+    return this._currentProject;
+  }
+
+  set currentProject(project: Project) {
+    this._currentProject = project;
   }
 
   get userInfo() {
@@ -31,9 +60,7 @@ export default class UserContext {
 
   set projectList(list: Project[]) {
     this._projectList = list;
-    for (const project of list) {
-      this._updateProjectMeta(project);
-    }
+    this.updateUserProjectListMeta();
     this._uiController.updateProjectListView();
   }
 
@@ -41,76 +68,48 @@ export default class UserContext {
     this._uiController = UIController;
   }
 
-  async setCurrentProject(info: IProjectDetail) {
-    this._currentProject = info;
-    return window.withProgress(
-      { location: { viewId: EViewID.ProjectList }, title: 'syncing' },
-      () => {
-        return this._initProjectAssetList(
-          info.assets.map((item) => new Asset(item))
-        ).then((res) => {
-          this._projectAssetList = res;
-          for (const asset of this._projectAssetList) {
-            this._updateAsset(asset);
-          }
-        });
-      }
+  async setPushProject(project: Project) {
+    if (!LocalFileManager.existProject(project)) {
+      window.showInformationMessage('Pull project data first!');
+      return;
+    }
+    if (this._pushProject?.data.id === project.data.id) return;
+    const tmpAssets = await project.getDirtyAssets();
+
+    this.dirtyAssets = tmpAssets.filter((item) => !!item);
+    commands.executeCommand('setContext', 'galacean.project.selected', project);
+  }
+
+  private updateUserInfoMeta() {
+    const userMetaFilePath = this.getUserInfoMetaFilePath();
+    LocalFileManager.writeFile(
+      userMetaFilePath,
+      JSON.stringify(this._userInfo)
     );
   }
 
-  private _updateProjectMeta(project: Project) {
-    const localMeta = LocalFileManager.instance.readProjectMeta(
-      this._userInfo.id,
-      project
+  updateUserProjectListMeta() {
+    const projectListMetaFilePath = this.getUserProjectListMetaFilePath();
+    LocalFileManager.writeFile(
+      projectListMetaFilePath,
+      JSON.stringify(
+        this._projectList.map((item) => pick(item.data, Project.MetaKeys))
+      )
     );
-    if (localMeta.gmtModified < new Date(project.data.gmtModified)) {
-      LocalFileManager.instance.updateProjectMeta(
-        this._userInfo.id,
-        project.data.id.toString(),
-        {
-          gmtCreate: new Date(project.data.gmtCreate),
-          gmtModified: new Date(project.data.gmtModified),
-        }
-      );
-    }
   }
 
-  private _updateAsset(asset: Asset) {
-    const localMeta = LocalFileManager.instance.readAssetMeta(
-      this._userInfo.id,
-      asset
+  getUserProjectListMetaFilePath() {
+    return join(
+      LocalFileManager.getUserDirPath(this.userId),
+      UserContext._projectListMetaFilename
     );
-    if (
-      localMeta.gmtModified < new Date(asset.data.gmtModified) ||
-      !LocalFileManager.instance.exist(asset)
-    ) {
-      LocalFileManager.instance.updateAsset(this._userInfo.id, asset);
-    }
   }
 
-  private async _initProjectAssetList(list: Asset[]): Promise<Asset[]> {
-    const tmpMap = new Map<string, Asset>();
-    for (const asset of list) {
-      tmpMap.set(asset.id, asset);
-    }
-    const getParentPathPrefix = (asset: Asset) => {
-      if (asset.pathPrefix.length > 0) return asset.pathPrefix;
-      if (asset.data.parentId) {
-        const parent = tmpMap.get(asset.data.parentId);
-        getParentPathPrefix(parent);
-        asset.pathPrefix.unshift(...parent.pathPrefix, parent.data.name);
-      }
-    };
-
-    const ret: Asset[] = [];
-    for (const asset of list) {
-      if (!ASSET_TYPE.includes(asset.type)) continue;
-
-      getParentPathPrefix(asset);
-      ret.push(asset as any);
-    }
-    await Promise.all(ret.map((item) => item.init()));
-    return ret;
+  getUserInfoMetaFilePath() {
+    return join(
+      LocalFileManager.getUserDirPath(this.userId),
+      UserContext._userInfoMetaFilename
+    );
   }
 
   getProjectById(projectId: string): Project | undefined {

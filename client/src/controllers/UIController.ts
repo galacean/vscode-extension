@@ -1,5 +1,5 @@
 import { StatusBarItem, TreeView, window } from 'vscode';
-import ProjectListViewProvider from '../providers/ProjectListViewProvider';
+import ProjectListViewProvider from '../providers/viewData/ProjectListViewProvider';
 
 export default class UIController {
   statusBar: StatusBarItem;

@@ -4,7 +4,7 @@ import ContextUtils from './ContextUtils';
 import RequestContext from './RequestContext';
 import UserContext from './UserContext';
 import UIController from '../controllers/UIController';
-import ProjectListViewProvider from '../providers/ProjectListViewProvider';
+import ProjectListViewProvider from '../providers/viewData/ProjectListViewProvider';
 
 export default class HostContext {
   private static _singleton: HostContext;
@@ -72,7 +72,7 @@ export default class HostContext {
 
   getConfig<T>(key: string) {
     return workspace
-      .getConfiguration('galacean', workspace.workspaceFolders[0].uri)
+      .getConfiguration('galacean', workspace.workspaceFolders?.[0].uri)
       .get<T>(key);
   }
 

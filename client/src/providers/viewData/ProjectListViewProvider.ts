@@ -6,9 +6,9 @@ import {
   TreeDataProvider,
   TreeItem,
 } from 'vscode';
-import HostContext from '../context/HostContext';
-import OpenProject from '../commands/OpenProject';
-import Project from '../models/Project';
+import HostContext from '../../context/HostContext';
+import OpenProject from '../../commands/OpenProject';
+import Project from '../../models/Project';
 
 export default class ProjectListViewProvider
   implements TreeDataProvider<Project>

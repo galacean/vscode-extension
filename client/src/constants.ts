@@ -1,5 +1,5 @@
 import { homedir } from 'os';
-import { join } from 'path';
+import { join, dirname } from 'path';
 
 export const SHADER_LAG_ID = 'shaderlab';
 export const ENV_PATH = join(homedir(), '.galacean');
@@ -9,7 +9,7 @@ export const SERVER_HOST = 'localhost';
 export const SERVER_PORT = 8443;
 
 export const OASIS_TOKEN_KEY = 'OasisToken';
-export const ASSET_TYPE = ['Shader', 'script'];
+export const ASSET_TYPE = ['Shader', 'script'] as const;
 
 export enum EViewID {
   ProjectList = 'project-list',
@@ -24,3 +24,6 @@ export const BUILTIN_SHADERS = [
   'skybox',
   'SkyProcedural',
 ];
+
+export const CLIENT_ROOT_PATH = dirname(__dirname);
+export const RES_DIR_PATH = join(CLIENT_ROOT_PATH, 'res');

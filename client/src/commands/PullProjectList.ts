@@ -1,6 +1,6 @@
 import HostContext from '../context/HostContext';
 import Project from '../models/Project';
-import { fetchProjectList } from '../request';
+import { fetchProjectList } from '../utils/request';
 import Command from './Command';
 
 export default class PullProjectList extends Command {

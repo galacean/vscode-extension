@@ -33,39 +33,12 @@ interface IPaginationParams {
   pageSize: number;
 }
 
-interface IProject {
-  /** 主键 */
-  id: number;
-
-  /** 创建时间 */
-  gmtCreate: string;
-
-  /** 修改时间 */
-  gmtModified: string;
-
+interface IProject extends BaseModel {
   /** 项目名称 */
   name: string;
 
   /** 项目描述 */
   description?: string;
-
-  /** 创建人 */
-  creator: number;
-
-  /** 引擎版本 */
-  engineVersion: string;
-
-  /** 设置 */
-  setting?: string;
-
-  /** 项目封面图 */
-  thumbnail?: string;
-
-  /** schema */
-  content: string;
-
-  /** 第三方依赖，json字符 */
-  dependencies: string;
 }
 
 interface BaseModel {

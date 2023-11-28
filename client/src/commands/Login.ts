@@ -1,7 +1,7 @@
 import { window } from 'vscode';
 import Command from './Command';
 import HostContext from '../context/HostContext';
-import { authCode, fetchProjectList, login } from '../request';
+import { authCode, fetchProjectList, login } from '../utils/request';
 import Project from '../models/Project';
 
 export default class Login extends Command {
