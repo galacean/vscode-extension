@@ -2,6 +2,7 @@ import * as https from 'https';
 import { IncomingMessage, ClientRequest } from 'http';
 import HostContext from '../../context/HostContext';
 import * as FormData from 'form-data';
+import Asset from '../../models/Asset';
 
 export default class Request {
   options: https.RequestOptions;
@@ -12,7 +13,7 @@ export default class Request {
   ) {
     this.options = {
       headers: {
-        'Content-Type': 'application/json',
+        'content-type': 'application/json',
         Cookie: HostContext.requestContext.toString(),
         'user-agent': 'vscode',
         ...headers,
@@ -44,7 +45,7 @@ export default class Request {
         res.setEncoding('utf8');
         res.on('data', (chunk) => (body += chunk));
         res.on('end', () => {
-          console.log('response:', body);
+          // console.log('response:', body);
           success ? resolve(body) : reject(body);
         });
       };
@@ -53,7 +54,14 @@ export default class Request {
 
       if (data instanceof FormData) {
         req = data.submit(
-          { ...this.options, protocol: 'https:' },
+          {
+            ...this.options,
+            headers: {
+              ...this.options.headers,
+              ...(<FormData>data).getHeaders(),
+            },
+            protocol: 'https:',
+          },
           (err, res) => {
             if (err) {
               console.error(err);
@@ -148,6 +156,20 @@ export async function fetchProjectDetail(
     await instance.makeRequest()
   ) as ISuccessResponse<IProjectDetail>;
   return res.data;
+}
+
+export async function updateAsset(asset: Asset, content: Buffer) {
+  const instance = new Request({
+    path: '/api/project/asset/form/update',
+    method: 'POST',
+  });
+  const form = new FormData();
+  form.append('id', asset.data.id);
+  form.append('projectId', asset.data.projectId);
+  form.append('file', content, { filename: asset.fullName });
+  const res = await instance.makeRequest(form);
+  const ret = JSON.parse(res) as ISuccessResponse<IAsset>;
+  return ret.data;
 }
 
 export async function curl(

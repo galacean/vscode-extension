@@ -6,12 +6,6 @@ import { promises as fsPromise, mkdirSync } from 'fs';
 import { fetchProjectDetail } from '../utils/request';
 import { pick } from '../utils';
 
-export interface IDirtyAsset {
-  asset: Asset;
-  /** current content */
-  content: string;
-}
-
 export default class Project {
   static assetTypes = ['Shader', 'script'];
   static _metaDirName = '.galacean';
@@ -81,7 +75,7 @@ export default class Project {
     await this.pullAssets();
     mkdirSync(this.getLocalPath(), { recursive: true });
     for (const asset of this.assets) {
-      LocalFileManager.updateAsset(HostContext.userId, asset);
+      await LocalFileManager.updateAsset(asset, HostContext.userId);
     }
     LocalFileManager.updateProjectPkgJson(HostContext.userId, this);
   }
@@ -92,27 +86,16 @@ export default class Project {
     }
   }
 
+  findAssetByLocalPath(path: string) {
+    const filename = basename(path);
+    return this.findAssetByName(filename);
+  }
+
   findAssetById(id: string) {
     for (const asset of this._assets) {
       if (asset.data.id.toString() === id) return asset;
     }
   }
-
-  // async getDirtyAssets(): Promise<IDirtyAsset[]> {
-  //   const projectAssetFiles = this.getLocalAssetFiles();
-  //   return Promise.all(
-  //     projectAssetFiles.map(async (assetPath) => {
-  //       const assetName = basename(assetPath);
-  //       const asset = this.assets.find((item) => item.fullName === assetName);
-  //       if (!asset) return;
-
-  //       const fileContent = (await fsPromise.readFile(assetPath)).toString();
-  //       const curMD5 = LocalFileManager.getMD5(fileContent);
-  //       if (curMD5 === asset.md5) return;
-  //       return { asset, content: fileContent };
-  //     })
-  //   );
-  // }
 
   private async pullAssets() {
     console.log('pulling data', this.data.id, this.data.name);
@@ -129,14 +112,16 @@ export default class Project {
   private async initAssetsFromLocal() {
     const assetMetaPathList = this.getLocalAssetMeta();
     this._assets.length = 0;
-    const trimRegex = new RegExp(`(\/${Project._metaDirName}|\.meta)`, 'g');
+
     this._assets.push(
       ...(await Promise.all(
         assetMetaPathList.map(async (path) => {
           const content = await fsPromise.readFile(path);
           const meta = JSON.parse(content.toString()) as IAssetMeta;
           const asset = new Asset(meta);
-          asset.localPath = path.replace(trimRegex, '');
+
+          asset.setLocalPath(path);
+
           await asset.init();
           return asset;
         })
@@ -152,7 +137,7 @@ export default class Project {
   }
 
   /**
-   * init path prefix and content
+   * init local path and content
    */
   private async _initAssets() {
     if (!this._allAssets) {
@@ -165,11 +150,11 @@ export default class Project {
       tmpMap.set(asset.id, asset);
     }
     const getParentPathPrefix = (asset: Asset) => {
-      if (asset.pathPrefix.length > 0) return asset.pathPrefix;
+      if (asset._pathPrefix.length > 0) return asset._pathPrefix;
       if (asset.data.parentId) {
         const parent = tmpMap.get(asset.data.parentId);
         getParentPathPrefix(parent);
-        asset.pathPrefix.unshift(...parent.pathPrefix, parent.data.name);
+        asset._pathPrefix.unshift(...parent._pathPrefix, parent.data.name);
       }
     };
 
@@ -177,6 +162,7 @@ export default class Project {
       if (!Project.assetTypes.includes(asset.type)) continue;
 
       getParentPathPrefix(asset);
+      asset.initLocalPath();
       this.assets.push(asset as any);
     }
     await Promise.all(this.assets.map((item) => item.init()));

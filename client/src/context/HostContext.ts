@@ -78,7 +78,6 @@ export default class HostContext {
     const uiContext = new UIController(
       statusBar,
       ProjectListViewProvider.instance
-      // CommitViewDataProvider.instance
     );
     this.userContext = new UserContext(uiContext);
   }

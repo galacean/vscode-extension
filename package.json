@@ -68,24 +68,25 @@
           "command": "galacean.pull.project",
           "when": "view == project-list",
           "group": "inline"
-        },
-        {
-          "command": "galacean.push.project",
-          "when": "view == project-list",
-          "group": "inline"
         }
       ],
       "scm/title": [
         {
           "when": "scmProvider == galacean",
-          "command": "galacean.pull.project",
+          "command": "galacean.scm.push",
           "group": "navigation"
         }
       ],
-      "scm/sourceControl": [
+      "scm/resourceState/context": [
         {
-          "command": "galacean.pull.project",
-          "group": "navigation"
+          "command": "galacean.scm.add",
+          "group": "inline",
+          "when": "scmProvider == galacean && scmResourceGroup == change"
+        },
+        {
+          "command": "galacean.scm.remove",
+          "group": "inline",
+          "when": "scmProvider == galacean &&scmResourceGroup == staged"
         }
       ]
     },
@@ -129,22 +130,22 @@
         "icon": "$(git-fetch)"
       },
       {
-        "command": "galacean.push.project",
-        "title": "Push project assets",
+        "command": "galacean.scm.push",
+        "title": "Push asset changes",
         "category": "Galacean",
-        "icon": "$(repo-push)"
+        "icon": "$(cloud-upload)"
       },
       {
-        "command": "galacean.refresh.dirtyAssets",
-        "title": "Refresh dirty assets",
-        "category": "Galacean",
-        "icon": "$(extensions-refresh)"
-      },
-      {
-        "command": "galacean.add.uploadAsset",
+        "command": "galacean.scm.add",
         "title": "Stage Changes",
         "category": "Galacean",
         "icon": "$(diff-review-insert)"
+      },
+      {
+        "command": "galacean.scm.remove",
+        "title": "Unstage Changes",
+        "category": "Galacean",
+        "icon": "$(diff-review-remove)"
       }
     ]
   },

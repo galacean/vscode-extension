@@ -1,6 +1,5 @@
-import { ExtensionContext, Range, TextEdit, languages, window } from 'vscode';
+import { ExtensionContext, window } from 'vscode';
 import Client from './client';
-import { FormatterProvider } from './providers/Formatter';
 
 export function activate(context: ExtensionContext) {
   window.showInformationMessage('hello from galacean');

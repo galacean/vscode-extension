@@ -14,6 +14,7 @@ export const ASSET_EXT = ['.shader', '.ts'];
 
 export enum EViewID {
   ProjectList = 'project-list',
+  SCM = 'scm',
 }
 
 export const BUILTIN_SHADERS = [

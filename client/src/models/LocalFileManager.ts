@@ -8,7 +8,6 @@ import {
   writeFileSync,
   readdirSync,
 } from 'fs';
-import { createHash } from 'crypto';
 import Project from './Project';
 import Asset from './Asset';
 import { RES_DIR_PATH } from '../constants';
@@ -27,11 +26,10 @@ export default class LocalFileManager {
     return this._singleton;
   }
 
-  // static getMD5(content: string) {
-  //   return createHash('md5').update(content).digest('hex');
-  // }
-
   static metaFileName = '.meta';
+  static get stagedChangeMetaFilePath() {
+    return join(this._singleton.localRootPath, '.staged');
+  }
 
   private localRootPath: string;
 
@@ -40,14 +38,6 @@ export default class LocalFileManager {
       HostContext.instance.getConfig('root') || join(homedir(), 'galacean');
     if (!existsSync(this.localRootPath)) {
       mkdirSync(this.localRootPath, { recursive: true });
-    }
-  }
-
-  static readAssetMeta(userId: string, asset: Asset): IAssetMeta | undefined {
-    const assetMetaPath = asset.getLocalMetaPath(this.localRootPath, userId);
-    if (existsSync(assetMetaPath)) {
-      const content = readFileSync(assetMetaPath).toString();
-      return JSON.parse(content);
     }
   }
 
@@ -79,13 +69,13 @@ export default class LocalFileManager {
     writeFileSync(pkgJsonPath, JSON.stringify(pkgInfo, null, 2));
   }
 
-  static updateAsset(userId: string, asset: Asset) {
+  static updateAsset(asset: Asset, userId?: string) {
     const assetDirPath = dirname(asset.localPath);
 
     if (!existsSync(assetDirPath)) {
       mkdirSync(assetDirPath, { recursive: true });
     }
-    const assetMetaPath = asset.getLocalMetaPath(this.localRootPath, userId);
+    const assetMetaPath = asset.localMetaPath;
     const assetMetaDirPath = dirname(assetMetaPath);
     if (!existsSync(assetMetaDirPath)) {
       mkdirSync(assetMetaDirPath, { recursive: true });
@@ -121,7 +111,7 @@ export default class LocalFileManager {
             continue;
 
           result.push(entryPath);
-        } else if (!['node_modules', '.git'].includes(entry.name)) {
+        } else if (!['node_modules', '.git', '.vscode'].includes(entry.name)) {
           readDir(entryPath, result);
         }
       }

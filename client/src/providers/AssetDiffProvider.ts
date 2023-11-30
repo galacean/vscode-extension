@@ -13,8 +13,6 @@ export default class AssetDiffProvider implements QuickDiffProvider {
     uri: Uri,
     token: CancellationToken
   ): ProviderResult<Uri> {
-    console.log('diff: ', uri.toString());
-    // return uri;
     const extension = extname(uri.path);
     if (!ASSET_EXT.includes(extension)) return uri;
 

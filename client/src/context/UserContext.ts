@@ -1,6 +1,6 @@
 import { commands, window } from 'vscode';
 import UIController from '../controllers/UIController';
-import Project, { IDirtyAsset } from '../models/Project';
+import Project from '../models/Project';
 import LocalFileManager from '../models/LocalFileManager';
 import { join } from 'path';
 import { pick } from '../utils';
@@ -14,24 +14,8 @@ export default class UserContext {
    */
   private _openedProject: Project;
 
-  private _dirtyAssets: IDirtyAsset[];
-
-  private _pushProject: Project;
-  get pushProject() {
-    return this._pushProject;
-  }
-
   private static _userInfoMetaFilename = '.user.meta';
   private static _projectListMetaFilename = '.projects.meta';
-
-  get dirtyAssets() {
-    return this._dirtyAssets;
-  }
-
-  set dirtyAssets(assets: IDirtyAsset[]) {
-    this._dirtyAssets = assets;
-    // this._uiController.updateCommitListView();
-  }
 
   set userInfo(info: IUserInfo) {
     this._userInfo = info;
@@ -67,18 +51,6 @@ export default class UserContext {
 
   constructor(UIController: UIController) {
     this._uiController = UIController;
-  }
-
-  async setPushProject(project: Project) {
-    this._pushProject = project;
-    // const tmpAssets = await project.getDirtyAssets();
-
-    // this.dirtyAssets = tmpAssets.filter((item) => !!item);
-    commands.executeCommand(
-      'setContext',
-      'galacean.project.selected',
-      project.data.id
-    );
   }
 
   private updateUserInfoMeta() {

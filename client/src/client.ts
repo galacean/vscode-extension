@@ -5,8 +5,6 @@ import {
   commands,
   window,
   StatusBarAlignment,
-  workspace,
-  Uri,
 } from 'vscode';
 import {
   LanguageClient,
@@ -23,7 +21,6 @@ import { fetchProjectList, fetchUserInfo } from './utils/request';
 import ProjectListViewProvider from './providers/viewData/ProjectListViewProvider';
 import Project from './models/Project';
 import SimpleCompletionItemProvider from './providers/CompletionProvider';
-// import CommitViewDataProvider from './providers/viewData/CommitViewProvider';
 import LocalFileManager from './models/LocalFileManager';
 import AssetSourceController from './controllers/AssetSourceController';
 

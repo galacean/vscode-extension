@@ -19,6 +19,10 @@
   - [x] data pull
   - [ ] data push
   - [ ] source control
+    - [x] stage
+    - [x] diff
+    - [x] push
+    - [x] pull
 
 ## Notes
 
