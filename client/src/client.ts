@@ -5,6 +5,8 @@ import {
   commands,
   window,
   StatusBarAlignment,
+  workspace,
+  Uri,
 } from 'vscode';
 import {
   LanguageClient,
@@ -21,9 +23,9 @@ import { fetchProjectList, fetchUserInfo } from './utils/request';
 import ProjectListViewProvider from './providers/viewData/ProjectListViewProvider';
 import Project from './models/Project';
 import SimpleCompletionItemProvider from './providers/CompletionProvider';
-import CommitViewDataProvider from './providers/viewData/CommitViewProvider';
+// import CommitViewDataProvider from './providers/viewData/CommitViewProvider';
 import LocalFileManager from './models/LocalFileManager';
-// import FileWatcher from './models/FileWatcher';
+import AssetSourceController from './controllers/AssetSourceController';
 
 let _singleton: Client;
 const selector = { language: 'shaderlab' };
@@ -43,14 +45,57 @@ export default class Client {
 
   private constructor(context: ExtensionContext) {
     this.initClient(context);
-    this.initViews(context);
     this.registerProviders(context);
-
+    this.initViews(context);
     Commands.forEach((command) => {
       context.subscriptions.push(
         commands.registerCommand(command.name, command.callback.bind(command))
       );
     });
+
+    this.initUserContext(context);
+  }
+
+  private async initUserContext(context: ExtensionContext) {
+    const userContext = HostContext.userContext;
+    if (!HostContext.instance.isLogin()) return false;
+
+    await window.withProgress(
+      { location: { viewId: 'project-list' } },
+      async () => {
+        // user
+        if (LocalFileManager.existUser()) {
+          userContext.userInfo = await LocalFileManager.readUserInfoFromLocal();
+        } else {
+          userContext.userInfo = await fetchUserInfo();
+        }
+
+        // project list
+        if (!LocalFileManager.existUserProjectList()) {
+          const projectList = await fetchProjectList();
+          userContext.projectList = projectList.map(
+            (item) => new Project(item)
+          );
+        } else {
+          userContext.projectList =
+            await LocalFileManager.readUserProjectListFromLocal();
+        }
+
+        // opened project
+        const openedProjectId = await HostContext.isInGalaceanProject();
+        if (openedProjectId) {
+          const project = userContext.getProjectById(openedProjectId);
+          if (project) {
+            await project.initAssets();
+            userContext.openedProject = project;
+
+            AssetSourceController.init(context);
+          }
+        }
+      }
+    );
+
+    return true;
   }
 
   private initClient(context: ExtensionContext) {
@@ -68,10 +113,6 @@ export default class Client {
 
     const clientOptions: LanguageClientOptions = {
       documentSelector: [{ scheme: 'file', language: SHADER_LAG_ID }],
-      // synchronize: {
-      //   // Notify the server about file changes to '.clientrc files contained in the workspace
-      //   fileEvents: workspace.createFileSystemWatcher('**/.clientrc'),
-      // },
     };
 
     const client = new LanguageClient(
@@ -85,39 +126,18 @@ export default class Client {
     this._instance = client;
   }
 
-  private async initViews(context: ExtensionContext) {
+  private initViews(context: ExtensionContext) {
     const statusBar = window.createStatusBarItem(StatusBarAlignment.Left, 100);
     const projectListView = window.createTreeView('project-list', {
       treeDataProvider: ProjectListViewProvider.instance,
       canSelectMany: false,
     });
+    context.subscriptions.push(projectListView);
     projectListView.message = 'click on the project you want to inspect';
     projectListView.title = 'Project List';
 
-    const commitListView = window.createTreeView('commit-list', {
-      treeDataProvider: CommitViewDataProvider.instance,
-    });
-    commitListView.title = 'Commits';
-
-    HostContext.init(statusBar, projectListView);
+    HostContext.init(statusBar);
     context.subscriptions.push(statusBar);
-    if (HostContext.instance.isLogin()) {
-      await window.withProgress(
-        { location: { viewId: 'project-list' }, title: 'logging in' },
-        async () => {
-          HostContext.userContext.userInfo = await fetchUserInfo();
-          if (!LocalFileManager.existUserProjectList()) {
-            const projectList = await fetchProjectList();
-            HostContext.userContext.projectList = projectList.map(
-              (item) => new Project(item)
-            );
-          } else {
-            HostContext.userContext.projectList =
-              await LocalFileManager.readUserProjectListFromLocal();
-          }
-        }
-      );
-    }
   }
 
   deactivate(): Thenable<void> | undefined {

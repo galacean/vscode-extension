@@ -1,19 +1,20 @@
 import { StatusBarItem, TreeView, window } from 'vscode';
 import ProjectListViewProvider from '../providers/viewData/ProjectListViewProvider';
+// import CommitViewDataProvider from '../providers/viewData/CommitViewProvider';
 
 export default class UIController {
   statusBar: StatusBarItem;
-  projectListView: TreeView<IProject>;
   projectListViewDataProvider: ProjectListViewProvider;
+  // commitListViewDataProvider: CommitViewDataProvider;
 
   constructor(
     statusBar: StatusBarItem,
-    projectListView: TreeView<IProject>,
     projectListViewDataProvider: ProjectListViewProvider
+    // commitListViewDataProvider: CommitViewDataProvider
   ) {
     this.statusBar = statusBar;
-    this.projectListView = projectListView;
     this.projectListViewDataProvider = projectListViewDataProvider;
+    // this.commitListViewDataProvider = commitListViewDataProvider;
   }
 
   updateUserStatus(info: IUserInfo) {
@@ -27,4 +28,8 @@ export default class UIController {
   updateProjectListView() {
     this.projectListViewDataProvider.refresh();
   }
+
+  // updateCommitListView() {
+  //   this.commitListViewDataProvider.refresh();
+  // }
 }

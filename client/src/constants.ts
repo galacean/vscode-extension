@@ -10,6 +10,7 @@ export const SERVER_PORT = 8443;
 
 export const OASIS_TOKEN_KEY = 'OasisToken';
 export const ASSET_TYPE = ['Shader', 'script'] as const;
+export const ASSET_EXT = ['.shader', '.ts'];
 
 export enum EViewID {
   ProjectList = 'project-list',
@@ -27,3 +28,5 @@ export const BUILTIN_SHADERS = [
 
 export const CLIENT_ROOT_PATH = dirname(__dirname);
 export const RES_DIR_PATH = join(CLIENT_ROOT_PATH, 'res');
+
+export const GALACEAN_ASSET_SCHEMA = 'galacean';

@@ -52,11 +52,6 @@
         {
           "id": "project-list",
           "name": "Project List"
-        },
-        {
-          "id": "commit-list",
-          "name": "Commits",
-          "when": "galacean.project.selected"
         }
       ]
     },
@@ -79,16 +74,25 @@
           "when": "view == project-list",
           "group": "inline"
         }
+      ],
+      "scm/title": [
+        {
+          "when": "scmProvider == galacean",
+          "command": "galacean.pull.project",
+          "group": "navigation"
+        }
+      ],
+      "scm/sourceControl": [
+        {
+          "command": "galacean.pull.project",
+          "group": "navigation"
+        }
       ]
     },
     "viewsWelcome": [
       {
         "view": "project-list",
         "contents": "Sign in to Galacean to display project list, edit and sync your scripts and shaders.\n[Sign in](command:galacean.login)"
-      },
-      {
-        "view": "commit-list",
-        "contents": "No project selected."
       }
     ],
     "configuration": {
@@ -129,6 +133,18 @@
         "title": "Push project assets",
         "category": "Galacean",
         "icon": "$(repo-push)"
+      },
+      {
+        "command": "galacean.refresh.dirtyAssets",
+        "title": "Refresh dirty assets",
+        "category": "Galacean",
+        "icon": "$(extensions-refresh)"
+      },
+      {
+        "command": "galacean.add.uploadAsset",
+        "title": "Stage Changes",
+        "category": "Galacean",
+        "icon": "$(diff-review-insert)"
       }
     ]
   },
@@ -144,7 +160,8 @@
     "clear": "rm -rf ./client/out/* ./server/out/*"
   },
   "activationEvents": [
-    "onLanguage:shaderlab"
+    "onLanguage:shaderlab",
+    "workspaceContains:.galacean"
   ],
   "devDependencies": {
     "@types/node": "^20.8.7",

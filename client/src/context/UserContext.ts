@@ -12,13 +12,14 @@ export default class UserContext {
   /**
    * Current opened project
    */
-  private _currentProject: Project;
-  /**
-   * Project selected for push data
-   */
-  private _pushProject?: Project;
+  private _openedProject: Project;
 
   private _dirtyAssets: IDirtyAsset[];
+
+  private _pushProject: Project;
+  get pushProject() {
+    return this._pushProject;
+  }
 
   private static _userInfoMetaFilename = '.user.meta';
   private static _projectListMetaFilename = '.projects.meta';
@@ -29,7 +30,7 @@ export default class UserContext {
 
   set dirtyAssets(assets: IDirtyAsset[]) {
     this._dirtyAssets = assets;
-    // TODO: update ui
+    // this._uiController.updateCommitListView();
   }
 
   set userInfo(info: IUserInfo) {
@@ -38,12 +39,12 @@ export default class UserContext {
     this._uiController.updateUserStatus(info);
   }
 
-  get currentProject() {
-    return this._currentProject;
+  get openedProject() {
+    return this._openedProject;
   }
 
-  set currentProject(project: Project) {
-    this._currentProject = project;
+  set openedProject(project: Project) {
+    this._openedProject = project;
   }
 
   get userInfo() {
@@ -69,15 +70,15 @@ export default class UserContext {
   }
 
   async setPushProject(project: Project) {
-    if (!LocalFileManager.existProject(project)) {
-      window.showInformationMessage('Pull project data first!');
-      return;
-    }
-    if (this._pushProject?.data.id === project.data.id) return;
-    const tmpAssets = await project.getDirtyAssets();
+    this._pushProject = project;
+    // const tmpAssets = await project.getDirtyAssets();
 
-    this.dirtyAssets = tmpAssets.filter((item) => !!item);
-    commands.executeCommand('setContext', 'galacean.project.selected', project);
+    // this.dirtyAssets = tmpAssets.filter((item) => !!item);
+    commands.executeCommand(
+      'setContext',
+      'galacean.project.selected',
+      project.data.id
+    );
   }
 
   private updateUserInfoMeta() {
@@ -107,7 +108,7 @@ export default class UserContext {
 
   getUserInfoMetaFilePath() {
     return join(
-      LocalFileManager.getUserDirPath(this.userId),
+      LocalFileManager.localRootPath,
       UserContext._userInfoMetaFilename
     );
   }

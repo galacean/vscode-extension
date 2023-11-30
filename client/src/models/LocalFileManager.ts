@@ -27,9 +27,9 @@ export default class LocalFileManager {
     return this._singleton;
   }
 
-  static getMD5(content: string) {
-    return createHash('md5').update(content).digest('hex');
-  }
+  // static getMD5(content: string) {
+  //   return createHash('md5').update(content).digest('hex');
+  // }
 
   static metaFileName = '.meta';
 
@@ -80,8 +80,7 @@ export default class LocalFileManager {
   }
 
   static updateAsset(userId: string, asset: Asset) {
-    const assetLocalPath = asset.getLocalPath(this.localRootPath, userId);
-    const assetDirPath = dirname(assetLocalPath);
+    const assetDirPath = dirname(asset.localPath);
 
     if (!existsSync(assetDirPath)) {
       mkdirSync(assetDirPath, { recursive: true });
@@ -93,7 +92,7 @@ export default class LocalFileManager {
     }
 
     writeFileSync(assetMetaPath, JSON.stringify(asset.localMeta));
-    writeFileSync(assetLocalPath, asset.content);
+    writeFileSync(asset.localPath, asset.content);
   }
 
   /** @returns absolute path list */
@@ -111,7 +110,8 @@ export default class LocalFileManager {
       for (const entry of entries) {
         const entryPath = join(path, entry.name);
         if (entry.isFile()) {
-          if (entry.name.endsWith(LocalFileManager.metaFileName)) continue;
+          if (!opts.meta && entry.name.endsWith(LocalFileManager.metaFileName))
+            continue;
           if (
             opts?.extensions &&
             !opts?.extensions.includes(extname(entry.name))
@@ -131,6 +131,7 @@ export default class LocalFileManager {
     const projectPath = opts.meta
       ? project.getLocalMetaDirPath(this.localRootPath, opts.userId)
       : project.getLocalPath(this.localRootPath, opts.userId);
+    mkdirSync(projectPath, { recursive: true });
     return readDir(projectPath);
   }
 
@@ -143,8 +144,13 @@ export default class LocalFileManager {
     return projectList.map((item) => new Project(item));
   }
 
+  static async readUserInfoFromLocal() {
+    const userInfoMetaPath = HostContext.userContext.getUserInfoMetaFilePath();
+    return JSON.parse(readFileSync(userInfoMetaPath).toString()) as IUserInfo;
+  }
+
   static existAsset(asset: Asset) {
-    return existsSync(asset.getLocalPath(this.localRootPath));
+    return existsSync(asset.localPath);
   }
 
   static existProject(project: Project) {
@@ -157,6 +163,10 @@ export default class LocalFileManager {
 
   static existUserProjectList() {
     return existsSync(HostContext.userContext.getUserProjectListMetaFilePath());
+  }
+
+  static existUser() {
+    return existsSync(HostContext.userContext.getUserInfoMetaFilePath());
   }
 
   static writeFile(filePath: string, content: string) {

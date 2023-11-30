@@ -5,12 +5,15 @@ import RequestContext from './RequestContext';
 import UserContext from './UserContext';
 import UIController from '../controllers/UIController';
 import ProjectListViewProvider from '../providers/viewData/ProjectListViewProvider';
+// import CommitViewDataProvider from '../providers/viewData/CommitViewProvider';
+import Project from '../models/Project';
+import { basename } from 'path';
 
 export default class HostContext {
   private static _singleton: HostContext;
 
-  static init(statusBar: StatusBarItem, projectListView: TreeView<any>) {
-    this._singleton = new HostContext(statusBar, projectListView);
+  static init(statusBar: StatusBarItem) {
+    this._singleton = new HostContext(statusBar);
   }
 
   static get instance() {
@@ -40,6 +43,19 @@ export default class HostContext {
     return this.instance.serverPort;
   }
 
+  static async isInGalaceanProject() {
+    if (!workspace.workspaceFolders) return;
+
+    const workspaceRoot = workspace.workspaceFolders[0].uri;
+    const file = await workspace.fs.stat(
+      Uri.joinPath(workspaceRoot, Project._metaDirName)
+    );
+    if (!file) return;
+
+    const projectId = basename(workspaceRoot.path);
+    return projectId;
+  }
+
   private envConfig: IHostEnv;
 
   private get serverHost() {
@@ -53,10 +69,7 @@ export default class HostContext {
   requestContext: RequestContext;
   userContext: UserContext;
 
-  private constructor(
-    statusBar: StatusBarItem,
-    projectListView: TreeView<any>
-  ) {
+  private constructor(statusBar: StatusBarItem) {
     this.envConfig = ContextUtils.loadEnv();
     this.requestContext = new RequestContext(
       this.envConfig.cookies,
@@ -64,8 +77,8 @@ export default class HostContext {
     );
     const uiContext = new UIController(
       statusBar,
-      projectListView,
       ProjectListViewProvider.instance
+      // CommitViewDataProvider.instance
     );
     this.userContext = new UserContext(uiContext);
   }

@@ -1,48 +1,98 @@
-import {
-  Event,
-  EventEmitter,
-  ProviderResult,
-  ThemeIcon,
-  TreeDataProvider,
-  TreeItem,
-  Uri,
-} from 'vscode';
-import HostContext from '../../context/HostContext';
-import { IDirtyAsset } from '../../models/Project';
-import { RES_DIR_PATH } from '../../constants';
+// import {
+//   Event,
+//   EventEmitter,
+//   ProviderResult,
+//   ThemeIcon,
+//   TreeDataProvider,
+//   TreeItem,
+//   TreeItemCollapsibleState,
+//   Uri,
+// } from 'vscode';
+// import HostContext from '../../context/HostContext';
+// import { IDirtyAsset } from '../../models/Project';
+// import { RES_DIR_PATH } from '../../constants';
 
-export default class CommitViewDataProvider
-  implements TreeDataProvider<IDirtyAsset>
-{
-  static _singleton: CommitViewDataProvider;
+// enum CommitNode {
+//   Changes = 1,
+//   StagedChanges = 2,
+// }
 
-  static get instance() {
-    if (!this._singleton) {
-      this._singleton = new CommitViewDataProvider();
-    }
-    return this._singleton;
-  }
+// export default class CommitViewDataProvider
+//   implements TreeDataProvider<IDirtyAsset | CommitNode>
+// {
+//   static _singleton: CommitViewDataProvider;
 
-  private _dataChangedEventEmitter = new EventEmitter<void>();
-  onDidChangeTreeData?: Event<void | IDirtyAsset | IDirtyAsset[]>;
+//   static get instance() {
+//     if (!this._singleton) {
+//       this._singleton = new CommitViewDataProvider();
+//     }
+//     return this._singleton;
+//   }
 
-  private constructor() {
-    this.onDidChangeTreeData = this._dataChangedEventEmitter.event;
-  }
+//   private _dataChangedEventEmitter = new EventEmitter<void>();
+//   onDidChangeTreeData?: Event<void | IDirtyAsset | IDirtyAsset[]>;
 
-  getChildren(element?: IDirtyAsset): ProviderResult<IDirtyAsset[]> {
-    return HostContext.userContext.dirtyAssets;
-  }
+//   private _changes?: IDirtyAsset[];
+//   private _stagedChanges?: IDirtyAsset[];
 
-  getTreeItem(element: IDirtyAsset): TreeItem | Thenable<TreeItem> {
-    const item = new TreeItem(element.asset.data.name);
-    item.id = element.asset.id;
-    item.iconPath =
-      element.asset.type === 'Shader'
-        ? new ThemeIcon('file-type-typescript')
-        : Uri.joinPath(Uri.file(RES_DIR_PATH), 'icons', 'shader.svg');
-    item.tooltip = element.asset.getLocalPath();
+//   private constructor() {
+//     this.onDidChangeTreeData = this._dataChangedEventEmitter.event;
+//   }
 
-    return item;
-  }
-}
+//   getChildren(
+//     element?: IDirtyAsset | CommitNode
+//   ): ProviderResult<(IDirtyAsset | CommitNode)[]> {
+//     const dirtyAssets = HostContext.userContext.dirtyAssets;
+//     if (!dirtyAssets) return [];
+
+//     if (!element) {
+//       return [CommitNode.Changes, CommitNode.StagedChanges];
+//     } else {
+//       if (<CommitNode>element === CommitNode.Changes) {
+//         if (!this._changes) {
+//           this._changes = dirtyAssets;
+//         }
+//         return this._changes;
+//       } else {
+//         return this._stagedChanges;
+//       }
+//     }
+//   }
+
+//   getTreeItem(
+//     element: IDirtyAsset | CommitNode
+//   ): TreeItem | Thenable<TreeItem> {
+//     if (<CommitNode>element === CommitNode.Changes) {
+//       const item = new TreeItem('Changes');
+//       item.collapsibleState = TreeItemCollapsibleState.Expanded;
+//       return item;
+//     } else if (<CommitNode>element === CommitNode.StagedChanges) {
+//       if (this._stagedChanges?.length) {
+//         const item = new TreeItem('Staged Changes');
+//         item.collapsibleState = TreeItemCollapsibleState.Collapsed;
+//         return item;
+//       }
+//     } else {
+//       return this.getItemFromAsset(<IDirtyAsset>element);
+//     }
+//   }
+
+//   private getItemFromAsset(element: IDirtyAsset) {
+//     const item = new TreeItem(element.asset.data.name);
+//     item.id = element.asset.id;
+//     item.iconPath =
+//       element.asset.type === 'Shader'
+//         ? Uri.joinPath(Uri.file(RES_DIR_PATH), 'icons', 'shader.svg')
+//         : Uri.joinPath(Uri.file(RES_DIR_PATH), 'icons', 'script.svg');
+//     item.tooltip = element.asset.getLocalPath();
+//     item.contextValue = 'asset';
+
+//     return item;
+//   }
+
+//   refresh() {
+//     this._changes = undefined;
+//     this._stagedChanges = undefined;
+//     this._dataChangedEventEmitter.fire();
+//   }
+// }

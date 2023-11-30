@@ -1,6 +1,5 @@
 import Command from './Command';
 import HostContext from '../context/HostContext';
-import LocalFileManager from '../models/LocalFileManager';
 import { Uri, commands, window } from 'vscode';
 import { EViewID } from '../constants';
 
@@ -16,20 +15,17 @@ export default class OpenProject extends Command {
       throw 'project not found';
     }
 
-    await window.withProgress(
-      {
-        location: { viewId: EViewID.ProjectList },
-        title: 'pulling',
-      },
-      () => {
-        if (LocalFileManager.existProject(project)) {
-          return project.initAssetsFromLocal();
-        }
-        return project.updateAssetsFromServer();
-      }
-    );
+    if (!project.assetsInitialized) {
+      await window.withProgress(
+        {
+          location: { viewId: EViewID.ProjectList },
+          title: 'pulling',
+        },
+        project.initAssets
+      );
+    }
 
-    userContext.currentProject = project;
+    userContext.openedProject = project;
 
     await commands.executeCommand(
       'vscode.openFolder',
