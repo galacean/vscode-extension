@@ -1,6 +1,11 @@
-import { existsSync, readFileSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { ENV_PATH } from '../constants';
 import { window } from 'vscode';
+import { dirname } from 'path';
+
+if (!existsSync(dirname(ENV_PATH))) {
+  mkdirSync(dirname(ENV_PATH), { recursive: true });
+}
 
 if (!existsSync(ENV_PATH)) {
   writeFileSync(ENV_PATH, '{}');

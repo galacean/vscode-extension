@@ -63,14 +63,12 @@
           "group": "navigation"
         }
       ],
-      "view/item/context": [
-        {
-          "command": "galacean.pull.project",
-          "when": "view == project-list",
-          "group": "inline"
-        }
-      ],
       "scm/title": [
+        {
+          "command": "galacean.pull.projectAssets",
+          "when": "scmProvider == galacean",
+          "group": "navigation"
+        },
         {
           "when": "scmProvider == galacean",
           "command": "galacean.scm.push",
@@ -87,6 +85,11 @@
           "command": "galacean.scm.remove",
           "group": "inline",
           "when": "scmProvider == galacean &&scmResourceGroup == staged"
+        },
+        {
+          "command": "galacean.scm.restore",
+          "group": "inline",
+          "when": "scmProvider == galacean && scmResourceGroup == change"
         }
       ]
     },
@@ -124,10 +127,10 @@
         "icon": "$(git-fetch)"
       },
       {
-        "command": "galacean.pull.project",
+        "command": "galacean.pull.projectAssets",
         "title": "Pull project assets",
         "category": "Galacean",
-        "icon": "$(git-fetch)"
+        "icon": "$(cloud-download)"
       },
       {
         "command": "galacean.scm.push",
@@ -146,6 +149,12 @@
         "title": "Unstage Changes",
         "category": "Galacean",
         "icon": "$(diff-review-remove)"
+      },
+      {
+        "command": "galacean.scm.restore",
+        "title": "Restore Changes",
+        "category": "Galacean",
+        "icon": "$(discard)"
       }
     ]
   },

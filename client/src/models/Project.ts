@@ -5,6 +5,7 @@ import HostContext from '../context/HostContext';
 import { promises as fsPromise, mkdirSync } from 'fs';
 import { fetchProjectDetail } from '../utils/request';
 import { pick } from '../utils';
+import AssetSourceController from '../controllers/AssetSourceController';
 
 export default class Project {
   static assetTypes = ['Shader', 'script'];
@@ -71,11 +72,16 @@ export default class Project {
   }
 
   /** update local meta and pull assets */
-  async updateAssetsFromServer() {
+  async updateAssetsFromServer(localSync = true) {
+    if (AssetSourceController.instance.stagedChanges.length > 0) {
+      throw 'Staged asset changes exist.';
+    }
+
     await this.pullAssets();
     mkdirSync(this.getLocalPath(), { recursive: true });
     for (const asset of this.assets) {
-      await LocalFileManager.updateAsset(asset, HostContext.userId);
+      await LocalFileManager.updateAsset(asset, localSync);
+      AssetSourceController.instance.inspectAsset(asset);
     }
     LocalFileManager.updateProjectPkgJson(HostContext.userId, this);
   }
@@ -128,6 +134,7 @@ export default class Project {
       ))
     );
     this._assetsInitialized = true;
+    AssetSourceController.instance.initChanges(this);
   }
 
   private getLocalAssetMeta() {

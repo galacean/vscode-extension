@@ -5,7 +5,6 @@ import RequestContext from './RequestContext';
 import UserContext from './UserContext';
 import UIController from '../controllers/UIController';
 import ProjectListViewProvider from '../providers/viewData/ProjectListViewProvider';
-// import CommitViewDataProvider from '../providers/viewData/CommitViewProvider';
 import Project from '../models/Project';
 import { basename } from 'path';
 

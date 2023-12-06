@@ -14,13 +14,9 @@ import { AssetOriginContentProvider } from '../providers/AssetOriginContentProvi
 import { basename } from 'path';
 import HostContext from '../context/HostContext';
 import Asset from '../models/Asset';
-import {
-  existsSync,
-  promises as fsPromise,
-  readFileSync,
-  writeFileSync,
-} from 'fs';
+import { existsSync, readFileSync, writeFileSync } from 'fs';
 import LocalFileManager from '../models/LocalFileManager';
+import Project from '../models/Project';
 
 enum EFileChange {
   DELETE,
@@ -36,13 +32,17 @@ interface ISource {
 }
 
 export default class AssetSourceController {
-  static instance: AssetSourceController;
-  static init(context: ExtensionContext, rootUri?: Uri) {
-    if (!this.instance) {
-      this.instance = new AssetSourceController(context, rootUri);
+  private static _instance: AssetSourceController;
+  static get instance() {
+    return AssetSourceController._instance;
+  }
+
+  static create(context: ExtensionContext, rootUri?: Uri) {
+    if (!this._instance) {
+      this._instance = new AssetSourceController(context, rootUri);
     }
 
-    return this.instance;
+    return this._instance;
   }
 
   private _scm: SourceControl;
@@ -73,28 +73,10 @@ export default class AssetSourceController {
     );
     context.subscriptions.push(this._scm);
     this.initFSWatcher(context);
-
-    this.initChanges();
   }
 
-  private initFSWatcher(context: ExtensionContext) {
-    this._fsWatcher = workspace.createFileSystemWatcher(
-      '**/{*,!node_modules,!.git,!.vscode}/*.{ts,shader}'
-    );
-    context.subscriptions.push(this._fsWatcher);
-    this._fsWatcher.onDidChange((uri) =>
-      this.onSourceChanged(uri, EFileChange.CHANGE)
-    );
-    this._fsWatcher.onDidCreate((uri) =>
-      this.onSourceChanged(uri, EFileChange.CHANGE)
-    );
-    this._fsWatcher.onDidDelete((uri) =>
-      this.onSourceChanged(uri, EFileChange.DELETE)
-    );
-  }
-
-  async initChanges() {
-    const openedProject = HostContext.userContext.openedProject;
+  async initChanges(project?: Project) {
+    const openedProject = project ?? HostContext.userContext.openedProject;
     const localSourceList: ISource[] = openedProject
       .getLocalAssetFiles()
       .map((localAsset) => ({
@@ -110,7 +92,7 @@ export default class AssetSourceController {
         if (remoteAsset) {
           localSource.asset = remoteAsset;
           const localContent = (
-            await fsPromise.readFile(localSource.localPath)
+            await workspace.fs.readFile(Uri.file(localSource.localPath))
           ).toString();
           if (localContent === remoteAsset.content) {
             localSource.state = EFileChange.NONE;
@@ -147,7 +129,59 @@ export default class AssetSourceController {
     }
   }
 
+  addStagedChange(resourceState: SourceControlResourceState) {
+    this.removeChange(resourceState.resourceUri);
+    const stats = this._stagedChangesGroup.resourceStates;
+    stats.push(resourceState);
+    this._stagedChangesGroup.resourceStates = stats;
+
+    this.updateStagedMetaFile(resourceState.resourceUri.path, 'add');
+  }
+
+  removeStagedChange(resourceState: SourceControlResourceState) {
+    const changeStates = this._changesGroup.resourceStates;
+    changeStates.push(resourceState);
+    this._changesGroup.resourceStates = changeStates;
+
+    this._removeStagedChange(resourceState);
+  }
+
+  /** Inspect asset to check if changed */
+  async inspectAsset(asset: Asset) {
+    const localContent = await workspace.fs.readFile(asset.localUri);
+    if (asset.content !== localContent.toString()) {
+      this.addChange(asset.localUri, false, asset);
+    } else {
+      this.removeChange(asset.localUri);
+    }
+  }
+
+  clearStagedChanges() {
+    this._changesGroup.resourceStates.length = 0;
+  }
+
+  private initFSWatcher(context: ExtensionContext) {
+    this._fsWatcher = workspace.createFileSystemWatcher(
+      '**/{*,!node_modules,!.git,!.vscode}/*.{ts,shader}'
+    );
+    context.subscriptions.push(this._fsWatcher);
+    this._fsWatcher.onDidChange((uri) =>
+      this.onSourceChanged(uri, EFileChange.CHANGE)
+    );
+    this._fsWatcher.onDidCreate((uri) =>
+      this.onSourceChanged(uri, EFileChange.CHANGE)
+    );
+    this._fsWatcher.onDidDelete((uri) =>
+      this.onSourceChanged(uri, EFileChange.DELETE)
+    );
+  }
+
   private async onSourceChanged(uri: Uri, change: EFileChange) {
+    const stagedState = this._stagedChangesGroup.resourceStates.find(
+      (item) => item.resourceUri.toString() === uri.toString()
+    );
+    if (stagedState) this._removeStagedChange(stagedState);
+
     const filename = basename(uri.path);
     const asset =
       HostContext.userContext.openedProject.findAssetByName(filename);
@@ -155,20 +189,14 @@ export default class AssetSourceController {
       if (change === EFileChange.DELETE) {
         this.removeChange(uri);
       } else {
-        this.addChange(uri, true);
+        this.addChange(uri, false);
       }
     } else {
       const document = await workspace.openTextDocument(uri);
       if (document.getText() === asset.content) {
         this.removeChange(uri);
-        const stagedState = this._stagedChangesGroup.resourceStates.find(
-          (item) => item.resourceUri.toString() === uri.toString()
-        );
-        if (stagedState) {
-          this._removeStagedChange(stagedState);
-        }
       } else {
-        this.addChange(uri, false, asset);
+        this.addChange(uri, true, asset);
       }
     }
   }
@@ -220,23 +248,6 @@ export default class AssetSourceController {
     }
 
     this._changesGroup.resourceStates = states;
-  }
-
-  addStagedChange(resourceState: SourceControlResourceState) {
-    this.removeChange(resourceState.resourceUri);
-    const stats = this._stagedChangesGroup.resourceStates;
-    stats.push(resourceState);
-    this._stagedChangesGroup.resourceStates = stats;
-
-    this.updateStagedMetaFile(resourceState.resourceUri.path, 'add');
-  }
-
-  removeStagedChange(resourceState: SourceControlResourceState) {
-    const changeStates = this._changesGroup.resourceStates;
-    changeStates.push(resourceState);
-    this._changesGroup.resourceStates = changeStates;
-
-    this._removeStagedChange(resourceState);
   }
 
   private _removeStagedChange(resourceState: SourceControlResourceState) {

@@ -10,7 +10,7 @@ import {
 } from 'fs';
 import Project from './Project';
 import Asset from './Asset';
-import { RES_DIR_PATH } from '../constants';
+import { RES_DIR_PATH, SERVER_HOST } from '../constants';
 
 export default class LocalFileManager {
   static _singleton: LocalFileManager;
@@ -35,7 +35,8 @@ export default class LocalFileManager {
 
   constructor() {
     this.localRootPath =
-      HostContext.instance.getConfig('root') || join(homedir(), 'galacean');
+      HostContext.instance.getConfig('root') ||
+      join(homedir(), 'galacean', SERVER_HOST);
     if (!existsSync(this.localRootPath)) {
       mkdirSync(this.localRootPath, { recursive: true });
     }
@@ -69,7 +70,7 @@ export default class LocalFileManager {
     writeFileSync(pkgJsonPath, JSON.stringify(pkgInfo, null, 2));
   }
 
-  static updateAsset(asset: Asset, userId?: string) {
+  static updateAsset(asset: Asset, localSync = true) {
     const assetDirPath = dirname(asset.localPath);
 
     if (!existsSync(assetDirPath)) {
@@ -82,7 +83,7 @@ export default class LocalFileManager {
     }
 
     writeFileSync(assetMetaPath, JSON.stringify(asset.localMeta));
-    writeFileSync(asset.localPath, asset.content);
+    if (localSync) writeFileSync(asset.localPath, asset.content);
   }
 
   /** @returns absolute path list */

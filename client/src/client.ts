@@ -86,7 +86,7 @@ export default class Client {
             await project.initAssets();
             userContext.openedProject = project;
 
-            AssetSourceController.init(context);
+            AssetSourceController.instance.initChanges();
           }
         }
       }
@@ -124,14 +124,13 @@ export default class Client {
   }
 
   private initViews(context: ExtensionContext) {
+    AssetSourceController.create(context);
     const statusBar = window.createStatusBarItem(StatusBarAlignment.Left, 100);
     const projectListView = window.createTreeView('project-list', {
       treeDataProvider: ProjectListViewProvider.instance,
       canSelectMany: false,
     });
     context.subscriptions.push(projectListView);
-    projectListView.message = 'click on the project you want to inspect';
-    projectListView.title = 'Project List';
 
     HostContext.init(statusBar);
     context.subscriptions.push(statusBar);

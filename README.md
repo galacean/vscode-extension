@@ -17,12 +17,15 @@
   - [x] http client mock (cookie)
   - [x] 登录
   - [x] data pull
-  - [ ] data push
-  - [ ] source control
+  - [x] data push
+  - [x] source control
     - [x] stage
     - [x] diff
     - [x] push
     - [x] pull
+
+- #### 其它
+  - [ ] walkthrough
 
 ## Notes
 

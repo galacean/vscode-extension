@@ -21,7 +21,7 @@ export default class OpenProject extends Command {
           location: { viewId: EViewID.ProjectList },
           title: 'pulling',
         },
-        project.initAssets
+        project.initAssets.bind(project)
       );
     }
 

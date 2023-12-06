@@ -95,9 +95,9 @@ export default class Asset {
   }
 
   setLocalPath(metaPath: string) {
+    this._localMetaPath = metaPath;
     const trimRegex = new RegExp(`(\/${Project._metaDirName}|\.meta)`, 'g');
     this._localPath = metaPath.replace(trimRegex, '');
-    this._localMetaPath = metaPath;
   }
 
   async updateData(data: IAsset) {
@@ -117,7 +117,7 @@ export default class Asset {
     this._localMetaPath = join(
       this.project.getLocalMetaDirPath(),
       ...this._pathPrefix,
-      `${this.filename}${this.extension}`
+      `${this.filename}${this.extension}.meta`
     );
     this._localPath = join(
       this.project.getLocalPath(),
