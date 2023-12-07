@@ -192,9 +192,13 @@ export default class AssetSourceController {
         this.addChange(uri, false);
       }
     } else {
-      const document = await workspace.openTextDocument(uri);
-      if (document.getText() === asset.content) {
-        this.removeChange(uri);
+      if (existsSync(asset.localPath)) {
+        const curContent = readFileSync(asset.localPath).toString();
+        if (curContent === asset.content) {
+          this.removeChange(uri);
+        } else {
+          this.addChange(uri, false, asset);
+        }
       } else {
         this.addChange(uri, true, asset);
       }
