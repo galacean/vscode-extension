@@ -167,7 +167,8 @@
     "clean": "rm -rf ./node_modules ./client/node_modules ./server/node_modules",
     "install": "cd ./client && npm install && cd ../server && npm install && cd ..",
     "build": "webpack",
-    "clear": "rm -rf ./client/out/* ./server/out/*"
+    "clear": "rm -rf ./client/out/* ./server/out/*",
+    "swipe": "rm -rf ~/.galacean ~/galacean"
   },
   "activationEvents": [
     "onLanguage:shaderlab",

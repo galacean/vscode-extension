@@ -23,9 +23,12 @@
     - [x] diff
     - [x] push
     - [x] pull
+    - [ ] packages.json 脚本依赖同步
+  - [ ] glsl 内置函数提示
 
 - #### 其它
   - [ ] walkthrough
+  - [ ] 编辑器中双击 Script，Shader 跳转至 VScode
 
 ## Notes
 

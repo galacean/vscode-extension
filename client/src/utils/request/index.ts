@@ -141,7 +141,7 @@ export async function fetchUserInfo(): Promise<IUserInfo> {
 }
 
 export async function fetchProjectList(): Promise<IProject[]> {
-  const instance = new Request({ path: '/api/project/list' });
+  const instance = new Request({ path: '/api/project/list?pageSize=100' });
   const res = JSON.parse(await instance.makeRequest()) as ISuccessResponse<
     IPaginationResponse<IProject>
   >;

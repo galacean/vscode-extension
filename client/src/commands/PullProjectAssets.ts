@@ -1,5 +1,4 @@
 import { window } from 'vscode';
-import Project from '../models/Project';
 import Command from './Command';
 import { EViewID } from '../constants';
 import HostContext from '../context/HostContext';
@@ -18,7 +17,7 @@ export default class PullProjectAssets extends Command {
 
     syncing = true;
     window.withProgress(
-      { location: { viewId: EViewID.ProjectList }, title: 'syncing' },
+      { location: { viewId: EViewID.SCM }, title: 'syncing' },
       async () => {
         await project
           .updateAssetsFromServer(false)
