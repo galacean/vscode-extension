@@ -86,8 +86,8 @@ export default class AssetSourceController {
 
     await Promise.all(
       localSourceList.map(async (localSource) => {
-        const remoteAsset = openedProject.findAssetByName(
-          basename(localSource.localPath)
+        const remoteAsset = openedProject.findAssetByLocalPath(
+          localSource.localPath
         );
         if (remoteAsset) {
           localSource.asset = remoteAsset;
@@ -187,9 +187,9 @@ export default class AssetSourceController {
     );
     if (stagedState) this._removeStagedChange(stagedState);
 
-    const filename = basename(uri.path);
-    const asset =
-      HostContext.userContext.openedProject.findAssetByName(filename);
+    const asset = HostContext.userContext.openedProject.findAssetByLocalPath(
+      uri.path
+    );
     if (!asset) {
       if (change === EFileChange.DELETE) {
         this.removeChange(uri);

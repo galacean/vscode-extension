@@ -29,9 +29,8 @@ export default class AssetDiffProvider implements QuickDiffProvider {
       throw 'no project opened';
     }
 
-    const name = basename(uri.path);
-    const asset = openedProject.findAssetByName(name);
-    if (!asset) throw `no asset find ${name} ${uri}`;
+    const asset = openedProject.findAssetByLocalPath(uri.path);
+    if (!asset) throw `no asset find ${asset.data.name} ${uri}`;
     return asset.data.id.toString();
   }
 }

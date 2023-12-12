@@ -86,15 +86,10 @@ export default class Project {
     LocalFileManager.updateProjectPkgJson(HostContext.userId, this);
   }
 
-  findAssetByName(name: string) {
-    for (const asset of this._assets) {
-      if (asset.fullName === name) return asset;
-    }
-  }
-
   findAssetByLocalPath(path: string) {
-    const filename = basename(path);
-    return this.findAssetByName(filename);
+    for (const asset of this._assets) {
+      if (asset.localPath === path) return asset;
+    }
   }
 
   findAssetById(id: string) {
