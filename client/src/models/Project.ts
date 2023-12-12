@@ -134,7 +134,7 @@ export default class Project {
       ))
     );
     this._assetsInitialized = true;
-    AssetSourceController.instance.initChanges(this);
+    // AssetSourceController.instance.initChanges(this);
   }
 
   private getLocalAssetMeta() {

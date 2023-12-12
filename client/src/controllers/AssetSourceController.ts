@@ -129,6 +129,11 @@ export default class AssetSourceController {
     }
   }
 
+  clear() {
+    this._changesGroup.resourceStates = [];
+    this._stagedChangesGroup.resourceStates = [];
+  }
+
   addStagedChange(resourceState: SourceControlResourceState) {
     this.removeChange(resourceState.resourceUri);
     const stats = this._stagedChangesGroup.resourceStates;

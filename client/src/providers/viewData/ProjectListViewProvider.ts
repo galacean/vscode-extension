@@ -35,7 +35,7 @@ export default class ProjectListViewProvider
     const item = new TreeItem(element.data.name);
     item.id = element.data.id.toString();
     item.iconPath = this._itemIcon;
-    item.tooltip = element.data.description;
+    item.tooltip = `${item.id} - ${element.data.description}`;
     item.command = {
       title: 'open',
       command: OpenProject.command,
