@@ -1,10 +1,11 @@
-import { SourceControlResourceState } from 'vscode';
 import Command from './Command';
-import AssetSourceController from '../controllers/AssetSourceController';
+import AssetChangesViewProvider, {
+  IAssetChange,
+} from '../providers/viewData/AssetChangesViewProvider';
 
 export default class StageAssetChange extends Command {
   name: string = 'galacean.scm.add';
-  callback(resourceState: SourceControlResourceState) {
-    AssetSourceController.instance.addStagedChange(resourceState);
+  callback(change: IAssetChange) {
+    AssetChangesViewProvider.instance.addStagedChange(change);
   }
 }

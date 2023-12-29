@@ -3,6 +3,7 @@ import { IncomingMessage, ClientRequest } from 'http';
 import HostContext from '../../context/HostContext';
 import * as FormData from 'form-data';
 import Asset from '../../models/Asset';
+import { commands, window } from 'vscode';
 
 export default class Request {
   options: https.RequestOptions;
@@ -45,7 +46,13 @@ export default class Request {
         res.setEncoding('utf8');
         res.on('data', (chunk) => (body += chunk));
         res.on('end', () => {
-          // console.log('response:', body);
+          if (!success) {
+            const errRes = JSON.parse(body) as IFailedResponse;
+            if (errRes.errCode === 10001) {
+              window.showErrorMessage('Session expired! please log in again.');
+              commands.executeCommand('galacean.login');
+            }
+          }
           success ? resolve(body) : reject(body);
         });
       };
@@ -165,11 +172,24 @@ export async function updateAsset(asset: Asset, content: Buffer) {
   });
   const form = new FormData();
   form.append('id', asset.data.id);
-  form.append('projectId', asset.data.projectId);
+  form.append('projectId', asset.project.data.id);
   form.append('file', content, { filename: asset.fullName });
   const res = await instance.makeRequest(form);
   const ret = JSON.parse(res) as ISuccessResponse<IAsset>;
   return ret.data;
+}
+
+export async function fetchAssetDetail(
+  assetId: string | number
+): Promise<IAsset> {
+  const instance = new Request({
+    path: `/api/project/asset/detail/${assetId}`,
+    method: 'GET',
+  });
+  const res = JSON.parse(
+    await instance.makeRequest()
+  ) as ISuccessResponse<IAsset>;
+  return res.data;
 }
 
 export async function curl(

@@ -1,10 +1,11 @@
-import { SourceControlResourceState } from 'vscode';
 import Command from './Command';
-import AssetSourceController from '../controllers/AssetSourceController';
+import AssetChangesViewProvider, {
+  IAssetChange,
+} from '../providers/viewData/AssetChangesViewProvider';
 
 export default class RemoveAssetChange extends Command {
   name: string = 'galacean.scm.remove';
-  callback(resourceState: SourceControlResourceState) {
-    AssetSourceController.instance.removeStagedChange(resourceState);
+  callback(change: IAssetChange) {
+    AssetChangesViewProvider.instance.removeStagedChange(change);
   }
 }

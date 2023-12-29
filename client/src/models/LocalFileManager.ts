@@ -82,8 +82,10 @@ export default class LocalFileManager {
       mkdirSync(assetMetaDirPath, { recursive: true });
     }
 
-    writeFileSync(assetMetaPath, JSON.stringify(asset.localMeta));
-    if (localSync) writeFileSync(asset.localPath, asset.content);
+    if (localSync) {
+      writeFileSync(assetMetaPath, JSON.stringify(asset.localMeta));
+      writeFileSync(asset.localPath, asset.content);
+    }
   }
 
   /** @returns absolute path list */

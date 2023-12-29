@@ -2,7 +2,7 @@
   "name": "galacean",
   "displayName": "Galacean VSCode Extension",
   "description": "VSCode tool plugin for galacean",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": "Sway007",
   "publisher": "Galacean",
   "license": "MIT",
@@ -22,7 +22,11 @@
         "id": "shaderlab",
         "extensions": [
           ".shader"
-        ]
+        ],
+        "icon": {
+          "light": "./client/res/icons/shader.svg",
+          "dark": "./client/res/icons/shader.svg"
+        }
       }
     ],
     "grammars": [
@@ -50,6 +54,10 @@
     "views": {
       "galacean-explorer": [
         {
+          "id": "asset-changes",
+          "name": "Changes"
+        },
+        {
           "id": "project-list",
           "name": "Project List"
         }
@@ -61,35 +69,28 @@
           "command": "galacean.pull.project_list",
           "when": "view == project-list",
           "group": "navigation"
-        }
-      ],
-      "scm/title": [
-        {
-          "command": "galacean.pull.projectAssets",
-          "when": "scmProvider == galacean",
-          "group": "navigation"
         },
         {
-          "when": "scmProvider == galacean",
           "command": "galacean.scm.push",
+          "when": "view == asset-changes",
           "group": "navigation"
         }
       ],
-      "scm/resourceState/context": [
+      "view/item/context": [
         {
           "command": "galacean.scm.add",
           "group": "inline",
-          "when": "scmProvider == galacean && scmResourceGroup == change"
+          "when": "view == asset-changes && viewItem == change"
         },
         {
           "command": "galacean.scm.remove",
           "group": "inline",
-          "when": "scmProvider == galacean &&scmResourceGroup == staged"
+          "when": "view == asset-changes && viewItem == stagedChange"
         },
         {
           "command": "galacean.scm.restore",
           "group": "inline",
-          "when": "scmProvider == galacean && scmResourceGroup == change"
+          "when": "view == asset-changes && viewItem == change"
         }
       ]
     },
@@ -168,7 +169,8 @@
     "install": "cd ./client && npm install && cd ../server && npm install && cd ..",
     "build": "webpack",
     "clear": "rm -rf ./client/out/* ./server/out/*",
-    "swipe": "rm -rf ~/.galacean ~/galacean"
+    "swipe": "rm -rf ~/.galacean ~/galacean",
+    "test": "vscode-test"
   },
   "activationEvents": [
     "onLanguage:shaderlab",
@@ -177,6 +179,8 @@
   "devDependencies": {
     "@types/node": "^20.8.7",
     "@types/vscode": "1.65.0",
+    "@vscode/test-cli": "^0.0.4",
+    "@vscode/test-electron": "^2.3.8",
     "path-browserify": "^1.0.1",
     "ts-loader": "^9.5.0",
     "webpack": "^5.89.0",

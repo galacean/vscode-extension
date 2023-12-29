@@ -6,7 +6,8 @@ import UserContext from './UserContext';
 import UIController from '../controllers/UIController';
 import ProjectListViewProvider from '../providers/viewData/ProjectListViewProvider';
 import Project from '../models/Project';
-import { basename } from 'path';
+import { basename, join } from 'path';
+import { existsSync } from 'fs';
 
 export default class HostContext {
   private static _singleton: HostContext;
@@ -46,10 +47,7 @@ export default class HostContext {
     if (!workspace.workspaceFolders) return;
 
     const workspaceRoot = workspace.workspaceFolders[0].uri;
-    const file = await workspace.fs.stat(
-      Uri.joinPath(workspaceRoot, Project._metaDirName)
-    );
-    if (!file) return;
+    if (!existsSync(join(workspaceRoot.path, Project._metaDirName))) return;
 
     const projectId = basename(workspaceRoot.path);
     return projectId;

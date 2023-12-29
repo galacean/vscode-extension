@@ -5,7 +5,7 @@ import HostContext from '../context/HostContext';
 import { promises as fsPromise, mkdirSync } from 'fs';
 import { fetchProjectDetail } from '../utils/request';
 import { pick } from '../utils';
-import AssetSourceController from '../controllers/AssetSourceController';
+import AssetChangesViewProvider from '../providers/viewData/AssetChangesViewProvider';
 
 export default class Project {
   static assetTypes = ['Shader', 'script'];
@@ -21,6 +21,9 @@ export default class Project {
   readonly data: IProject;
 
   private _allAssets?: Asset[];
+  get allAssets() {
+    return this._allAssets;
+  }
   set allAssets(list: Asset[]) {
     this._allAssets = list;
   }
@@ -48,6 +51,7 @@ export default class Project {
     if (LocalFileManager.existProject(this)) {
       await this.initAssetsFromLocal();
     } else {
+      mkdirSync(this.getLocalPath(), { recursive: true });
       await this.updateAssetsFromServer();
     }
   }
@@ -73,16 +77,11 @@ export default class Project {
 
   /** update local meta and pull assets */
   async updateAssetsFromServer(localSync = true) {
-    if (AssetSourceController.instance.stagedChanges.length > 0) {
+    if (AssetChangesViewProvider.instance.stagedChanges.length > 0) {
       throw 'Staged asset changes exist.';
     }
 
     await this.pullAssets();
-    mkdirSync(this.getLocalPath(), { recursive: true });
-    for (const asset of this.assets) {
-      await LocalFileManager.updateAsset(asset, localSync);
-      AssetSourceController.instance.inspectAsset(asset);
-    }
     LocalFileManager.updateProjectPkgJson(HostContext.userId, this);
   }
 
@@ -101,7 +100,7 @@ export default class Project {
   private async pullAssets() {
     console.log('pulling data', this.data.id, this.data.name);
     const projectData = await fetchProjectDetail(this.data.id.toString());
-    this._allAssets = projectData.assets.map((item) => new Asset(item));
+    this._allAssets = projectData.assets.map((item) => new Asset(item, this));
 
     Object.assign(this.data, pick(projectData, Project.MetaKeys));
     HostContext.userContext.updateUserProjectListMeta();
@@ -119,17 +118,16 @@ export default class Project {
         assetMetaPathList.map(async (path) => {
           const content = await fsPromise.readFile(path);
           const meta = JSON.parse(content.toString()) as IAssetMeta;
-          const asset = new Asset(meta);
+          const asset = new Asset(meta, this);
 
           asset.setLocalPath(path);
 
-          await asset.init();
+          await asset.init(false);
           return asset;
         })
       ))
     );
     this._assetsInitialized = true;
-    // AssetSourceController.instance.initChanges(this);
   }
 
   private getLocalAssetMeta() {
@@ -138,35 +136,20 @@ export default class Project {
     });
   }
 
-  /**
-   * init local path and content
-   */
   private async _initAssets() {
     if (!this._allAssets) {
       throw 'no assets in project';
     }
     this.assets.length = 0;
 
-    const tmpMap = new Map<string, Asset>();
-    for (const asset of this._allAssets) {
-      tmpMap.set(asset.id, asset);
-    }
-    const getParentPathPrefix = (asset: Asset) => {
-      if (asset._pathPrefix.length > 0) return asset._pathPrefix;
-      if (asset.data.parentId) {
-        const parent = tmpMap.get(asset.data.parentId);
-        getParentPathPrefix(parent);
-        asset._pathPrefix.unshift(...parent._pathPrefix, parent.data.name);
-      }
-    };
+    await Promise.all(
+      this._allAssets.map(async (item) => {
+        if (!Project.assetTypes.includes(item.type)) return;
 
-    for (const asset of this._allAssets) {
-      if (!Project.assetTypes.includes(asset.type)) continue;
-
-      getParentPathPrefix(asset);
-      asset.initLocalPath();
-      this.assets.push(asset as any);
-    }
-    await Promise.all(this.assets.map((item) => item.init()));
+        item.initLocalPath();
+        await item.init();
+        this.assets.push(item);
+      })
+    );
   }
 }

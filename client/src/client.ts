@@ -5,6 +5,7 @@ import {
   commands,
   window,
   StatusBarAlignment,
+  workspace,
 } from 'vscode';
 import {
   LanguageClient,
@@ -12,7 +13,7 @@ import {
   ServerOptions,
   TransportKind,
 } from 'vscode-languageclient/node';
-import { SHADER_LAG_ID } from './constants';
+import { GALACEAN_ASSET_SCHEMA, SHADER_LAG_ID } from './constants';
 import { FormatterProvider } from './providers/Formatter';
 import { EditorPropertiesCompletionProvider } from './providers/EditorPropertiesCompletionProvider';
 import { Commands } from './commands';
@@ -22,7 +23,9 @@ import ProjectListViewProvider from './providers/viewData/ProjectListViewProvide
 import Project from './models/Project';
 import SimpleCompletionItemProvider from './providers/CompletionProvider';
 import LocalFileManager from './models/LocalFileManager';
-import AssetSourceController from './controllers/AssetSourceController';
+import URIHandler from './providers/URIHandler';
+import AssetChangesViewProvider from './providers/viewData/AssetChangesViewProvider';
+import { AssetOriginContentProvider } from './providers/AssetOriginContentProvider';
 
 let _singleton: Client;
 const selector = { language: 'shaderlab' };
@@ -78,6 +81,7 @@ export default class Client {
             await LocalFileManager.readUserProjectListFromLocal();
         }
 
+        context.subscriptions.push(AssetChangesViewProvider.instance.fsWatcher);
         // opened project
         const openedProjectId = await HostContext.isInGalaceanProject();
         if (openedProjectId) {
@@ -86,7 +90,7 @@ export default class Client {
             await project.initAssets();
             userContext.openedProject = project;
 
-            AssetSourceController.instance.initChanges();
+            AssetChangesViewProvider.instance.initChanges();
           }
         }
       }
@@ -124,7 +128,7 @@ export default class Client {
   }
 
   private initViews(context: ExtensionContext) {
-    AssetSourceController.create(context);
+    // AssetSourceController.create(context);
     const statusBar = window.createStatusBarItem(StatusBarAlignment.Left, 100);
     const projectListView = window.createTreeView('project-list', {
       treeDataProvider: ProjectListViewProvider.instance,
@@ -159,6 +163,22 @@ export default class Client {
       languages.registerCompletionItemProvider(
         selector,
         new SimpleCompletionItemProvider()
+      )
+    );
+
+    context.subscriptions.push(window.registerUriHandler(new URIHandler()));
+
+    context.subscriptions.push(
+      window.registerTreeDataProvider(
+        'asset-changes',
+        AssetChangesViewProvider.instance
+      )
+    );
+
+    context.subscriptions.push(
+      workspace.registerTextDocumentContentProvider(
+        GALACEAN_ASSET_SCHEMA,
+        new AssetOriginContentProvider()
       )
     );
   }

@@ -1,20 +1,21 @@
-import { SourceControlResourceState, workspace } from 'vscode';
+import { Uri, workspace } from 'vscode';
 import Command from './Command';
 import HostContext from '../context/HostContext';
-import { writeFileSync, promises as fsPromise } from 'fs';
+import { writeFileSync } from 'fs';
+import { IAssetChange } from '../providers/viewData/AssetChangesViewProvider';
 
 export default class RestoreChanges extends Command {
   name: string = 'galacean.scm.restore';
 
-  callback(resourceState: SourceControlResourceState) {
+  callback(change: IAssetChange) {
     const openedProject = HostContext.userContext.openedProject;
-    const assetUri = resourceState.resourceUri;
+    const assetPath = change.path;
 
-    const asset = openedProject.findAssetByLocalPath(assetUri.path);
+    const asset = openedProject.findAssetByLocalPath(assetPath);
     if (asset) {
-      writeFileSync(assetUri.path, asset.content);
+      writeFileSync(assetPath, asset.content);
     } else {
-      workspace.fs.delete(assetUri);
+      workspace.fs.delete(Uri.file(assetPath));
     }
   }
 }

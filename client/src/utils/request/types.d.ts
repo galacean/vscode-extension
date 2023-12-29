@@ -4,7 +4,7 @@ interface IFailedResponse<T = any> {
   data?: T;
   success: false;
   message?: string;
-  errCode?: string;
+  errCode?: number;
 }
 
 interface ISuccessResponse<T> {
@@ -80,3 +80,15 @@ interface IAsset extends BaseModel {
 }
 
 type IProjectDetail = IProject & { assets: IAsset[] };
+
+interface IProjectAssetCreate {
+  name: string;
+  type: number;
+  uuid: string;
+  /** 父资产uuid */
+  parentId?: string;
+  meta: string;
+  url?: string;
+  projectId: number;
+  size?: number;
+}

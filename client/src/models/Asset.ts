@@ -36,11 +36,11 @@ export default class Asset {
 
   private _project: Project;
   get project() {
-    if (!this._project) {
-      this._project = HostContext.userContext.projectList.find(
-        (item) => item.data.id === this.data.projectId
-      );
-    }
+    // if (!this._project) {
+    //   this._project = HostContext.userContext.projectList.find(
+    //     (item) => item.data.id === this.data.projectId
+    //   );
+    // }
     return this._project;
   }
 
@@ -89,8 +89,9 @@ export default class Asset {
     });
   }
 
-  constructor(data: IAsset) {
+  constructor(data: IAsset, project: Project) {
     this._data = data;
+    this._project = project;
     this._meta = JSON.parse(data.meta);
   }
 
@@ -104,16 +105,21 @@ export default class Asset {
     this._data = data;
     this._meta = JSON.parse(data.meta);
     await this.init();
-    LocalFileManager.updateAsset(this);
   }
 
-  async init() {
+  /**
+   * init local path and content
+   */
+  async init(localSync = true) {
     if (this.data.url) {
       this._content = await curl(this.data.url);
     }
+    LocalFileManager.updateAsset(this, localSync);
   }
 
   initLocalPath() {
+    Asset.getParentPathPrefix(this);
+
     this._localMetaPath = join(
       this.project.getLocalMetaDirPath(),
       ...this._pathPrefix,
@@ -124,5 +130,18 @@ export default class Asset {
       ...this._pathPrefix,
       `${this.filename}${this.extension}`
     );
+  }
+
+  private static getParentPathPrefix(asset: Asset) {
+    if (asset._pathPrefix.length) return asset._pathPrefix;
+    if (asset.data.parentId) {
+      const parent = asset.project.allAssets.find(
+        (item) => item.data.uuid.toString() === asset.data.parentId.toString()
+      );
+      if (parent) {
+        Asset.getParentPathPrefix(parent);
+        asset._pathPrefix.unshift(...parent._pathPrefix, parent.data.name);
+      }
+    }
   }
 }

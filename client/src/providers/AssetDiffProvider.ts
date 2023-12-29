@@ -4,8 +4,8 @@ import {
   QuickDiffProvider,
   Uri,
 } from 'vscode';
-import { ASSET_EXT, ASSET_TYPE, GALACEAN_ASSET_SCHEMA } from '../constants';
-import { basename, extname } from 'path';
+import { ASSET_EXT, GALACEAN_ASSET_SCHEMA } from '../constants';
+import { extname } from 'path';
 import HostContext from '../context/HostContext';
 
 export default class AssetDiffProvider implements QuickDiffProvider {
