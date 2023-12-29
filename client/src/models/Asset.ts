@@ -114,7 +114,9 @@ export default class Asset {
     if (this.data.url) {
       this._content = await curl(this.data.url);
     }
-    LocalFileManager.updateAsset(this, localSync);
+    if (localSync) {
+      LocalFileManager.updateAsset(this, localSync);
+    }
   }
 
   initLocalPath() {
