@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "prettydiff": "^101.2.6",
-    "vscode-languageclient": "^8.1.0"
+    "vscode-languageclient": "^8.1.0",
+    "form-data": "^4.0.0"
   },
   "devDependencies": {
     "@types/vscode": "^1.75.1",

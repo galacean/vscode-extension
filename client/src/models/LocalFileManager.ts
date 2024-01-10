@@ -11,6 +11,8 @@ import {
 import Project from './Project';
 import Asset from './Asset';
 import { RES_DIR_PATH, SERVER_HOST } from '../constants';
+import { curl } from '../utils';
+import FileWatcher from './FileWatcher';
 
 export default class LocalFileManager {
   static _singleton: LocalFileManager;
@@ -70,7 +72,7 @@ export default class LocalFileManager {
     writeFileSync(pkgJsonPath, JSON.stringify(pkgInfo, null, 2));
   }
 
-  static updateAsset(asset: Asset, localSync = true) {
+  static async updateAsset(asset: Asset) {
     const assetDirPath = dirname(asset.localPath);
 
     if (!existsSync(assetDirPath)) {
@@ -82,10 +84,10 @@ export default class LocalFileManager {
       mkdirSync(assetMetaDirPath, { recursive: true });
     }
 
-    if (localSync) {
-      writeFileSync(assetMetaPath, JSON.stringify(asset.localMeta));
-      writeFileSync(asset.localPath, asset.content);
-    }
+    writeFileSync(assetMetaPath, JSON.stringify(asset.localMeta));
+    const content = await curl(asset.data.url);
+    FileWatcher.addIgnoreFile(asset.localPath);
+    writeFileSync(asset.localPath, content);
   }
 
   /** @returns absolute path list */

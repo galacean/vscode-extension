@@ -1,5 +1,5 @@
 import { SERVER_HOST, SERVER_PORT } from '../constants';
-import { StatusBarItem, TreeView, Uri, workspace } from 'vscode';
+import { StatusBarItem, workspace } from 'vscode';
 import ContextUtils from './ContextUtils';
 import RequestContext from './RequestContext';
 import UserContext from './UserContext';
@@ -12,8 +12,8 @@ import { existsSync } from 'fs';
 export default class HostContext {
   private static _singleton: HostContext;
 
-  static init(statusBar: StatusBarItem) {
-    this._singleton = new HostContext(statusBar);
+  static init(statusBar: StatusBarItem, assetSyncStatusBar: StatusBarItem) {
+    this._singleton = new HostContext(statusBar, assetSyncStatusBar);
   }
 
   static get instance() {
@@ -66,7 +66,10 @@ export default class HostContext {
   requestContext: RequestContext;
   userContext: UserContext;
 
-  private constructor(statusBar: StatusBarItem) {
+  private constructor(
+    statusBar: StatusBarItem,
+    assetSyncStatusBar: StatusBarItem
+  ) {
     this.envConfig = ContextUtils.loadEnv();
     this.requestContext = new RequestContext(
       this.envConfig.cookies,
@@ -74,6 +77,7 @@ export default class HostContext {
     );
     const uiContext = new UIController(
       statusBar,
+      assetSyncStatusBar,
       ProjectListViewProvider.instance
     );
     this.userContext = new UserContext(uiContext);

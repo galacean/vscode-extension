@@ -2,7 +2,6 @@ import Command from './Command';
 import HostContext from '../context/HostContext';
 import { Uri, commands, window } from 'vscode';
 import { EViewID } from '../constants';
-import AssetChangesViewProvider from '../providers/viewData/AssetChangesViewProvider';
 
 export default class OpenProject extends Command {
   static command = 'galacean.open.project';
@@ -22,8 +21,6 @@ export default class OpenProject extends Command {
     if (!project) {
       throw 'project not found';
     }
-
-    AssetChangesViewProvider.instance.clear();
 
     if (!project.assetsInitialized) {
       await window.withProgress(

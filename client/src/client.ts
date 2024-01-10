@@ -5,7 +5,6 @@ import {
   commands,
   window,
   StatusBarAlignment,
-  workspace,
 } from 'vscode';
 import {
   LanguageClient,
@@ -13,7 +12,7 @@ import {
   ServerOptions,
   TransportKind,
 } from 'vscode-languageclient/node';
-import { GALACEAN_ASSET_SCHEMA, SHADER_LAG_ID } from './constants';
+import { SHADER_LAG_ID } from './constants';
 import { FormatterProvider } from './providers/Formatter';
 import { EditorPropertiesCompletionProvider } from './providers/EditorPropertiesCompletionProvider';
 import { Commands } from './commands';
@@ -24,8 +23,8 @@ import Project from './models/Project';
 import SimpleCompletionItemProvider from './providers/CompletionProvider';
 import LocalFileManager from './models/LocalFileManager';
 import URIHandler from './providers/URIHandler';
-import AssetChangesViewProvider from './providers/viewData/AssetChangesViewProvider';
-import { AssetOriginContentProvider } from './providers/AssetOriginContentProvider';
+import FileWatcher from './models/FileWatcher';
+import PullProjectAssets from './commands/PullProjectAssets';
 
 let _singleton: Client;
 const selector = { language: 'shaderlab' };
@@ -81,7 +80,7 @@ export default class Client {
             await LocalFileManager.readUserProjectListFromLocal();
         }
 
-        context.subscriptions.push(AssetChangesViewProvider.instance.fsWatcher);
+        context.subscriptions.push(FileWatcher.fsWatcher);
         // opened project
         const openedProjectId = await HostContext.isInGalaceanProject();
         if (openedProjectId) {
@@ -89,13 +88,12 @@ export default class Client {
           if (project) {
             await project.initAssets();
             userContext.openedProject = project;
-
-            AssetChangesViewProvider.instance.initChanges();
           }
         }
       }
     );
 
+    FileWatcher.init();
     return true;
   }
 
@@ -128,15 +126,21 @@ export default class Client {
   }
 
   private initViews(context: ExtensionContext) {
-    // AssetSourceController.create(context);
     const statusBar = window.createStatusBarItem(StatusBarAlignment.Left, 100);
+    const assetSyncStatusBar = window.createStatusBarItem(
+      StatusBarAlignment.Left,
+      99
+    );
+    assetSyncStatusBar.command = PullProjectAssets.command;
+    assetSyncStatusBar.hide();
+
     const projectListView = window.createTreeView('project-list', {
       treeDataProvider: ProjectListViewProvider.instance,
       canSelectMany: false,
     });
     context.subscriptions.push(projectListView);
 
-    HostContext.init(statusBar);
+    HostContext.init(statusBar, assetSyncStatusBar);
     context.subscriptions.push(statusBar);
   }
 
@@ -167,19 +171,5 @@ export default class Client {
     );
 
     context.subscriptions.push(window.registerUriHandler(new URIHandler()));
-
-    context.subscriptions.push(
-      window.registerTreeDataProvider(
-        'asset-changes',
-        AssetChangesViewProvider.instance
-      )
-    );
-
-    context.subscriptions.push(
-      workspace.registerTextDocumentContentProvider(
-        GALACEAN_ASSET_SCHEMA,
-        new AssetOriginContentProvider()
-      )
-    );
   }
 }

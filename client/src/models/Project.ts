@@ -1,11 +1,10 @@
-import { basename, join } from 'path';
+import { join } from 'path';
 import Asset from './Asset';
 import LocalFileManager from './LocalFileManager';
 import HostContext from '../context/HostContext';
 import { promises as fsPromise, mkdirSync } from 'fs';
 import { fetchProjectDetail } from '../utils/request';
 import { pick } from '../utils';
-import AssetChangesViewProvider from '../providers/viewData/AssetChangesViewProvider';
 
 export default class Project {
   static assetTypes = ['Shader', 'script'];
@@ -76,11 +75,7 @@ export default class Project {
   }
 
   /** update local meta and pull assets */
-  async updateAssetsFromServer(localSync = true) {
-    if (AssetChangesViewProvider.instance.stagedChanges.length > 0) {
-      throw 'Staged asset changes exist.';
-    }
-
+  async updateAssetsFromServer() {
     await this.pullAssets();
     LocalFileManager.updateProjectPkgJson(HostContext.userId, this);
   }
@@ -119,10 +114,8 @@ export default class Project {
           const content = await fsPromise.readFile(path);
           const meta = JSON.parse(content.toString()) as IAssetMeta;
           const asset = new Asset(meta, this);
-
           asset.setLocalPath(path);
 
-          await asset.init(false);
           return asset;
         })
       ))
@@ -147,7 +140,7 @@ export default class Project {
         if (!Project.assetTypes.includes(item.type)) return;
 
         item.initLocalPath();
-        await item.init();
+        await LocalFileManager.updateAsset(item);
         this.assets.push(item);
       })
     );

@@ -54,10 +54,6 @@
     "views": {
       "galacean-explorer": [
         {
-          "id": "asset-changes",
-          "name": "Changes"
-        },
-        {
           "id": "project-list",
           "name": "Project List"
         }
@@ -69,30 +65,9 @@
           "command": "galacean.pull.project_list",
           "when": "view == project-list",
           "group": "navigation"
-        },
-        {
-          "command": "galacean.scm.push",
-          "when": "view == asset-changes",
-          "group": "navigation"
         }
       ],
-      "view/item/context": [
-        {
-          "command": "galacean.scm.add",
-          "group": "inline",
-          "when": "view == asset-changes && viewItem == change"
-        },
-        {
-          "command": "galacean.scm.remove",
-          "group": "inline",
-          "when": "view == asset-changes && viewItem == stagedChange"
-        },
-        {
-          "command": "galacean.scm.restore",
-          "group": "inline",
-          "when": "view == asset-changes && viewItem == change"
-        }
-      ]
+      "view/item/context": []
     },
     "viewsWelcome": [
       {
@@ -132,30 +107,6 @@
         "title": "Pull project assets",
         "category": "Galacean",
         "icon": "$(cloud-download)"
-      },
-      {
-        "command": "galacean.scm.push",
-        "title": "Push asset changes",
-        "category": "Galacean",
-        "icon": "$(cloud-upload)"
-      },
-      {
-        "command": "galacean.scm.add",
-        "title": "Stage Changes",
-        "category": "Galacean",
-        "icon": "$(diff-review-insert)"
-      },
-      {
-        "command": "galacean.scm.remove",
-        "title": "Unstage Changes",
-        "category": "Galacean",
-        "icon": "$(diff-review-remove)"
-      },
-      {
-        "command": "galacean.scm.restore",
-        "title": "Restore Changes",
-        "category": "Galacean",
-        "icon": "$(discard)"
       }
     ]
   },
@@ -170,7 +121,8 @@
     "build": "webpack",
     "clear": "rm -rf ./client/out/* ./server/out/*",
     "swipe": "rm -rf ~/.galacean ~/galacean",
-    "test": "vscode-test"
+    "test": "vscode-test",
+    "release": "standard-version && vsce package"
   },
   "activationEvents": [
     "onLanguage:shaderlab",
@@ -182,11 +134,9 @@
     "@vscode/test-cli": "^0.0.4",
     "@vscode/test-electron": "^2.3.8",
     "path-browserify": "^1.0.1",
+    "standard-version": "^9.5.0",
     "ts-loader": "^9.5.0",
     "webpack": "^5.89.0",
     "webpack-cli": "^5.1.4"
-  },
-  "dependencies": {
-    "form-data": "^4.0.0"
   }
 }

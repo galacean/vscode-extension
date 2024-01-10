@@ -1,5 +1,5 @@
 import { readFileSync } from 'fs';
-import path = require('path');
+import * as path from 'path';
 import { RES_DIR_PATH } from '../constants';
 
 interface IEngineEnum {

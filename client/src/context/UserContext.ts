@@ -31,6 +31,7 @@ export default class UserContext {
 
   set openedProject(project: Project) {
     this._openedProject = project;
+    this._uiController.showSyncStatusBar(false);
   }
 
   get userInfo() {
@@ -49,6 +50,10 @@ export default class UserContext {
     this._projectList = list;
     this.updateUserProjectListMeta();
     this._uiController.updateProjectListView();
+  }
+
+  get uiController() {
+    return this._uiController;
   }
 
   constructor(UIController: UIController) {

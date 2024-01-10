@@ -4,6 +4,7 @@ import HostContext from '../../context/HostContext';
 import * as FormData from 'form-data';
 import Asset from '../../models/Asset';
 import { commands, window } from 'vscode';
+import { readFileSync } from 'fs';
 
 export default class Request {
   options: https.RequestOptions;
@@ -170,11 +171,16 @@ export async function fetchProjectDetail(
   return res.data;
 }
 
-export async function updateAsset(asset: Asset, content: Buffer) {
+export async function updateAsset(asset: Asset, _content?: Buffer) {
   const instance = new Request({
     path: '/api/project/asset/form/update',
     method: 'POST',
   });
+  let content = _content;
+  if (!content) {
+    content = readFileSync(asset.localPath);
+  }
+
   const form = new FormData();
   form.append('id', asset.data.id);
   form.append('projectId', asset.project.data.id);
@@ -183,6 +189,26 @@ export async function updateAsset(asset: Asset, content: Buffer) {
   const ret = JSON.parse(res) as ISuccessResponse<IAsset>;
   return ret.data;
 }
+
+export async function deleteAsset(asset: Asset) {
+  const instance = new Request({
+    path: '/api/project/asset/delete',
+    method: 'DELETE',
+  });
+
+  return instance.makeRequest({
+    ids: [asset.id],
+    projectId: asset.data.projectId,
+  });
+}
+
+// TODO: 资产创建涉及到设置资产meta相关逻辑，需要明确规则
+// export async function createAsset(filepath: string) {
+//   const instance = new Request({path: '/api/project/asset/form/create', method: 'POST'})
+
+//   const form = new FormData();
+
+// }
 
 export async function fetchAssetDetail(
   assetId: string | number

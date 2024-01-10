@@ -1,11 +1,11 @@
-import { window } from 'vscode';
+import { ProgressLocation, window } from 'vscode';
 import Command from './Command';
-import { EViewID } from '../constants';
 import HostContext from '../context/HostContext';
 
 let syncing = false;
 
 export default class PullProjectAssets extends Command {
+  static command = 'galacean.pull.projectAssets';
   name: string = 'galacean.pull.projectAssets';
 
   async callback() {
@@ -16,11 +16,12 @@ export default class PullProjectAssets extends Command {
     if (!project || syncing) return;
 
     syncing = true;
+    HostContext.userContext.uiController.showSyncStatusBar(true);
     window.withProgress(
-      { location: { viewId: EViewID.SCM }, title: 'syncing' },
+      { location: ProgressLocation.Notification, title: 'syncing' },
       async () => {
         await project
-          .updateAssetsFromServer(false)
+          .updateAssetsFromServer()
           .then(() => {
             window.showInformationMessage(
               'Successfully pulled the project asset list'
@@ -31,6 +32,7 @@ export default class PullProjectAssets extends Command {
           });
 
         syncing = false;
+        HostContext.userContext.uiController.showSyncStatusBar(false);
       }
     );
   }

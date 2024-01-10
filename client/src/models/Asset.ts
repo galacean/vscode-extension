@@ -1,7 +1,5 @@
 import { join, parse } from 'path';
-import { curl } from '../utils/request';
-import HostContext from '../context/HostContext';
-import { ASSET_TYPE, GALACEAN_ASSET_SCHEMA } from '../constants';
+import { ASSET_TYPE } from '../constants';
 import Project from './Project';
 import { Uri } from 'vscode';
 import LocalFileManager from './LocalFileManager';
@@ -11,7 +9,7 @@ export default class Asset {
   get data() {
     return this._data;
   }
-  private _content: string;
+  // private _content: string;
   private _meta: any;
 
   /** 相对项目文件夹路径 */
@@ -36,16 +34,7 @@ export default class Asset {
 
   private _project: Project;
   get project() {
-    // if (!this._project) {
-    //   this._project = HostContext.userContext.projectList.find(
-    //     (item) => item.data.id === this.data.projectId
-    //   );
-    // }
     return this._project;
-  }
-
-  get content() {
-    return this._content;
   }
 
   private _filename: string;
@@ -82,13 +71,6 @@ export default class Asset {
     return Uri.file(this.localPath);
   }
 
-  get galaceanUri() {
-    return Uri.from({
-      scheme: GALACEAN_ASSET_SCHEMA,
-      path: this.data.id.toString(),
-    });
-  }
-
   constructor(data: IAsset, project: Project) {
     this._data = data;
     this._project = project;
@@ -99,24 +81,6 @@ export default class Asset {
     this._localMetaPath = metaPath;
     const trimRegex = new RegExp(`(\/${Project._metaDirName}|\.meta)`, 'g');
     this._localPath = metaPath.replace(trimRegex, '');
-  }
-
-  async updateData(data: IAsset) {
-    this._data = data;
-    this._meta = JSON.parse(data.meta);
-    await this.init();
-  }
-
-  /**
-   * init local path and content
-   */
-  async init(localSync = true) {
-    if (this.data.url) {
-      this._content = await curl(this.data.url);
-    }
-    if (localSync) {
-      LocalFileManager.updateAsset(this, localSync);
-    }
   }
 
   initLocalPath() {

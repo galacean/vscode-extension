@@ -10,6 +10,7 @@ import HostContext from '../context/HostContext';
 import { fetchAssetDetail, fetchProjectDetail } from '../utils';
 import Project from '../models/Project';
 import Asset from '../models/Asset';
+import LocalFileManager from '../models/LocalFileManager';
 
 export default class URIHandler implements UriHandler {
   handleUri(uri: Uri): ProviderResult<void> {
@@ -46,7 +47,7 @@ export default class URIHandler implements UriHandler {
       asset = new Asset(assetData, project);
 
       asset.initLocalPath();
-      await asset.init();
+      await LocalFileManager.updateAsset(asset);
     }
     const doc = await workspace.openTextDocument(asset.localUri);
     window.showTextDocument(doc);
