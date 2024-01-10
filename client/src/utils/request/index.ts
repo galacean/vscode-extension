@@ -147,12 +147,17 @@ export async function fetchUserInfo(): Promise<IUserInfo> {
   return JSON.parse(res).data;
 }
 
-export async function fetchProjectList(): Promise<IProject[]> {
-  const instance = new Request({ path: '/api/project/list?pageSize=100' });
+export async function fetchProjectList(
+  pageNo: number,
+  pageSize: number
+): Promise<IPaginationResponse<IProject>> {
+  const instance = new Request({
+    path: `/api/project/list?pageSize=${pageSize}&pageNo=${pageNo}`,
+  });
   const res = JSON.parse(await instance.makeRequest()) as ISuccessResponse<
     IPaginationResponse<IProject>
   >;
-  return res.data.list;
+  return res.data;
 }
 
 export async function fetchProjectDetail(

@@ -1,5 +1,6 @@
 import Command from './Command';
 import Login from './Login';
+import MoreProjects from './MoreProjects';
 import OpenProject from './OpenProject';
 import PullProjectAssets from './PullProjectAssets';
 import PullProjectList from './PullProjectList';
@@ -17,4 +18,5 @@ export const Commands: Command[] = [
   new StageAssetChange(),
   new PushAssetChanges(),
   new RestoreChanges(),
+  new MoreProjects(),
 ];

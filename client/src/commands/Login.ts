@@ -44,8 +44,8 @@ export default class Login extends Command {
     window.showInformationMessage('login success');
 
     HostContext.userContext.userInfo = userInfo;
-    HostContext.userContext.projectList = (await fetchProjectList()).map(
-      (item) => new Project(item)
-    );
+    HostContext.userContext.projectList = (
+      await fetchProjectList(0, 10)
+    ).list.map((item) => new Project(item));
   }
 }

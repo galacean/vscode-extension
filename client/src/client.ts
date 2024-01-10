@@ -72,8 +72,8 @@ export default class Client {
 
         // project list
         if (!LocalFileManager.existUserProjectList()) {
-          const projectList = await fetchProjectList();
-          userContext.projectList = projectList.map(
+          const projectList = await fetchProjectList(0, 10);
+          userContext.projectList = projectList.list.map(
             (item) => new Project(item)
           );
         } else {

@@ -1,9 +1,9 @@
-import { commands, window } from 'vscode';
+import { window } from 'vscode';
 import UIController from '../controllers/UIController';
 import Project from '../models/Project';
 import LocalFileManager from '../models/LocalFileManager';
 import { join } from 'path';
-import { pick } from '../utils';
+import { fetchProjectList, pick } from '../utils';
 
 export default class UserContext {
   private _userInfo: IUserInfo;
@@ -16,6 +16,8 @@ export default class UserContext {
 
   private static _userInfoMetaFilename = '.user.meta';
   private static _projectListMetaFilename = '.projects.meta';
+
+  private static _projectPageSize = 10;
 
   set userInfo(info: IUserInfo) {
     this._userInfo = info;
@@ -88,6 +90,30 @@ export default class UserContext {
   getProjectById(projectId: string): Project | undefined {
     for (const project of this._projectList) {
       if (project.data.id.toString() === projectId) return project;
+    }
+  }
+
+  async fetchMoreProjectList() {
+    const pageNo = this._projectList
+      ? Math.floor(this._projectList.length / UserContext._projectPageSize)
+      : 0;
+    const res = await fetchProjectList(pageNo, UserContext._projectPageSize);
+    const projects = res.list.map((item) => new Project(item));
+
+    if (this._projectList?.length) {
+      this._projectList.splice(
+        pageNo * UserContext._projectPageSize,
+        res.list.length,
+        ...projects
+      );
+    } else {
+      this._projectList = projects;
+    }
+    this.updateUserProjectListMeta();
+    this._uiController.updateProjectListView();
+
+    if (this._projectList.length >= res.total) {
+      window.showInformationMessage('No more projects.');
     }
   }
 }
