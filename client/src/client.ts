@@ -5,6 +5,7 @@ import {
   commands,
   window,
   StatusBarAlignment,
+  ProgressLocation,
 } from 'vscode';
 import {
   LanguageClient,
@@ -25,6 +26,8 @@ import LocalFileManager from './models/LocalFileManager';
 import URIHandler from './providers/URIHandler';
 import FileWatcher from './models/FileWatcher';
 import PullProjectAssets from './commands/PullProjectAssets';
+import NpmInstall from './commands/NpmInstall';
+import { existsSync } from 'fs';
 
 let _singleton: Client;
 const selector = { language: 'shaderlab' };
@@ -60,7 +63,7 @@ export default class Client {
     if (!HostContext.instance.isLogin()) return false;
 
     await window.withProgress(
-      { location: { viewId: 'project-list' } },
+      { location: ProgressLocation.Notification },
       async () => {
         // user
         if (LocalFileManager.existUser()) {
@@ -88,6 +91,12 @@ export default class Client {
           if (project) {
             await project.initAssets();
             userContext.openedProject = project;
+
+            if (
+              !existsSync(path.join(project.getLocalPath(), 'node_modules'))
+            ) {
+              commands.executeCommand(NpmInstall.command);
+            }
           }
         }
       }
