@@ -23,7 +23,7 @@ export default class FileWatcher {
 
   private constructor() {
     this._fsWatcher = workspace.createFileSystemWatcher(
-      '**/{*,!node_modules,!.git,!.vscode}/*.{ts,shader}'
+      '**/{*,!node_modules,!.git,!.vscode}/*.{ts,gsl}'
     );
     this._fsWatcher.onDidChange(this.onChange.bind(this));
 

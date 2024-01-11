@@ -197,7 +197,7 @@ export async function deleteAsset(asset: Asset) {
   });
 
   return instance.makeRequest({
-    ids: [asset.id],
+    ids: [Number(asset.id)],
     projectId: asset.data.projectId,
   });
 }

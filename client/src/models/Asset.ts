@@ -1,5 +1,5 @@
 import { join, parse } from 'path';
-import { ASSET_TYPE } from '../constants';
+import { ASSET_EXT, ASSET_TYPE } from '../constants';
 import Project from './Project';
 import { Uri } from 'vscode';
 import LocalFileManager from './LocalFileManager';
@@ -53,14 +53,7 @@ export default class Asset {
   }
 
   get extension() {
-    switch (this.type) {
-      case 'Shader':
-        return '.shader';
-      case 'script':
-        return '.ts';
-      default:
-        throw `not support type: ${this.type}`;
-    }
+    return ASSET_EXT[this.type];
   }
 
   get localMeta(): IAssetMeta {

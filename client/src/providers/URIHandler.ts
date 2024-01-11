@@ -11,6 +11,7 @@ import { fetchAssetDetail, fetchProjectDetail } from '../utils';
 import Project from '../models/Project';
 import Asset from '../models/Asset';
 import LocalFileManager from '../models/LocalFileManager';
+import OpenProject from '../commands/OpenProject';
 
 export default class URIHandler implements UriHandler {
   handleUri(uri: Uri): ProviderResult<void> {
@@ -40,7 +41,7 @@ export default class URIHandler implements UriHandler {
   }
 
   async openProject(project: Project, assetId: string) {
-    await commands.executeCommand('galacean.open.project', project.data.id);
+    await commands.executeCommand(OpenProject.command, project.data.id);
     let asset = project.findAssetById(assetId);
     if (!asset) {
       const assetData = await fetchAssetDetail(assetId);

@@ -5,6 +5,7 @@ import HostContext from '../context/HostContext';
 import { promises as fsPromise, mkdirSync } from 'fs';
 import { fetchProjectDetail } from '../utils/request';
 import { pick } from '../utils';
+import { ASSET_EXT } from '../constants';
 
 export default class Project {
   static assetTypes = ['Shader', 'script'];
@@ -70,7 +71,7 @@ export default class Project {
   getLocalAssetFiles() {
     return LocalFileManager.readProjectFiles(this, {
       meta: false,
-      extensions: ['.shader', '.ts'],
+      extensions: Object.values(ASSET_EXT),
     });
   }
 

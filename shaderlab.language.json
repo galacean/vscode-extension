@@ -1,6 +1,5 @@
 {
   "scopeName": "source.shaderlab",
-  "fileTypes": ".shaderlab",
   "foldingStartMarker": "{s*$",
   "foldingStopMarker": "^s*}",
   "patterns": [
