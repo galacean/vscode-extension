@@ -12,6 +12,7 @@ import Project from '../models/Project';
 import Asset from '../models/Asset';
 import LocalFileManager from '../models/LocalFileManager';
 import OpenProject from '../commands/OpenProject';
+import { existsSync } from 'fs';
 
 export default class URIHandler implements UriHandler {
   handleUri(uri: Uri): ProviderResult<void> {
@@ -43,13 +44,14 @@ export default class URIHandler implements UriHandler {
   async openProject(project: Project, assetId: string) {
     await commands.executeCommand(OpenProject.command, project.data.id);
     let asset = project.findAssetById(assetId);
-    if (!asset) {
+    if (!asset || !existsSync(asset.localPath)) {
       const assetData = await fetchAssetDetail(assetId);
       asset = new Asset(assetData, project);
 
       asset.initLocalPath();
       await LocalFileManager.updateAsset(asset);
     }
+
     const doc = await workspace.openTextDocument(asset.localUri);
     window.showTextDocument(doc);
   }

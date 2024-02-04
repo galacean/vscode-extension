@@ -1,4 +1,10 @@
-import { FileSystemWatcher, Uri, window, workspace } from 'vscode';
+import {
+  FileSystemWatcher,
+  ProgressLocation,
+  Uri,
+  window,
+  workspace,
+} from 'vscode';
 import HostContext from '../context/HostContext';
 import { debounceAsync, deleteAsset, updateAsset } from '../utils';
 
@@ -45,9 +51,13 @@ export default class FileWatcher {
       // TODO: 资产创建涉及到设置资产meta相关逻辑，需要明确规则
     } else {
       // 更新
-      debouncedUpdate(asset).then(() => {
-        window.showInformationMessage(`update ${asset.fullName} success`);
-      });
+      window.withProgress(
+        { location: ProgressLocation.Notification, title: 'Syncing assets...' },
+        async () => {
+          await debouncedUpdate(asset);
+          window.showInformationMessage(`update ${asset.fullName} success`);
+        }
+      );
     }
   }
 

@@ -8,7 +8,7 @@ import { pick } from '../utils';
 import { ASSET_EXT } from '../constants';
 
 export default class Project {
-  static assetTypes = ['Shader', 'script'];
+  static assetTypes = ['Shader', 'script', 'ShaderFragment'];
   static _metaDirName = '.galacean';
   static MetaKeys: Array<keyof IProjectMeta> = [
     'id',

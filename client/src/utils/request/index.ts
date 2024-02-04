@@ -24,6 +24,7 @@ export default class Request {
       port: HostContext.serverPort,
       rejectUnauthorized: false,
       method: 'GET',
+      timeout: 3000,
       ...options,
     };
   }
