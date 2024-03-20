@@ -2,7 +2,7 @@
   "name": "galacean",
   "displayName": "Galacean VSCode Extension",
   "description": "VSCode tool plugin for galacean",
-  "version": "0.1.6",
+  "version": "0.1.8-1-shaderChunk-pre-fix-4",
   "author": "Sway007",
   "publisher": "Galacean",
   "license": "MIT",

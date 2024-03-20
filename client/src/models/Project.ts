@@ -5,10 +5,9 @@ import HostContext from '../context/HostContext';
 import { promises as fsPromise, mkdirSync } from 'fs';
 import { fetchProjectDetail } from '../utils/request';
 import { pick } from '../utils';
-import { ASSET_EXT } from '../constants';
+import { ASSET_EXT, ASSET_TYPE } from '../constants';
 
 export default class Project {
-  static assetTypes = ['Shader', 'script', 'ShaderFragment'];
   static _metaDirName = '.galacean';
   static MetaKeys: Array<keyof IProjectMeta> = [
     'id',
@@ -138,7 +137,7 @@ export default class Project {
 
     await Promise.all(
       this._allAssets.map(async (item) => {
-        if (!Project.assetTypes.includes(item.type)) return;
+        if (!ASSET_TYPE.includes(item.type)) return;
 
         item.initLocalPath();
         await LocalFileManager.updateAsset(item);
