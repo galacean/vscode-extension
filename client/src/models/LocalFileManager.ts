@@ -10,9 +10,8 @@ import {
 } from 'fs';
 import Project from './Project';
 import Asset from './Asset';
-import { RES_DIR_PATH, SERVER_HOST } from '../constants';
+import { EProjectAssetType, RES_DIR_PATH, SERVER_HOST } from '../constants';
 import { curl } from '../utils';
-import FileWatcher from './FileWatcher';
 
 export default class LocalFileManager {
   static _singleton: LocalFileManager;
@@ -69,25 +68,19 @@ export default class LocalFileManager {
     if (info?.other) {
       Object.assign(pkgInfo, info.other);
     }
-    writeFileSync(pkgJsonPath, JSON.stringify(pkgInfo, null, 2));
+    this.writeFile(pkgJsonPath, JSON.stringify(pkgInfo, null, 2));
   }
 
   static async updateAsset(asset: Asset) {
-    const assetDirPath = dirname(asset.localPath);
-
-    if (!existsSync(assetDirPath)) {
-      mkdirSync(assetDirPath, { recursive: true });
+    this.writeFile(asset.localMetaPath, JSON.stringify(asset.data));
+    if (asset.data.type !== EProjectAssetType.Directory) {
+      const content = await curl(asset.data.url);
+      this.writeFile(asset.localPath, content);
+    } else {
+      if (!existsSync(asset.localPath)) {
+        mkdirSync(asset.localPath, { recursive: true });
+      }
     }
-    const assetMetaPath = asset.localMetaPath;
-    const assetMetaDirPath = dirname(assetMetaPath);
-    if (!existsSync(assetMetaDirPath)) {
-      mkdirSync(assetMetaDirPath, { recursive: true });
-    }
-
-    writeFileSync(assetMetaPath, JSON.stringify(asset.localMeta));
-    const content = await curl(asset.data.url);
-    FileWatcher.addIgnoreFile(asset.localPath);
-    writeFileSync(asset.localPath, content);
   }
 
   /** @returns absolute path list */
@@ -167,7 +160,7 @@ export default class LocalFileManager {
   static writeFile(filePath: string, content: string) {
     const dirPath = dirname(filePath);
     if (!existsSync(dirPath)) {
-      mkdirSync(dirPath);
+      mkdirSync(dirPath, { recursive: true });
     }
     writeFileSync(filePath, content);
   }

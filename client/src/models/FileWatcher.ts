@@ -6,9 +6,10 @@ import {
   workspace,
 } from 'vscode';
 import HostContext from '../context/HostContext';
-import { debounceAsync, deleteAsset, updateAsset } from '../utils';
+import { debounceAsync, deleteAsset, updateAssetContent } from '../utils';
+import { dirname } from 'path';
 
-const debouncedUpdate = debounceAsync(2000, updateAsset);
+const debouncedUpdate = debounceAsync(2000, updateAssetContent);
 
 export default class FileWatcher {
   private static _singleton: FileWatcher;
@@ -25,40 +26,48 @@ export default class FileWatcher {
   }
 
   private _fsWatcher: FileSystemWatcher;
-  private _ignoreFiles = new Map<string, boolean>();
 
   private constructor() {
-    this._fsWatcher = workspace.createFileSystemWatcher(
-      '**/{*,!node_modules,!.git,!.vscode}/*.{ts,gsl,glsl,gs}'
-    );
-    this._fsWatcher.onDidChange(this.onChange.bind(this));
-
-    this._fsWatcher.onDidDelete(this.onDelete.bind(this));
-  }
-
-  static addIgnoreFile(path: string) {
-    this.init();
-    this._singleton._ignoreFiles.set(path, true);
-  }
-
-  onChange(uri: Uri) {
-    if (this._ignoreFiles.get(uri.path)) {
-      this._ignoreFiles.delete(uri.path);
-      return;
-    }
-    const asset = this.getAsset(uri);
-    if (!asset) {
-      // TODO: 资产创建涉及到设置资产meta相关逻辑，需要明确规则
-    } else {
-      // 更新
-      window.withProgress(
-        { location: ProgressLocation.Notification, title: 'Syncing assets...' },
-        async () => {
-          await debouncedUpdate(asset);
-          window.showInformationMessage(`update ${asset.fullName} success`);
+    workspace.onDidRenameFiles((e) => {
+      for (const f of e.files) {
+        const asset = this.getAsset(f.oldUri);
+        if (!asset) continue;
+        const newDir = dirname(f.newUri.path);
+        let newDirAssetUUID;
+        if (newDir !== dirname(f.oldUri.path)) {
+          if (newDir === HostContext.userContext.openedProject.getLocalPath()) {
+            newDirAssetUUID = null;
+          } else {
+            const newDirAsset = this.getAsset(Uri.file(newDir));
+            newDirAssetUUID = newDirAsset.data.uuid;
+          }
         }
-      );
-    }
+
+        asset.rename(f.newUri, newDirAssetUUID);
+      }
+    });
+
+    workspace.onDidDeleteFiles((e) => {
+      for (const f of e.files) {
+        this.onDelete(f);
+      }
+    });
+
+    workspace.onDidSaveTextDocument((e) => {
+      const asset = this.getAsset(e.uri);
+      if (asset) {
+        window.withProgress(
+          {
+            location: ProgressLocation.Notification,
+            title: 'Syncing assets...',
+          },
+          async () => {
+            await debouncedUpdate(asset);
+            window.showInformationMessage(`update ${asset.fullName} success`);
+          }
+        );
+      }
+    });
   }
 
   onDelete(uri: Uri) {

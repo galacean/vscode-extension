@@ -17,7 +17,7 @@ export default class Request {
       headers: {
         'content-type': 'application/json',
         Cookie: HostContext.requestContext.toString(),
-        'user-agent': 'vscode',
+        'x-client-platform': 'vscode',
         ...headers,
       },
       hostname: HostContext.serverHost,
@@ -85,8 +85,12 @@ export default class Request {
           console.error(e);
           reject(e);
         });
-        data && req.write(JSON.stringify(data));
+        if (req.method.toLowerCase() === 'delete') {
+          // https://github.com/nodejs/node/issues/19179
+          req.useChunkedEncodingByDefault = true;
+        }
 
+        data && req.write(JSON.stringify(data));
         req.end();
       }
     });
@@ -172,7 +176,7 @@ export async function fetchProjectDetail(
   return res.data;
 }
 
-export async function updateAsset(asset: Asset, _content?: Buffer) {
+export async function updateAssetContent(asset: Asset, _content?: Buffer) {
   const instance = new Request({
     path: '/api/project/asset/form/update',
     method: 'POST',
@@ -191,6 +195,24 @@ export async function updateAsset(asset: Asset, _content?: Buffer) {
   return ret.data;
 }
 
+export async function renameAsset(
+  asset: Asset,
+  newName: string,
+  newDirUUID?: string
+) {
+  const instance = new Request({
+    path: '/api/project/asset/update',
+    method: 'POST',
+  });
+  const res = await instance.makeRequest({
+    id: asset.data.id,
+    projectId: HostContext.userContext.openedProject.data.id,
+    pairs: { name: newName, parentId: newDirUUID },
+  });
+  const ret = JSON.parse(res) as ISuccessResponse<IAsset>;
+  return ret.data;
+}
+
 export async function deleteAsset(asset: Asset) {
   const instance = new Request({
     path: '/api/project/asset/delete',
@@ -199,7 +221,7 @@ export async function deleteAsset(asset: Asset) {
 
   return instance.makeRequest({
     ids: [Number(asset.id)],
-    projectId: asset.data.projectId,
+    projectId: HostContext.userContext.openedProject.data.id,
   });
 }
 

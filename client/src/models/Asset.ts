@@ -1,7 +1,8 @@
-import { join, parse } from 'path';
+import { basename, join, parse } from 'path';
 import { ASSET_EXT, ASSET_TYPE } from '../constants';
 import Project from './Project';
 import { Uri } from 'vscode';
+import { renameAsset } from '../utils';
 import LocalFileManager from './LocalFileManager';
 
 export default class Asset {
@@ -13,15 +14,33 @@ export default class Asset {
   private _meta: any;
 
   /** 相对项目文件夹路径 */
-  readonly _pathPrefix: string[] = [];
-  private _localPath: string;
-  get localPath() {
-    return this._localPath;
+  private get _pathPrefix(): string[] {
+    const ret: string[] = [];
+    if (this._data.parentId) {
+      const parent = (this.project.allAssets ?? this.project.assets).find(
+        (item) => item.data.uuid.toString() === this._data.parentId.toString()
+      );
+      if (parent) {
+        ret.unshift(...parent._pathPrefix, parent.data.name);
+      }
+    }
+    return ret;
   }
 
-  private _localMetaPath: string;
+  get localPath() {
+    return join(
+      this.project.getLocalPath(),
+      ...this._pathPrefix,
+      `${this.filename}${this.extension ?? ''}`
+    );
+  }
+
   get localMetaPath() {
-    return this._localMetaPath;
+    return join(
+      this.project.getLocalMetaDirPath(),
+      ...this._pathPrefix,
+      `${this.filename}${this.extension}.meta`
+    );
   }
 
   get type(): (typeof ASSET_TYPE)[number] {
@@ -29,7 +48,7 @@ export default class Asset {
   }
 
   get id() {
-    return this._meta.id;
+    return this._data.id;
   }
 
   private _project: Project;
@@ -37,14 +56,10 @@ export default class Asset {
     return this._project;
   }
 
-  private _filename: string;
   /** without extension */
   get filename() {
-    if (!this._filename) {
-      const tmp = parse(this.data.name);
-      this._filename = tmp.name;
-    }
-    return this._filename;
+    const p = parse(this._data.name);
+    return p.name;
   }
 
   /** with extension */
@@ -54,10 +69,6 @@ export default class Asset {
 
   get extension() {
     return ASSET_EXT[this.type];
-  }
-
-  get localMeta(): IAssetMeta {
-    return this.data;
   }
 
   get localUri() {
@@ -70,37 +81,20 @@ export default class Asset {
     this._meta = JSON.parse(data.meta);
   }
 
-  setLocalPath(metaPath: string) {
-    this._localMetaPath = metaPath;
-    const trimRegex = new RegExp(`(\/${Project._metaDirName}|\.meta)`, 'g');
-    this._localPath = metaPath.replace(trimRegex, '');
-  }
-
-  initLocalPath() {
-    Asset.getParentPathPrefix(this);
-
-    this._localMetaPath = join(
-      this.project.getLocalMetaDirPath(),
-      ...this._pathPrefix,
-      `${this.filename}${this.extension}.meta`
-    );
-    this._localPath = join(
-      this.project.getLocalPath(),
-      ...this._pathPrefix,
-      `${this.filename}${this.extension}`
-    );
-  }
-
-  private static getParentPathPrefix(asset: Asset) {
-    if (asset._pathPrefix.length) return asset._pathPrefix;
-    if (asset.data.parentId) {
-      const parent = asset.project.allAssets.find(
-        (item) => item.data.uuid.toString() === asset.data.parentId.toString()
-      );
-      if (parent) {
-        Asset.getParentPathPrefix(parent);
-        asset._pathPrefix.unshift(...parent._pathPrefix, parent.data.name);
-      }
-    }
+  async rename(uri: Uri, newDirAssetUUID?: string | null) {
+    const newName = basename(uri.path);
+    renameAsset(this, newName, newDirAssetUUID)
+      .then((data) => {
+        this._data = data;
+      })
+      .catch(() => {
+        this._data.name = newName;
+      })
+      .finally(() => {
+        LocalFileManager.writeFile(
+          this.localMetaPath,
+          JSON.stringify(this._data)
+        );
+      });
   }
 }

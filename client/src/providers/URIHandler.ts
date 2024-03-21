@@ -48,7 +48,6 @@ export default class URIHandler implements UriHandler {
       const assetData = await fetchAssetDetail(assetId);
       asset = new Asset(assetData, project);
 
-      asset.initLocalPath();
       await LocalFileManager.updateAsset(asset);
     }
 

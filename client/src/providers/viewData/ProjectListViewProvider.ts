@@ -56,7 +56,11 @@ export default class ProjectListViewProvider
   }
 
   getChildren(element?: Project): ProviderResult<(Project | 'more')[]> {
-    if (!HostContext.instance.isLogin()) return [];
+    if (
+      !HostContext.instance.isLogin() ||
+      !HostContext.userContext.projectList?.length
+    )
+      return [];
     return [...HostContext.userContext.projectList, 'more'];
   }
 

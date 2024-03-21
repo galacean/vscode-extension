@@ -5,7 +5,7 @@ import HostContext from '../context/HostContext';
 import { promises as fsPromise, mkdirSync } from 'fs';
 import { fetchProjectDetail } from '../utils/request';
 import { pick } from '../utils';
-import { ASSET_EXT, ASSET_TYPE } from '../constants';
+import { ASSET_EXT, ASSET_TYPE, EProjectAssetType } from '../constants';
 
 export default class Project {
   static _metaDirName = '.galacean';
@@ -114,7 +114,6 @@ export default class Project {
           const content = await fsPromise.readFile(path);
           const meta = JSON.parse(content.toString()) as IAssetMeta;
           const asset = new Asset(meta, this);
-          asset.setLocalPath(path);
 
           return asset;
         })
@@ -137,11 +136,13 @@ export default class Project {
 
     await Promise.all(
       this._allAssets.map(async (item) => {
-        if (!ASSET_TYPE.includes(item.type)) return;
-
-        item.initLocalPath();
-        await LocalFileManager.updateAsset(item);
-        this.assets.push(item);
+        if (
+          ASSET_TYPE.includes(item.type) ||
+          item.data.type === EProjectAssetType.Directory
+        ) {
+          await LocalFileManager.updateAsset(item);
+          this.assets.push(item);
+        }
       })
     );
   }

@@ -52,14 +52,11 @@ interface BaseModel {
   gmtModified: string;
 }
 
-type EProjectAssetType = 0 /** 普通文件 */ | 1 /** 文件夹 */;
-type EPejectAssetStatus = 0 /** 正常 */ | 1; /** 删除 */
-
 interface IAsset extends BaseModel {
   name: string;
 
   /** 文件or文件夹 */
-  type: EProjectAssetType;
+  type: number;
 
   /** 前端上传的uuid */
   uuid: string;
@@ -76,7 +73,7 @@ interface IAsset extends BaseModel {
   projectId: number;
 
   /** 状态: 正常 删除 */
-  status: EPejectAssetStatus;
+  status: number;
 }
 
 type IProjectDetail = IProject & { assets: IAsset[] };
