@@ -7,6 +7,7 @@ import {
   readFileSync,
   writeFileSync,
   readdirSync,
+  unlinkSync,
 } from 'fs';
 import Project from './Project';
 import Asset from './Asset';
@@ -130,6 +131,12 @@ export default class LocalFileManager {
       readFileSync(projectListMetaFilePath).toString()
     ) as IProject[];
     return projectList.map((item) => new Project(item));
+  }
+
+  static async clearLocalProjectList() {
+    const projectListMetaFilePath =
+      HostContext.userContext.getUserProjectListMetaFilePath();
+    unlinkSync(projectListMetaFilePath);
   }
 
   static async readUserInfoFromLocal() {

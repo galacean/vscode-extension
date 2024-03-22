@@ -13,6 +13,7 @@ export default class Request {
     options?: Omit<https.RequestOptions, 'headers'>,
     headers?: Record<string, any>
   ) {
+    const serverEnv = HostContext.serverHostAndPort;
     this.options = {
       headers: {
         'content-type': 'application/json',
@@ -20,8 +21,7 @@ export default class Request {
         'x-client-platform': 'vscode',
         ...headers,
       },
-      hostname: HostContext.serverHost,
-      port: HostContext.serverPort,
+      ...serverEnv,
       rejectUnauthorized: false,
       method: 'GET',
       timeout: 3000,

@@ -2,7 +2,7 @@
   "name": "galacean",
   "displayName": "Galacean VSCode Extension",
   "description": "VSCode tool plugin for galacean",
-  "version": "0.1.8-1-shaderChunk-pre-fix-4",
+  "version": "0.1.0-alpha.1",
   "author": "Sway007",
   "publisher": "Galacean",
   "license": "MIT",
@@ -21,7 +21,8 @@
       {
         "id": "GalaceanShaderLab",
         "extensions": [
-          ".gsl"
+          ".gsl",
+          ".gs"
         ],
         "icon": {
           "light": "./client/res/icons/shader.svg",
@@ -87,6 +88,20 @@
           "type": "string",
           "default": "",
           "description": "The sign mail"
+        },
+        "galacean.server.env": {
+          "type": "string",
+          "default": "test",
+          "enum": [
+            "dev",
+            "test",
+            "pre"
+          ],
+          "enumDescriptions": [
+            "本地环境",
+            "测试环境",
+            "预发环境"
+          ]
         }
       }
     },

@@ -6,6 +6,7 @@ import {
   window,
   StatusBarAlignment,
   ProgressLocation,
+  workspace,
 } from 'vscode';
 import {
   LanguageClient,
@@ -132,6 +133,22 @@ export default class Client {
 
     client.start();
     this._instance = client;
+
+    workspace.onDidChangeConfiguration((e) => {
+      if (e.affectsConfiguration('galacean.server.env')) {
+        LocalFileManager.clearLocalProjectList();
+        window
+          .showInformationMessage(
+            `Reload window in order for change in extension configuration to take effect.`,
+            'Reload'
+          )
+          .then((action) => {
+            if (action === 'Reload') {
+              commands.executeCommand('workbench.action.reloadWindow');
+            }
+          });
+      }
+    });
   }
 
   private initViews(context: ExtensionContext) {

@@ -35,12 +35,8 @@ export default class HostContext {
     return this.instance.userContext;
   }
 
-  static get serverHost() {
-    return this.instance.serverHost;
-  }
-
-  static get serverPort() {
-    return this.instance.serverPort;
+  static get serverHostAndPort() {
+    return this.instance.serverHostAndPort;
   }
 
   static async isInGalaceanProject() {
@@ -55,12 +51,19 @@ export default class HostContext {
 
   private envConfig: IHostEnv;
 
-  private get serverHost() {
-    return this.envConfig.host ?? SERVER_HOST;
-  }
-
-  private get serverPort() {
-    return this.envConfig.port ?? SERVER_PORT;
+  private get serverHostAndPort(): { hostname: string; port: number } {
+    const configEnv = <string>this.getConfig('server.env');
+    if (!configEnv) return { hostname: SERVER_HOST, port: SERVER_PORT };
+    switch (configEnv) {
+      case 'dev':
+        return { hostname: 'localhost', port: 8443 };
+      case 'test':
+        return { hostname: 'oasisbe.test.alipay.net', port: 443 };
+      case 'pre':
+        return { hostname: 'oasisbe-pre.alipay.com', port: 443 };
+      default:
+        throw `unknown env ${configEnv}`;
+    }
   }
 
   requestContext: RequestContext;

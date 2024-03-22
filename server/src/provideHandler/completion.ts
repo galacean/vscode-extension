@@ -31,7 +31,7 @@ function getShaderLabUserGlobalList() {
       ret.push({
         label: name,
         data: data.ast,
-        kind: getCompletionType(data.ast._astType),
+        kind: getCompletionType(data.ast?._astType),
       });
     }
   };

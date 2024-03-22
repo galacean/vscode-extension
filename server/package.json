@@ -8,7 +8,7 @@
     "node": "*"
   },
   "dependencies": {
-    "@galacean/engine-shader-lab": "^1.1.0-alpha.1",
+    "@galacean/engine-shader-lab": "1.2.0-beta.1",
     "vscode-languageserver": "^8.1.0",
     "vscode-languageserver-textdocument": "^1.0.8"
   },
