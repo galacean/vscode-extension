@@ -32,6 +32,22 @@
       }
     },
     {
+      "comment": "UsePass And UIScript Line",
+      "match": "\\b(UsePass|UIScript)\\b\\s*\"([^\"]+)\"",
+      "captures": {
+        "1": { "name": "keyword.control.shaderlab" },
+        "2": { "name": "string.quoted.double.shaderlab" }
+      }
+    },
+    {
+      "comment": "Editor Header Constructor",
+      "match": "\\b(Header)\\b\\s*(\\()",
+      "captures": {
+        "1": { "name": "entity.name.function.shaderlab" },
+        "2": { "name": "punctuation.section.group.begin.shaderlab" }
+      }
+    },
+    {
       "comment": "PREPROCESSOR",
       "name": "meta.preprocessor.shaderlab",
       "match": "#.*?($|(?=(\\/\\/|\\/\\*)))"
@@ -64,12 +80,36 @@
     {
       "comment": "KEYWORD",
       "name": "keyword.control.shaderlab",
-      "match": "\\b(discard|return|break|continue|do|for|while|switch|case|default|if|else)\\b"
+      "match": "\\b(discard|return|break|continue|do|for|while|switch|case|default|if|else|Shader|SubShader|Pass|UsePass|Editor|Properties|Macros|UIScript|Tags|VertexShader|FragmentShader|RenderQueueType|BlendState|DepthState|StencilState|RasterState)\\b"
     },
     {
       "comment": "QUALIFIER",
       "name": "storage.modifier.shaderlab",
       "match": "\\b(attribute|varying|const|uniform|layout|centroid|flat|smooth|in|out|inout|invariant|lowp|mediump|highp|precision)\\b"
+    },
+    {
+      "comment": "SHADERLAB ENGINE ENUM TYPE",
+      "name": "support.type.shaderlab",
+      "match": "\\b(BlendFactor|BlendOperation|CompareFunction|StencilOperation|CullMode|FillMode|ColorWriteMask|RenderQueueType|Bool|Number|Color)\\b"
+    },
+    {
+      "comment": "SHADERLAB ENUM MEMBER ACCESS",
+      "match": "\\b(BlendFactor|BlendOperation|CompareFunction|StencilOperation|CullMode|FillMode|ColorWriteMask|RenderQueueType)\\b(\\.)([_a-zA-Z]\\w*)",
+      "captures": {
+        "1": { "name": "support.type.shaderlab" },
+        "2": { "name": "keyword.operator.shaderlab" },
+        "3": { "name": "constant.other.shaderlab" }
+      }
+    },
+    {
+      "comment": "RENDER STATE FIELD",
+      "name": "support.variable.shaderlab",
+      "match": "\\b(Enabled|ColorBlendOperation|AlphaBlendOperation|SourceColorBlendFactor|SourceAlphaBlendFactor|DestinationColorBlendFactor|DestinationAlphaBlendFactor|ColorWriteMask|BlendColor|AlphaToCoverage|WriteEnabled|CompareFunction|ReferenceValue|Mask|WriteMask|CompareFunctionFront|CompareFunctionBack|PassOperationFront|PassOperationBack|FailOperationFront|FailOperationBack|ZFailOperationFront|ZFailOperationBack|CullMode|FillMode|DepthBias|SlopeScaledDepthBias|VertexShader|FragmentShader|RenderQueueType)\\b"
+    },
+    {
+      "comment": "EDITOR PROPERTY TYPE",
+      "name": "support.class.shaderlab",
+      "match": "\\b(Boolean|Int|Float|Range|Color|HDRColor|Vector2|Vector3|Vector4|Texture2D|TextureCube|Enum)\\b"
     },
     {
       "comment": "FUNCTION CALL",

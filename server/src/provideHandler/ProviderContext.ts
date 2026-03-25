@@ -1,4 +1,3 @@
-import { ShaderLab } from '@galacean/engine-shader-lab';
 import {
   DocumentUri,
   TextDocuments,
@@ -6,6 +5,10 @@ import {
   Position,
 } from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
+import {
+  buildDocumentSemanticModel,
+  DocumentSemanticModel,
+} from '../model/buildDocumentSemanticModel';
 
 interface CompletionInfo {
   position: Position;
@@ -24,8 +27,6 @@ export class CompletionData<T = any> {
   }
 }
 
-const shaderLab = new ShaderLab();
-
 export class ProviderContext {
   static docMap: Map<DocumentUri, ProviderContext> = new Map();
   static getInstance(docUri: DocumentUri) {
@@ -42,11 +43,11 @@ export class ProviderContext {
     this.documents = documents;
   }
 
-  static shaderLab = shaderLab;
-
   readonly uri: DocumentUri;
 
   private _lastResolvedCompletion?: CompletionInfo;
+  private _semanticModel?: DocumentSemanticModel;
+  private _semanticModelVersion?: number;
 
   get lastResolvedCompletion() {
     // @ts-ignore
@@ -59,6 +60,18 @@ export class ProviderContext {
 
   get document() {
     return ProviderContext.documents.get(this.uri);
+  }
+
+  get semanticModel() {
+    const document = this.document;
+    if (!document) return;
+
+    if (this._semanticModelVersion !== document.version) {
+      this._semanticModel = buildDocumentSemanticModel(document.getText());
+      this._semanticModelVersion = document.version;
+    }
+
+    return this._semanticModel;
   }
 
   static curCompletionData: CompletionData;

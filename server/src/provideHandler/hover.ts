@@ -14,17 +14,18 @@ export function provideHover(
     ProviderContext.getInstance(docUir).document!.getText()
   );
   if (word) {
-    const hints = provideCompletion(docUir, position)?.filter(
-      (item) => item.label === word && !!item.data
-    );
+    const semanticSymbol = ProviderContext.getInstance(docUir).semanticModel?.symbolsByName.get(word);
+    if (semanticSymbol) {
+      return {
+        contents: [createUserDefineIdentifierDescribe(semanticSymbol)],
+      };
+    }
+
+    const hints = provideCompletion(docUir, position)?.filter((item) => item.label === word && !!item.data);
     return {
       contents:
         hints?.map((item) => {
-          if (item.data._astType) {
-            return createUserDefineIdentifierDescribe(item.data);
-          } else {
-            return Builtin.getFunctionLabel(item.data);
-          }
+          return Builtin.getFunctionLabel(item.data);
         }) ?? [],
     };
   }

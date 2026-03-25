@@ -21,7 +21,7 @@ connection.listen();
 
 connection.onInitialize(() => {
   return {
-    serverInfo: { name: 'Galacean LSP Server' },
+    serverInfo: { name: 'Galacean ShaderLab Server' },
     capabilities: {
       completionProvider: { resolveProvider: true, triggerCharacters: ['.'] },
       textDocumentSync: TextDocumentSyncKind.Incremental,

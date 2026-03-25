@@ -1,7 +1,6 @@
 import {
   CompletionContext,
   CompletionItem,
-  CompletionItemKind,
   CompletionTriggerKind,
   DocumentUri,
   Position,
@@ -9,54 +8,52 @@ import {
 import { Builtin } from '../builtin';
 import { CompletionData, ProviderContext } from './ProviderContext';
 import { createCompletionByDot } from './utils';
-
-function getCompletionType(astType: string) {
-  switch (astType) {
-    case 'Function':
-      return CompletionItemKind.Function;
-    case 'Struct':
-      return CompletionItemKind.Struct;
-    case 'ShaderProperty':
-    default:
-      return CompletionItemKind.Variable;
-  }
-}
-
-function getShaderLabUserGlobalList() {
-  const context = (<any>ProviderContext.shaderLab).context;
-  const ret: CompletionItem[] = [];
-  if (!context) return [];
-  const getGlobal = (globalMap: Map<string, any>) => {
-    for (const [name, data] of globalMap) {
-      ret.push({
-        label: name,
-        data: data.ast,
-        kind: getCompletionType(data.ast?._astType),
-      });
-    }
-  };
-  getGlobal(<Map<string, any>>context?._shaderGlobalMap);
-  getGlobal(<Map<string, any>>context?._subShaderGlobalMap);
-  getGlobal(<Map<string, any>>context?._passGlobalMap);
-
-  return ret;
-}
+import { createCompletionItemFromSymbol } from '../model/buildDocumentSemanticModel';
+import { AstNodeUtils } from './AstNodeUtils';
 
 export function provideCompletion(
   docUri: DocumentUri,
   position: Position,
   context?: CompletionContext
 ): CompletionItem[] | undefined {
+  const providerContext = ProviderContext.getInstance(docUri);
+  const document = providerContext.document;
+  if (!document) return;
+  const docContent = document.getText();
+
+  if (!AstNodeUtils.isCodePosition(position, docContent)) {
+    return;
+  }
+
   if (context?.triggerKind === CompletionTriggerKind.TriggerCharacter) {
     return createCompletionByDot(position, docUri);
   } else {
     const builtin = Builtin.getInstance();
     ProviderContext.curCompletionData = new CompletionData(docUri, position);
-    return [
-      ...getShaderLabUserGlobalList(),
+    const semanticModel = providerContext.semanticModel;
+    const userSymbols: CompletionItem[] =
+      semanticModel?.symbols.map(createCompletionItemFromSymbol) ?? [];
+    const completionItems = [
+      ...userSymbols,
       ...builtin.functionCompletions,
       ...builtin.engineEnums,
       ...builtin.glslVars,
     ];
+
+    const deduped = new Map<string, CompletionItem>();
+    for (const item of completionItems) {
+      if (!deduped.has(item.label.toString())) {
+        deduped.set(item.label.toString(), item);
+      }
+    }
+
+    const prefix = AstNodeUtils.getCompletionPrefix(position, docContent).toLowerCase();
+    if (!prefix) {
+      return [...deduped.values()];
+    }
+
+    return [...deduped.values()].filter((item) =>
+      item.label.toString().toLowerCase().startsWith(prefix)
+    );
   }
 }

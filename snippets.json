@@ -34,83 +34,115 @@
       "}"
     ]
   },
-  "EditorProperties": {
-    "prefix": "EditorProperties",
-    "body": ["EditorProperties {", "\t$0", "}"],
-    "description": "Creates Editor Properties"
-  },
   "shader": {
     "prefix": "Shader",
-    "body": ["Shader \"$0:shaderName\" {", "\t$1", "}"],
-    "description": "Creates Shader Block"
+    "body": ["Shader \"${1:shaderName}\" {", "\t$0", "}"],
+    "description": "Creates Shader block"
   },
   "subShader": {
     "prefix": "SubShader",
-    "body": ["SubShader \"$0:subShaderName\" {", "\t$1", "}"],
-    "description": "Creates SubShader Block"
+    "body": ["SubShader \"${1:subShaderName}\" {", "\t$0", "}"],
+    "description": "Creates SubShader block"
   },
   "Pass": {
     "prefix": "Pass",
-    "body": ["Pass \"$0:passName\" {", "\t$1", "}"],
-    "description": "Creates Pass Block"
+    "body": ["Pass \"${1:passName}\" {", "\t$0", "}"],
+    "description": "Creates Pass block"
+  },
+  "Editor": {
+    "prefix": "Editor",
+    "body": ["Editor {", "\t$0", "}"],
+    "description": "Creates Editor block"
+  },
+  "Properties": {
+    "prefix": "Properties",
+    "body": ["Properties {", "\t$0", "}"],
+    "description": "Creates Properties block"
+  },
+  "Macros": {
+    "prefix": "Macros",
+    "body": ["Macros {", "\t$0", "}"],
+    "description": "Creates Macros block"
+  },
+  "UIScript": {
+    "prefix": "UIScript",
+    "body": ["UIScript \"${1:path/to/script.ts}\";"],
+    "description": "Creates UIScript binding"
+  },
+  "UsePass": {
+    "prefix": "UsePass",
+    "body": ["UsePass \"${1:shader/path/passName}\""],
+    "description": "Creates UsePass reference"
+  },
+  "Tags": {
+    "prefix": "Tags",
+    "body": ["Tags { \"${1:pipelineStage}\" = \"${2:Forward}\" }"],
+    "description": "Creates Tags block"
+  },
+  "Header": {
+    "prefix": "Header",
+    "body": ["Header(\"${1:Group}\") {", "\t$0", "}"],
+    "description": "Creates Editor property group"
   },
   "Declare RasterState": {
     "prefix": "RasterState",
     "body": [
-      "RasterState ${0:rasterState} {",
-      "\tCullMode = $1;",
-      "\tDepthBias = $2;",
-      "\tSlopeScaledDepthBias = $3;",
+      "RasterState ${1:customRasterState} {",
+      "\tCullMode = ${2:CullMode.Back};",
+      "\tFillMode = ${3:FillMode.Solid};",
+      "\tDepthBias = ${4:0};",
+      "\tSlopeScaledDepthBias = ${5:0};",
       "}"
     ],
-    "description": "Create RasterState"
+    "description": "Creates RasterState declaration"
   },
   "Declare BlendState": {
     "prefix": "BlendState",
     "body": [
-      "BlendState ${0:blendState} {",
-      "\tEnabled = $1;",
-      "\tColorBlendOperation = $2",
-      "\tAlphaBlendOperation = $3",
-      "\tSrcColorBlendFactor = $4",
-      "\tSrcAlphaBlendFactor = $5",
-      "\tDestColorBlendFactor = $6",
-      "\tDestAlphaBlendFactor = $7",
-      "\tColorWriteMask = $8",
-      "\tBlendColor = $9",
-      "\tAlphaToCoverage = $10",
+      "BlendState ${1:customBlendState} {",
+      "\tEnabled = ${2:true};",
+      "\tColorBlendOperation = ${3:BlendOperation.Add};",
+      "\tAlphaBlendOperation = ${4:BlendOperation.Add};",
+      "\tSourceColorBlendFactor = ${5:BlendFactor.SourceAlpha};",
+      "\tSourceAlphaBlendFactor = ${6:BlendFactor.One};",
+      "\tDestinationColorBlendFactor = ${7:BlendFactor.OneMinusSourceAlpha};",
+      "\tDestinationAlphaBlendFactor = ${8:BlendFactor.OneMinusSourceAlpha};",
+      "\tColorWriteMask = ${9:ColorWriteMask.All};",
+      "\tBlendColor = ${10:(1, 1, 1, 1)};",
+      "\tAlphaToCoverage = ${11:false};",
       "}"
     ],
-    "description": "Create BlendState"
+    "description": "Creates BlendState declaration"
   },
   "Declare DepthState": {
     "prefix": "DepthState",
     "body": [
-      "DepthState ${0:depthState} {",
-      "\tEnabled = $1;",
-      "\tWriteEnabled = $2",
-      "\tCompareFunction = $3",
+      "DepthState ${1:customDepthState} {",
+      "\tEnabled = ${2:true};",
+      "\tWriteEnabled = ${3:true};",
+      "\tCompareFunction = ${4:CompareFunction.LessEqual};",
       "}"
     ],
-    "description": "Create DepthState"
+    "description": "Creates DepthState declaration"
   },
   "Declare StencilState": {
-    "prefix": "DepthState",
+    "prefix": "StencilState",
     "body": [
-      "DepthState ${0:DepthState} {",
-      "\tEnabled = $1;",
-      "ReferenceValue = $2;",
-      "Mask = $3;",
-      "WriteMask = $4",
-      "CompareFunctionFront = $5",
-      "CompareFunctionBack = $6",
-      "PassOperationFront = $7",
-      "PassOperationBack = $8",
-      "FailOperationFront = $9",
-      "FailOperationBack = $10",
-      "ZFailOperationFront = $11",
-      "ZFailOperationBack = $12"
+      "StencilState ${1:customStencilState} {",
+      "\tEnabled = ${2:false};",
+      "\tReferenceValue = ${3:0};",
+      "\tMask = ${4:255};",
+      "\tWriteMask = ${5:255};",
+      "\tCompareFunctionFront = ${6:CompareFunction.Always};",
+      "\tCompareFunctionBack = ${7:CompareFunction.Always};",
+      "\tPassOperationFront = ${8:StencilOperation.Keep};",
+      "\tPassOperationBack = ${9:StencilOperation.Keep};",
+      "\tFailOperationFront = ${10:StencilOperation.Keep};",
+      "\tFailOperationBack = ${11:StencilOperation.Keep};",
+      "\tZFailOperationFront = ${12:StencilOperation.Keep};",
+      "\tZFailOperationBack = ${13:StencilOperation.Keep};",
+      "}"
     ],
-    "description": "Create StencilState"
+    "description": "Creates StencilState declaration"
   }
 }

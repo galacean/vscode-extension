@@ -6,7 +6,7 @@ import {
 } from 'vscode-languageserver';
 import { ProviderContext } from './ProviderContext';
 import { Builtin } from '../builtin';
-import { createSignatureFromAstNode } from './utils';
+import { createSignatureFromDescriptor } from './utils';
 
 function isTriggeredAfterCompletionResolve(
   triggerPosition: Position,
@@ -31,8 +31,8 @@ export function provideSignatureHelp(
 
   const context = ProviderContext.getInstance(docUri);
   const completionData = context.lastResolvedCompletion.item.data;
-  if (completionData._astType) {
-    return createSignatureFromAstNode(completionData);
+  if (completionData?.kind) {
+    return createSignatureFromDescriptor(completionData);
   } else {
     return Builtin.getFunctionSignature(completionData);
   }

@@ -1,9 +1,9 @@
 {
-  "name": "galacean",
-  "displayName": "Galacean VSCode Extension",
-  "description": "VSCode tool plugin for galacean",
+  "name": "galacean-shaderlab",
+  "displayName": "Galacean ShaderLab",
+  "description": "ShaderLab language support for Galacean Engine",
   "version": "0.1.0-alpha.1",
-  "author": "Sway007",
+  "author": "Mrkou47",
   "publisher": "Galacean",
   "license": "MIT",
   "engines": {
@@ -14,7 +14,15 @@
     "url": "https://github.com/galacean/vscode-extension"
   },
   "categories": [
+    "Programming Languages",
     "Snippets"
+  ],
+  "keywords": [
+    "galacean",
+    "shaderlab",
+    "shader",
+    "glsl",
+    "lsp"
   ],
   "contributes": {
     "languages": [
@@ -42,97 +50,16 @@
         "language": "GalaceanShaderLab",
         "path": "./snippets.json"
       }
-    ],
-    "viewsContainers": {
-      "activitybar": [
-        {
-          "id": "galacean-explorer",
-          "title": "Galacean",
-          "icon": "res/icons/logo.svg"
-        }
-      ]
-    },
-    "views": {
-      "galacean-explorer": [
-        {
-          "id": "project-list",
-          "name": "Project List"
-        }
-      ]
-    },
-    "menus": {
-      "view/title": [
-        {
-          "command": "galacean.pull.project_list",
-          "when": "view == project-list",
-          "group": "navigation"
-        }
-      ],
-      "view/item/context": []
-    },
-    "viewsWelcome": [
-      {
-        "view": "project-list",
-        "contents": "Sign in to Galacean to display project list, edit and sync your scripts and shaders.\n[Sign in](command:galacean.login)"
-      }
-    ],
-    "configuration": {
-      "title": "Galacean",
-      "properties": {
-        "galacean.root": {
-          "type": "string",
-          "default": "",
-          "description": "The galacean workspace root path"
-        },
-        "galacean.user.mail": {
-          "type": "string",
-          "default": "",
-          "description": "The sign mail"
-        },
-        "galacean.server.env": {
-          "type": "string",
-          "default": "test",
-          "enum": [
-            "dev",
-            "test",
-            "pre"
-          ],
-          "enumDescriptions": [
-            "本地环境",
-            "测试环境",
-            "预发环境"
-          ]
-        }
-      }
-    },
-    "commands": [
-      {
-        "command": "galacean.login",
-        "title": "Login to Galacean",
-        "category": "Galacean"
-      },
-      {
-        "command": "galacean.pull.project_list",
-        "title": "Pull project list",
-        "category": "Galacean",
-        "icon": "$(git-fetch)"
-      },
-      {
-        "command": "galacean.pull.projectAssets",
-        "title": "Pull project assets",
-        "category": "Galacean",
-        "icon": "$(cloud-download)"
-      }
     ]
   },
   "main": "client/out/main",
   "scripts": {
     "vscode:prepublish": "npm run clear && npm run compile -- --mode production",
     "compile": "webpack",
+    "rebuild": "npm run clear && npm run compile",
     "watch": "webpack --watch",
     "package": "webpack --mode production --devtool hidden-source-map",
-    "clean": "rm -rf ./node_modules ./client/node_modules ./server/node_modules",
-    "install": "cd ./client && npm install && cd ../server && npm install && cd ..",
+    "clean": "rm -rf ./node_modules",
     "build": "webpack",
     "clear": "rm -rf ./client/out/* ./server/out/*",
     "swipe": "rm -rf ~/.galacean ~/galacean",
@@ -140,15 +67,23 @@
     "release": "standard-version && vsce package"
   },
   "activationEvents": [
-    "onLanguage:GalaceanShaderLab",
-    "workspaceContains:.galacean"
+    "onLanguage:GalaceanShaderLab"
   ],
+  "dependencies": {
+    "@galacean/engine": "1.6.13",
+    "@galacean/engine-shaderlab": "^1.6.13",
+    "prettydiff": "^101.2.6",
+    "vscode-languageclient": "^8.1.0",
+    "vscode-languageserver": "^8.1.0",
+    "vscode-languageserver-textdocument": "^1.0.8"
+  },
   "devDependencies": {
+    "@galacean/engine-design": "^1.0.4",
     "@types/node": "^20.8.7",
     "@types/vscode": "1.65.0",
     "@vscode/test-cli": "^0.0.4",
     "@vscode/test-electron": "^2.3.8",
-    "path-browserify": "^1.0.1",
+    "chevrotain": "^11.0.3",
     "standard-version": "^9.5.0",
     "ts-loader": "^9.5.0",
     "webpack": "^5.89.0",

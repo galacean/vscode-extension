@@ -1,8 +1,7 @@
-import { ExtensionContext, window } from 'vscode';
+import { ExtensionContext } from 'vscode';
 import Client from './client';
 
 export function activate(context: ExtensionContext) {
-  window.showInformationMessage('hello from galacean');
   Client.create(context);
 }
 

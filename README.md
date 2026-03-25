@@ -1,48 +1,99 @@
-# Galacean VSCode Extension
+# Galacean ShaderLab
 
-## TODO
+ShaderLab language support for Galacean Engine in Visual Studio Code.
 
-- #### shaderlab 语言相关
+## Features
 
-  - [x] completion
-  - [x] signature
-  - [x] hover
-  - [x] grammar highlight
-  - [x] snippets
-  - [x] formatting
+- Syntax highlighting for `.gs` and `.gsl`
+- Snippets for common ShaderLab structures
+- Code completion for ShaderLab symbols and common built-ins
+- Hover information
+- Signature help
+- Diagnostics
+- Range formatting
 
-- #### 项目同步相关
+## Supported Syntax
 
-  - [x] 与服务端通讯
-  - [x] http client mock (cookie)
-  - [x] 登录
-  - [x] data pull
-  - [x] data push
-  - [x] source control
-    - [x] stage
-    - [x] diff
-    - [x] push
-    - [x] pull
-    - [ ] packages.json 脚本依赖同步
-  - [ ] glsl 内置函数提示
+This extension is designed for the main Galacean ShaderLab workflow, including:
 
-- #### 其它
-  - [ ] walkthrough
-  - [ ] 编辑器中双击 Script，Shader 跳转至 VScode
+- `Shader`, `SubShader`, `Pass`
+- `UsePass`
+- `Editor`, `Properties`, `Macros`, `UIScript`
+- `Header(...)`
+- `Tags`
+- `VertexShader`, `FragmentShader`
+- `RenderQueueType`
+- `BlendState`, `DepthState`, `StencilState`, `RasterState`
+- User-defined `struct`, functions, and variables
+- Common preprocessor lines such as `#include`, `#if`, and `#ifdef`
 
-#### 流程
+## Snippets
 
-- [ ] 双击编辑器资产自动检查并打开 VSCode 并直接关联云端打开的项目(如用户未安装需要提示)
-- [ ] 保留 git sourcecontrol，单独加一个 view 作为 galacean 源码控制窗口
-- [ ] 用户上传体感更明显
-- [ ] meta 字段加一个是否内置的字段，插件项目资产过滤掉内置资产
-- [ ] 每个项目都需要指定本地文件夹路径 第一次打开弹窗提示
+Built-in snippets include:
 
-- [ ] glsl 对比
+- `Shader`
+- `SubShader`
+- `Pass`
+- `Editor`
+- `Properties`
+- `Macros`
+- `UIScript`
+- `UsePass`
+- `Tags`
+- `Header`
+- `BlendState`
+- `DepthState`
+- `StencilState`
+- `RasterState`
+- `struct`
+- `for`
+- `if`
+- `main`
 
-## Notes
+## Quick Start
 
-- formatting 需要先手动 format document，指定 formatter 为 Galacean
-- SourceControl 视图暂时不能像 git SourceControl 那样添加显示的 commit 按钮，不过官网正在计划添加开发相关 api，相关 issue
-  - https://github.com/microsoft/vscode/issues/167410#issuecomment-1339179812
-  - https://github.com/microsoft/vscode/issues/133935
+1. Install the extension.
+2. Open a `.gs` or `.gsl` file.
+3. Start writing ShaderLab code with highlighting, snippets, completion, and diagnostics.
+
+Example:
+
+```shaderlab
+Shader "Example/MyShader" {
+  Editor {
+    Properties {
+      Header("Surface") {
+        baseColor("Base Color", Color) = (1, 1, 1, 1);
+        metallic("Metallic", Range(0, 1, 0.01)) = 0;
+      }
+    }
+
+    UIScript "./ui.ts";
+  }
+
+  SubShader "Default" {
+    Pass "Forward" {
+      Tags { pipelineStage = "Forward" }
+      VertexShader = vert;
+      FragmentShader = frag;
+    }
+  }
+}
+```
+
+## Development
+
+```bash
+pnpm install
+npm run compile
+```
+
+To debug locally in VS Code:
+
+1. Open this folder in VS Code.
+2. Run `Launch Extension`.
+3. Open a `.gs` or `.gsl` file in the Extension Development Host.
+
+## License
+
+MIT

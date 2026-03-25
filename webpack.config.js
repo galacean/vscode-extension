@@ -21,10 +21,6 @@ const clientConfig = {
   resolve: {
     mainFields: ['module', 'main'],
     extensions: ['.ts', '.js'],
-    alias: {},
-    fallback: {
-      path: require.resolve('path-browserify'),
-    },
   },
   module: {
     rules: [

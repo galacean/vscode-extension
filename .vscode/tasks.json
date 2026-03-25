@@ -3,19 +3,15 @@
   "tasks": [
     {
       "type": "npm",
-      "script": "compile",
+      "script": "rebuild",
+      "label": "npm: rebuild",
       "group": "build",
       "presentation": {
         "panel": "dedicated",
-        "reveal": "never"
+        "reveal": "never",
+        "clear": true
       },
-      "problemMatcher": ["$tsc"]
-    },
-    {
-      "type": "shell",
-      "command": "tsc",
-      "label": "tsc",
-      "args": ["-b"]
+      "problemMatcher": []
     }
   ]
 }

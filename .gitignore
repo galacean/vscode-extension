@@ -3,3 +3,5 @@
 *.vsix
 **/.DS_Store
 !galacean-0.1.1.vsix
+out
+.temp

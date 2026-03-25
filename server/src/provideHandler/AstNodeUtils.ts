@@ -3,6 +3,77 @@ import { Position, Range } from 'vscode-languageserver';
 export type IAstNodeSelfChecker = (check: string, astNode: any) => boolean;
 
 export class AstNodeUtils {
+  static getOffsetAt(position: Position, docContent: string) {
+    const lines = docContent.split('\n');
+    let offset = 0;
+    for (let index = 0; index < position.line; index++) {
+      offset += lines[index].length + 1;
+    }
+    return offset + position.character;
+  }
+
+  static getLexicalStateAt(
+    position: Position,
+    docContent: string
+  ): 'code' | 'lineComment' | 'blockComment' | 'string' {
+    const offset = this.getOffsetAt(position, docContent);
+    let state: 'code' | 'lineComment' | 'blockComment' | 'string' = 'code';
+
+    for (let index = 0; index < offset; index++) {
+      const char = docContent[index];
+      const nextChar = docContent[index + 1];
+
+      if (state === 'lineComment') {
+        if (char === '\n') {
+          state = 'code';
+        }
+        continue;
+      }
+
+      if (state === 'blockComment') {
+        if (char === '*' && nextChar === '/') {
+          state = 'code';
+          index++;
+        }
+        continue;
+      }
+
+      if (state === 'string') {
+        if (char === '\\') {
+          index++;
+          continue;
+        }
+
+        if (char === '"') {
+          state = 'code';
+        }
+        continue;
+      }
+
+      if (char === '/' && nextChar === '/') {
+        state = 'lineComment';
+        index++;
+        continue;
+      }
+
+      if (char === '/' && nextChar === '*') {
+        state = 'blockComment';
+        index++;
+        continue;
+      }
+
+      if (char === '"') {
+        state = 'string';
+      }
+    }
+
+    return state;
+  }
+
+  static isCodePosition(position: Position, docContent: string) {
+    return this.getLexicalStateAt(position, docContent) === 'code';
+  }
+
   static getWordAt(position: Position, docContent: string) {
     const line = docContent.split('\n')[position.line];
     const matches = line.matchAll(/\w+/g);
@@ -14,6 +85,12 @@ export class AstNodeUtils {
         return m[0];
       }
     }
+  }
+
+  static getCompletionPrefix(position: Position, docContent: string) {
+    const line = docContent.split('\n')[position.line].slice(0, position.character);
+    const match = line.match(/([A-Za-z_]\w*)$/);
+    return match?.[1] ?? '';
   }
 
   static isPositionAfter(before: Position, after: Position) {
