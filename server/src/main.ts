@@ -11,6 +11,14 @@ import { SHADER_LAG_ID } from './constants';
 import { provideSignatureHelp } from './provideHandler/signatureHelp';
 import { ProviderContext } from './provideHandler/ProviderContext';
 import { provideHover } from './provideHandler/hover';
+import { provideDefinition } from './provideHandler/definition';
+import { provideDocumentSymbols } from './provideHandler/documentSymbol';
+import { provideReferences } from './provideHandler/references';
+import { provideWorkspaceSymbols } from './provideHandler/workspaceSymbol';
+import {
+  providePrepareRename,
+  provideRename,
+} from './provideHandler/rename';
 
 const connection = createConnection(ProposedFeatures.all);
 const documents = new TextDocuments(TextDocument);
@@ -23,10 +31,20 @@ connection.onInitialize(() => {
   return {
     serverInfo: { name: 'Galacean ShaderLab Server' },
     capabilities: {
-      completionProvider: { resolveProvider: true, triggerCharacters: ['.'] },
+      completionProvider: {
+        resolveProvider: true,
+        triggerCharacters: ['.', '/', '"', '#'],
+      },
       textDocumentSync: TextDocumentSyncKind.Incremental,
       signatureHelpProvider: { triggerCharacters: ['('] },
       hoverProvider: true,
+      definitionProvider: true,
+      referencesProvider: true,
+      documentSymbolProvider: true,
+      workspaceSymbolProvider: true,
+      renameProvider: {
+        prepareProvider: true,
+      },
     },
   };
 });
@@ -34,7 +52,7 @@ connection.onInitialize(() => {
 documents.onDidChangeContent((change) => {
   change.document.positionAt;
   const doc = change.document;
-  const diagnostics = validateShader(doc.getText());
+  const diagnostics = validateShader(doc.getText(), doc.uri);
 
   connection.sendDiagnostics({ uri: doc.uri, diagnostics });
 });
@@ -81,4 +99,28 @@ connection.onSignatureHelp((params) => {
 
 connection.onHover((params) => {
   return provideHover(params.textDocument.uri, params.position);
+});
+
+connection.onDefinition((params) => {
+  return provideDefinition(params.textDocument.uri, params.position);
+});
+
+connection.onDocumentSymbol((params) => {
+  return provideDocumentSymbols(params.textDocument.uri);
+});
+
+connection.onReferences((params) => {
+  return provideReferences(params);
+});
+
+connection.onWorkspaceSymbol((params) => {
+  return provideWorkspaceSymbols(params.query);
+});
+
+connection.onPrepareRename((params) => {
+  return providePrepareRename(params.textDocument.uri, params.position);
+});
+
+connection.onRenameRequest((params) => {
+  return provideRename(params);
 });

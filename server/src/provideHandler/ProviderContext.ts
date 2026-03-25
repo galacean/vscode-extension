@@ -43,6 +43,10 @@ export class ProviderContext {
     this.documents = documents;
   }
 
+  static getDocuments() {
+    return this.documents;
+  }
+
   readonly uri: DocumentUri;
 
   private _lastResolvedCompletion?: CompletionInfo;

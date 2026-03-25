@@ -1,7 +1,7 @@
 {
   "scopeName": "source.shaderlab",
-  "foldingStartMarker": "{s*$",
-  "foldingStopMarker": "^s*}",
+  "foldingStartMarker": "\\{\\s*$",
+  "foldingStopMarker": "^\\s*\\}",
   "patterns": [
     {
       "comment": "BLOCK COMMENT",

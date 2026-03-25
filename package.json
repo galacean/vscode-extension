@@ -32,6 +32,7 @@
           ".gsl",
           ".gs"
         ],
+        "configuration": "./language-configuration.json",
         "icon": {
           "light": "./client/res/icons/shader.svg",
           "dark": "./client/res/icons/shader.svg"
