@@ -4,8 +4,8 @@ import {
   WorkspaceSymbol,
 } from 'vscode-languageserver';
 import { ProviderContext } from './ProviderContext';
-import { SHADER_LAG_ID } from '../constants';
 import { SymbolDescriptor } from '../model/SymbolDescriptor';
+import { WorkspaceIndex } from '../workspace/WorkspaceIndex';
 
 function toWorkspaceSymbolKind(symbol: SymbolDescriptor): SymbolKind {
   switch (symbol.kind) {
@@ -23,24 +23,24 @@ function toWorkspaceSymbolKind(symbol: SymbolDescriptor): SymbolKind {
 
 export function provideWorkspaceSymbols(query: string) {
   const lowered = query.trim().toLowerCase();
-  const documents = ProviderContext.getDocuments();
   const result: WorkspaceSymbol[] = [];
 
-  documents.all().forEach((document) => {
-    if (document.languageId !== SHADER_LAG_ID) return;
-
-    const semanticModel = ProviderContext.getInstance(document.uri).semanticModel;
+  WorkspaceIndex.forEachIndexedUri((uri) => {
+    const semanticModel = ProviderContext.getInstance(uri).semanticModel;
     if (!semanticModel) return;
 
     semanticModel.symbols.forEach((symbol) => {
       if (lowered && !symbol.name.toLowerCase().includes(lowered)) return;
 
+      const text = WorkspaceIndex.getDocumentText(uri);
+      if (!text) return;
+
       result.push({
         name: symbol.name,
         kind: toWorkspaceSymbolKind(symbol),
-        location: Location.create(document.uri, {
-          start: document.positionAt(symbol.selectionStartOffset),
-          end: document.positionAt(symbol.selectionEndOffset),
+        location: Location.create(uri, {
+          start: WorkspaceIndex.positionAt(text, symbol.selectionStartOffset),
+          end: WorkspaceIndex.positionAt(text, symbol.selectionEndOffset),
         }),
       });
     });

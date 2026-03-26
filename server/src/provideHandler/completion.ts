@@ -1,6 +1,7 @@
 import {
   CompletionContext,
   CompletionItem,
+  CompletionList,
   CompletionTriggerKind,
   DocumentUri,
   Position,
@@ -20,7 +21,7 @@ export function provideCompletion(
   docUri: DocumentUri,
   position: Position,
   context?: CompletionContext
-): CompletionItem[] | undefined {
+): CompletionItem[] | CompletionList | undefined {
   const providerContext = ProviderContext.getInstance(docUri);
   const document = providerContext.document;
   if (!document) return;

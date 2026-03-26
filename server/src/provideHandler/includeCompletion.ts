@@ -4,6 +4,7 @@ import { pathToFileURL } from 'url';
 import {
   CompletionItem,
   CompletionItemKind,
+  DocumentLink,
   DocumentUri,
   Location,
   Position,
@@ -27,7 +28,7 @@ export function getFilePathFromUri(uri: string): string | undefined {
   return decodeURIComponent(new URL(uri).pathname);
 }
 
-function getIncludeStringRange(
+export function getIncludeStringRange(
   lineText: string
 ): { value: string; startCharacter: number; endCharacter: number } | undefined {
   const match = lineText.match(/^\s*#include\s+"([^"]*)"?/);
@@ -44,6 +45,21 @@ function getIncludeStringRange(
     startCharacter,
     endCharacter: startCharacter + value.length,
   };
+}
+
+export function resolveIncludeTargetUri(
+  docUri: DocumentUri,
+  includePath: string
+): DocumentUri | undefined {
+  const filePath = getFilePathFromUri(docUri);
+  if (!filePath) return;
+
+  if (!includePath.startsWith('.')) return;
+
+  const targetPath = path.resolve(path.dirname(filePath), includePath);
+  if (!fs.existsSync(targetPath) || !fs.statSync(targetPath).isFile()) return;
+
+  return pathToFileURL(targetPath).toString();
 }
 
 function getIncludeContext(
@@ -104,12 +120,10 @@ export function provideIncludeDefinition(
   }
 
   const includePath = includeRange.value.trim();
-  if (!includePath.startsWith('.')) return;
+  const targetUri = resolveIncludeTargetUri(docUri, includePath);
+  if (!targetUri) return;
 
-  const targetPath = path.resolve(path.dirname(filePath), includePath);
-  if (!fs.existsSync(targetPath) || !fs.statSync(targetPath).isFile()) return;
-
-  return Location.create(pathToFileURL(targetPath).toString(), {
+  return Location.create(targetUri, {
     start: Position.create(0, 0),
     end: Position.create(0, 0),
   });
@@ -156,4 +170,33 @@ export function provideIncludePathCompletion(
         filterText: `${includeContext.typedDirectory}${replacement}`,
       };
     });
+}
+
+export function provideIncludeDocumentLinks(docUri: DocumentUri): DocumentLink[] {
+  const document = ProviderContext.getInstance(docUri).document;
+  if (!document) return [];
+
+  const links: DocumentLink[] = [];
+  const lines = document.getText().split('\n');
+
+  for (let line = 0; line < lines.length; line++) {
+    const includeRange = getIncludeStringRange(lines[line]);
+    if (!includeRange) continue;
+
+    const target = resolveIncludeTargetUri(docUri, includeRange.value.trim());
+    if (!target) continue;
+
+    links.push({
+      range: Range.create(
+        line,
+        includeRange.startCharacter,
+        line,
+        includeRange.endCharacter
+      ),
+      target,
+      tooltip: 'Open include target',
+    });
+  }
+
+  return links;
 }

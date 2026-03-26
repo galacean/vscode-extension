@@ -8,17 +8,18 @@ import {
 import { ProviderContext } from './ProviderContext';
 import { AstNodeUtils } from './AstNodeUtils';
 import { collectReferences, getLookupWord } from './references';
+import { WorkspaceIndex } from '../workspace/WorkspaceIndex';
 
 export function providePrepareRename(
   uri: string,
   position: { line: number; character: number }
 ): PrepareRenameResult | undefined {
   const context = ProviderContext.getInstance(uri);
-  const document = context.document;
   const semanticModel = context.semanticModel;
-  if (!document || !semanticModel) return;
+  const text = context.document?.getText();
+  if (!text || !semanticModel) return;
 
-  if (!AstNodeUtils.isCodePosition(position, document.getText())) return;
+  if (!AstNodeUtils.isCodePosition(position, text)) return;
 
   const word = getLookupWord(uri, position);
   if (!word) return;
@@ -28,8 +29,8 @@ export function providePrepareRename(
 
   return {
     range: Range.create(
-      document.positionAt(symbol.selectionStartOffset),
-      document.positionAt(symbol.selectionEndOffset)
+      WorkspaceIndex.positionAt(text, symbol.selectionStartOffset),
+      WorkspaceIndex.positionAt(text, symbol.selectionEndOffset)
     ),
     placeholder: symbol.name,
   };

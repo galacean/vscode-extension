@@ -1,4 +1,4 @@
-import { Hover, Position, Range, DocumentUri } from 'vscode-languageserver';
+import { CompletionItem, Hover, Position, DocumentUri } from 'vscode-languageserver';
 import { ProviderContext } from './ProviderContext';
 import { provideCompletion } from './completion';
 import { createUserDefineIdentifierDescribe } from './utils';
@@ -21,7 +21,13 @@ export function provideHover(
       };
     }
 
-    const hints = provideCompletion(docUir, position)?.filter((item) => item.label === word && !!item.data);
+    const completionResult = provideCompletion(docUir, position);
+    const completionItems: CompletionItem[] = Array.isArray(completionResult)
+      ? completionResult
+      : completionResult?.items ?? [];
+    const hints = completionItems.filter(
+      (item) => item.label === word && !!item.data
+    );
     return {
       contents:
         hints?.map((item) => {

@@ -1,4 +1,12 @@
-import { CompletionItem, CompletionItemKind, DocumentUri, Position } from 'vscode-languageserver';
+import {
+  CompletionList,
+  CompletionItem,
+  CompletionItemKind,
+  DocumentUri,
+  Position,
+  Range,
+  TextEdit,
+} from 'vscode-languageserver';
 import { ProviderContext } from './ProviderContext';
 
 const PREPROCESSOR_DIRECTIVES = [
@@ -15,7 +23,7 @@ const PREPROCESSOR_DIRECTIVES = [
 export function providePreprocessorCompletion(
   docUri: DocumentUri,
   position: Position
-): CompletionItem[] | undefined {
+): CompletionList | undefined {
   const document = ProviderContext.getInstance(docUri).document;
   if (!document) return;
 
@@ -26,12 +34,23 @@ export function providePreprocessorCompletion(
   const match = linePrefix.match(/^\s*#([\w]*)$/);
   if (!match) return;
 
-  const typedDirective = `#${match[1]}`.toLowerCase();
-  return PREPROCESSOR_DIRECTIVES.filter((directive) =>
-    directive.toLowerCase().startsWith(typedDirective)
+  const typedDirective = match[1].toLowerCase();
+  const hashCharacter = linePrefix.lastIndexOf('#');
+  const replaceRange = Range.create(
+    position.line,
+    hashCharacter,
+    position.line,
+    position.character
+  );
+
+  const items: CompletionItem[] = PREPROCESSOR_DIRECTIVES.filter((directive) =>
+    directive.slice(1).toLowerCase().startsWith(typedDirective)
   ).map((directive) => ({
     label: directive,
     kind: CompletionItemKind.Keyword,
-    insertText: directive,
+    filterText: directive,
+    textEdit: TextEdit.replace(replaceRange, directive),
   }));
+
+  return CompletionList.create(items, true);
 }

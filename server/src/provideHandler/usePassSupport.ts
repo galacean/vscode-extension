@@ -1,6 +1,7 @@
 import {
   CompletionItem,
   CompletionItemKind,
+  DocumentLink,
   DocumentUri,
   Location,
   Position,
@@ -8,7 +9,7 @@ import {
   TextEdit,
 } from 'vscode-languageserver';
 import { ProviderContext } from './ProviderContext';
-import { SHADER_LAG_ID } from '../constants';
+import { WorkspaceIndex } from '../workspace/WorkspaceIndex';
 
 interface IUsePassTarget {
   uri: DocumentUri;
@@ -25,7 +26,7 @@ function getSanitizedLine(line: string): string {
   return line.replace(/\/\/.*$/, '').replace(/"[^"]*"/g, '""');
 }
 
-function getUsePassStringContext(
+export function getUsePassStringContext(
   docUri: DocumentUri,
   position: Position
 ): IUsePassStringContext | undefined {
@@ -53,12 +54,11 @@ function getUsePassStringContext(
 
 function collectUsePassTargets(): IUsePassTarget[] {
   const targets: IUsePassTarget[] = [];
-  const documents = ProviderContext.getDocuments();
+  WorkspaceIndex.forEachIndexedUri((uri) => {
+    const content = WorkspaceIndex.getDocumentText(uri);
+    if (!content) return;
 
-  documents.all().forEach((document) => {
-    if (document.languageId !== SHADER_LAG_ID) return;
-
-    const lines = document.getText().split('\n');
+    const lines = content.split('\n');
     let depth = 0;
     let activeShader: { name: string; baseDepth: number } | undefined;
     let activeSubShader: { name: string; baseDepth: number } | undefined;
@@ -84,7 +84,7 @@ function collectUsePassTargets(): IUsePassTarget[] {
         const startCharacter = quoteStart >= 0 ? quoteStart + 1 : 0;
         const endCharacter = startCharacter + passName.length;
         targets.push({
-          uri: document.uri,
+          uri,
           path: `${activeShader.name}/${activeSubShader.name}/${passName}`,
           passRange: Range.create(
             lineIndex,
@@ -112,6 +112,10 @@ function collectUsePassTargets(): IUsePassTarget[] {
   });
 
   return targets;
+}
+
+export function resolveUsePassTarget(value: string): IUsePassTarget | undefined {
+  return collectUsePassTargets().find((item) => item.path === value);
 }
 
 export function provideUsePassCompletion(
@@ -151,8 +155,34 @@ export function provideUsePassDefinition(
     return;
   }
 
-  const target = collectUsePassTargets().find((item) => item.path === value);
+  const target = resolveUsePassTarget(value);
   if (!target) return;
 
   return Location.create(target.uri, target.passRange);
+}
+
+export function provideUsePassDocumentLinks(docUri: DocumentUri): DocumentLink[] {
+  const document = ProviderContext.getInstance(docUri).document;
+  if (!document) return [];
+
+  const links: DocumentLink[] = [];
+  const lines = document.getText().split('\n');
+
+  for (let line = 0; line < lines.length; line++) {
+    const match = lines[line].match(/^\s*UsePass\s+"([^"]+)"/);
+    if (!match) continue;
+
+    const value = match[1];
+    const valueStart = lines[line].indexOf(value);
+    const target = resolveUsePassTarget(value);
+    if (valueStart < 0 || !target) continue;
+
+    links.push({
+      range: Range.create(line, valueStart, line, valueStart + value.length),
+      target: target.uri,
+      tooltip: 'Open UsePass target file',
+    });
+  }
+
+  return links;
 }
