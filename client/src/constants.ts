@@ -1,6 +1,6 @@
 import { dirname, join } from 'path';
 
-export const SHADERLAB_ID = 'GalaceanShaderlab';
+export const SHADERLAB_ID = 'galacean-shaderlab';
 
 export const BUILTIN_SHADERS = [
   'pbr',

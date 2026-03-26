@@ -15,7 +15,7 @@ let _singleton: Client;
 const selector = { language: SHADERLAB_ID };
 
 export default class Client {
-  _instance: LanguageClient;
+  _instance!: LanguageClient;
 
   static getClient() {
     if (!_singleton) throw 'not initialized';
@@ -50,7 +50,7 @@ export default class Client {
     };
 
     const client = new LanguageClient(
-      'GalaceanShaderlab',
+      'galacean-shaderlab',
       'Galacean ShaderLab',
       serverOptions,
       clientOptions
