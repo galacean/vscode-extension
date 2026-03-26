@@ -9,7 +9,7 @@ import {
 } from 'vscode-languageserver/node';
 import { validateShader } from './provideHandler/validate';
 import { provideCompletion } from './provideHandler/completion';
-import { SHADER_LAG_ID } from './constants';
+import { SHADERLAB_ID } from './constants';
 import { provideSignatureHelp } from './provideHandler/signatureHelp';
 import { ProviderContext } from './provideHandler/ProviderContext';
 import { provideHover } from './provideHandler/hover';
@@ -90,7 +90,7 @@ documents.onDidClose((change) => {
 
 connection.onCompletion((params) => {
   const doc = documents.get(params.textDocument.uri);
-  if (!doc || doc.languageId !== SHADER_LAG_ID) return;
+  if (!doc || doc.languageId !== SHADERLAB_ID) return;
 
   return provideCompletion(
     params.textDocument.uri,
@@ -119,7 +119,7 @@ connection.onCompletionResolve((completion) => {
 
 connection.onSignatureHelp((params) => {
   const doc = documents.get(params.textDocument.uri);
-  if (!doc || doc.languageId !== SHADER_LAG_ID) return;
+  if (!doc || doc.languageId !== SHADERLAB_ID) return;
 
   return provideSignatureHelp(
     params.textDocument.uri,

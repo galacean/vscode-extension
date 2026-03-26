@@ -27,7 +27,7 @@
   "contributes": {
     "languages": [
       {
-        "id": "GalaceanShaderLab",
+        "id": "GalaceanShaderlab",
         "extensions": [
           ".gsl",
           ".gs"
@@ -41,14 +41,14 @@
     ],
     "grammars": [
       {
-        "language": "GalaceanShaderLab",
+        "language": "GalaceanShaderlab",
         "scopeName": "source.shaderlab",
         "path": "./shaderlab.language.json"
       }
     ],
     "snippets": [
       {
-        "language": "GalaceanShaderLab",
+        "language": "GalaceanShaderlab",
         "path": "./snippets.json"
       }
     ]
@@ -68,7 +68,7 @@
     "release": "standard-version && vsce package"
   },
   "activationEvents": [
-    "onLanguage:GalaceanShaderLab"
+    "onLanguage:GalaceanShaderlab"
   ],
   "dependencies": {
     "@galacean/engine": "1.6.13",
