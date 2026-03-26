@@ -2,9 +2,10 @@
   "name": "galacean-shaderlab",
   "displayName": "Galacean ShaderLab",
   "description": "ShaderLab language support for Galacean Engine",
-  "version": "0.1.0-alpha.1",
-  "author": "Mrkou47",
-  "publisher": "Galacean",
+  "version": "0.1.0",
+  "author": "mrkou47",
+  "icon": "icons/logo.jpg",
+  "publisher": "galacean",
   "license": "MIT",
   "engines": {
     "vscode": "^1.65.0"
