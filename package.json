@@ -4,7 +4,7 @@
   "description": "Shader language support for Galacean Engine",
   "version": "0.1.1",
   "author": "mrkou47",
-  "icon": "icons/logo.jpg",
+  "icon": "icons/logo.png",
   "publisher": "galacean",
   "license": "MIT",
   "engines": {
