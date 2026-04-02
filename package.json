@@ -2,9 +2,10 @@
   "name": "galacean-shaderlab",
   "displayName": "Galacean ShaderLab",
   "description": "ShaderLab language support for Galacean Engine",
-  "version": "0.1.0-alpha.1",
-  "author": "Mrkou47",
-  "publisher": "Galacean",
+  "version": "0.1.0",
+  "author": "mrkou47",
+  "icon": "icons/logo.jpg",
+  "publisher": "galacean",
   "license": "MIT",
   "engines": {
     "vscode": "^1.65.0"
@@ -27,11 +28,12 @@
   "contributes": {
     "languages": [
       {
-        "id": "GalaceanShaderLab",
+        "id": "galacean-shaderlab",
         "extensions": [
           ".gsl",
           ".gs"
         ],
+        "configuration": "./language-configuration.json",
         "icon": {
           "light": "./client/res/icons/shader.svg",
           "dark": "./client/res/icons/shader.svg"
@@ -40,14 +42,14 @@
     ],
     "grammars": [
       {
-        "language": "GalaceanShaderLab",
+        "language": "galacean-shaderlab",
         "scopeName": "source.shaderlab",
         "path": "./shaderlab.language.json"
       }
     ],
     "snippets": [
       {
-        "language": "GalaceanShaderLab",
+        "language": "galacean-shaderlab",
         "path": "./snippets.json"
       }
     ]
@@ -58,16 +60,17 @@
     "compile": "webpack",
     "rebuild": "npm run clear && npm run compile",
     "watch": "webpack --watch",
-    "package": "webpack --mode production --devtool hidden-source-map",
+    "bundle": "webpack --mode production --devtool hidden-source-map",
+    "package:vsix": "vsce package --no-dependencies",
     "clean": "rm -rf ./node_modules",
     "build": "webpack",
     "clear": "rm -rf ./client/out/* ./server/out/*",
     "swipe": "rm -rf ~/.galacean ~/galacean",
     "test": "vscode-test",
-    "release": "standard-version && vsce package"
+    "release": "standard-version && npm run package:vsix"
   },
   "activationEvents": [
-    "onLanguage:GalaceanShaderLab"
+    "onLanguage:galacean-shaderlab"
   ],
   "dependencies": {
     "@galacean/engine": "1.6.13",
@@ -83,9 +86,11 @@
     "@types/vscode": "1.65.0",
     "@vscode/test-cli": "^0.0.4",
     "@vscode/test-electron": "^2.3.8",
+    "@vscode/vsce": "^3.6.0",
     "chevrotain": "^11.0.3",
     "standard-version": "^9.5.0",
     "ts-loader": "^9.5.0",
+    "typescript": "^5.6.3",
     "webpack": "^5.89.0",
     "webpack-cli": "^5.1.4"
   }

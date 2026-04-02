@@ -179,12 +179,22 @@ function scanStructs(source: string) {
 
   for (const match of source.matchAll(structMatcher)) {
     const [, name, body] = match;
+    const startOffset = match.index ?? 0;
+    const nameOffset = source.indexOf(name, startOffset);
     const fields: IStructFieldDescriptor[] = [];
     const fieldMatcher = /\b([A-Za-z_]\w*)\s+([A-Za-z_]\w*)\s*;/g;
     for (const field of body.matchAll(fieldMatcher)) {
       fields.push({ type: field[1], name: field[2] });
     }
-    structs.push({ kind: 'struct', name, fields });
+    structs.push({
+      kind: 'struct',
+      name,
+      fields,
+      startOffset,
+      endOffset: startOffset + match[0].length,
+      selectionStartOffset: nameOffset,
+      selectionEndOffset: nameOffset + name.length,
+    });
   }
 
   return structs;
@@ -196,10 +206,17 @@ function scanRenderStates(source: string) {
     /^\s*(BlendState|DepthState|StencilState|RasterState)\s+([A-Za-z_]\w*)\s*\{/gm;
 
   for (const match of source.matchAll(matcher)) {
+    const startOffset = match.index ?? 0;
+    const name = match[2];
+    const nameOffset = source.indexOf(name, startOffset);
     states.push({
       kind: 'renderState',
       type: match[1] as IRenderStateSymbolDescriptor['type'],
-      name: match[2],
+      name,
+      startOffset,
+      endOffset: startOffset + match[0].length,
+      selectionStartOffset: nameOffset,
+      selectionEndOffset: nameOffset + name.length,
     });
   }
 
@@ -222,6 +239,11 @@ function scanFunctions(source: string): IFunctionRange[] {
         name,
         returnType: returnType.trim(),
         parameters: parseParameters(params),
+        startOffset: match.index!,
+        endOffset: endOffset + 1,
+        selectionStartOffset: match.index! + fullMatch.indexOf(name),
+        selectionEndOffset:
+          match.index! + fullMatch.indexOf(name) + name.length,
       },
       startOffset: match.index!,
       bodyStartOffset: braceOffset + 1,
@@ -242,7 +264,17 @@ function scanGlobalVariables(source: string): IVariableSymbolDescriptor[] {
     if (RESERVED_IDENTIFIERS.has(type) || RESERVED_IDENTIFIERS.has(name)) {
       continue;
     }
-    variables.push({ kind: 'variable', type, name });
+    const startOffset = match.index ?? 0;
+    const nameOffset = source.indexOf(name, startOffset);
+    variables.push({
+      kind: 'variable',
+      type,
+      name,
+      startOffset,
+      endOffset: startOffset + match[0].length,
+      selectionStartOffset: nameOffset,
+      selectionEndOffset: nameOffset + name.length,
+    });
   }
 
   return variables;

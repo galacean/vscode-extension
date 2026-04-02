@@ -8,6 +8,11 @@ export type SymbolKind = 'function' | 'struct' | 'variable' | 'renderState';
 interface IBaseSymbolDescriptor {
   kind: SymbolKind;
   name: string;
+  startOffset: number;
+  endOffset: number;
+  selectionStartOffset: number;
+  selectionEndOffset: number;
+  containerName?: string;
 }
 
 export interface IFunctionSymbolDescriptor extends IBaseSymbolDescriptor {

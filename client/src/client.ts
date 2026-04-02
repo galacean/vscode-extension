@@ -6,16 +6,16 @@ import {
   ServerOptions,
   TransportKind,
 } from 'vscode-languageclient/node';
-import { SHADER_LAG_ID } from './constants';
+import { SHADERLAB_ID } from './constants';
 import { FormatterProvider } from './providers/Formatter';
 import { EditorPropertiesCompletionProvider } from './providers/EditorPropertiesCompletionProvider';
 import SimpleCompletionItemProvider from './providers/CompletionProvider';
 
 let _singleton: Client;
-const selector = { language: SHADER_LAG_ID };
+const selector = { language: SHADERLAB_ID };
 
 export default class Client {
-  _instance: LanguageClient;
+  _instance!: LanguageClient;
 
   static getClient() {
     if (!_singleton) throw 'not initialized';
@@ -46,11 +46,11 @@ export default class Client {
     };
 
     const clientOptions: LanguageClientOptions = {
-      documentSelector: [{ scheme: 'file', language: SHADER_LAG_ID }],
+      documentSelector: [{ scheme: 'file', language: SHADERLAB_ID }],
     };
 
     const client = new LanguageClient(
-      'galaceanShaderLab',
+      'galacean-shaderlab',
       'Galacean ShaderLab',
       serverOptions,
       clientOptions

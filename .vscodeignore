@@ -3,6 +3,7 @@
 .github
 .husky
 .vscode
+.temp
 **/src/**
 **/node_modules/**
 .gitignore
@@ -10,5 +11,6 @@
 **/.md
 **/.vscodeignore
 **/package-lock.json
+pnpm-lock.yaml
 **/*.vsix
 docs

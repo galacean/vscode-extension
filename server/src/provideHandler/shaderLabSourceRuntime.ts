@@ -30,13 +30,27 @@ function getShaderLabSourceModule(): ShaderLabSourceModule {
   return shaderLabSourceModule!;
 }
 
+function neutralizePreprocessorLine(line: string): string {
+  if (!/^\s*#/.test(line)) return line;
+
+  // Keep line count and approximate columns stable for source-level diagnostics.
+  const leadingWhitespace = line.match(/^\s*/)?.[0] ?? '';
+  return `${leadingWhitespace}//__shaderlab_preprocessed__`;
+}
+
+function normalizeSourceForValidation(shader: string): string {
+  return shader.split('\n').map(neutralizePreprocessorLine).join('\n');
+}
+
 export function parseShaderSource(shader: string) {
   if (!shaderLabSourceInstance) {
     const { ShaderLab } = getShaderLabSourceModule();
     shaderLabSourceInstance = new ShaderLab();
   }
 
-  return shaderLabSourceInstance._parseShaderSource(shader);
+  return shaderLabSourceInstance._parseShaderSource(
+    normalizeSourceForValidation(shader)
+  );
 }
 
 export function mapShaderSourceErrorToDiagnostics(error: unknown): Diagnostic[] {

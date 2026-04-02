@@ -6,9 +6,9 @@ import {
 } from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import {
-  buildDocumentSemanticModel,
   DocumentSemanticModel,
 } from '../model/buildDocumentSemanticModel';
+import { WorkspaceIndex } from '../workspace/WorkspaceIndex';
 
 interface CompletionInfo {
   position: Position;
@@ -43,6 +43,10 @@ export class ProviderContext {
     this.documents = documents;
   }
 
+  static getDocuments() {
+    return this.documents;
+  }
+
   readonly uri: DocumentUri;
 
   private _lastResolvedCompletion?: CompletionInfo;
@@ -64,10 +68,12 @@ export class ProviderContext {
 
   get semanticModel() {
     const document = this.document;
-    if (!document) return;
+    if (!document) {
+      return WorkspaceIndex.getSemanticModel(this.uri);
+    }
 
     if (this._semanticModelVersion !== document.version) {
-      this._semanticModel = buildDocumentSemanticModel(document.getText());
+      this._semanticModel = WorkspaceIndex.getSemanticModel(this.uri);
       this._semanticModelVersion = document.version;
     }
 
