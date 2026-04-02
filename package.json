@@ -1,5 +1,5 @@
 {
-  "name": "galacean-shader",
+  "name": "galacean-shader-extension",
   "displayName": "Galacean Shader",
   "description": "Shader language support for Galacean Engine",
   "version": "0.1.2",
