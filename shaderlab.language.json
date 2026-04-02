@@ -1,11 +1,11 @@
 {
-  "scopeName": "source.shaderlab",
+  "scopeName": "source.galacean-shader",
   "foldingStartMarker": "\\{\\s*$",
   "foldingStopMarker": "^\\s*\\}",
   "patterns": [
     {
       "comment": "BLOCK COMMENT",
-      "name": "comment.block.shaderlab",
+      "name": "comment.block.galacean-shader",
       "begin": "\\/\\*",
       "end": "\\*\\/"
     },
@@ -13,13 +13,13 @@
       "comment": "Builtin shader",
       "match": "//\\s*(@builtin)\\s*([\\w-]+)",
       "captures": {
-        "1": { "name": "storage.modifier.shaderlab" },
-        "2": { "name": "keyword.other.language.shaderlab" }
+        "1": { "name": "storage.modifier.galacean-shader" },
+        "2": { "name": "keyword.other.language.galacean-shader" }
       }
     },
     {
       "comment": "SINGLE LINE COMMENT",
-      "name": "comment.line.double-slash.shaderlab",
+      "name": "comment.line.double-slash.galacean-shader",
       "begin": "//",
       "end": "$"
     },
@@ -27,34 +27,34 @@
       "comment": "Shader Line",
       "match": "(Shader|SubShader|Pass)\\s*\"([\\w-]+)\"",
       "captures": {
-        "1": { "name": "entity.name.type.shaderlab" },
-        "2": { "name": "entity.name.function.shaderlab" }
+        "1": { "name": "entity.name.type.galacean-shader" },
+        "2": { "name": "entity.name.function.galacean-shader" }
       }
     },
     {
       "comment": "UsePass And UIScript Line",
       "match": "\\b(UsePass|UIScript)\\b\\s*\"([^\"]+)\"",
       "captures": {
-        "1": { "name": "keyword.control.shaderlab" },
-        "2": { "name": "string.quoted.double.shaderlab" }
+        "1": { "name": "keyword.control.galacean-shader" },
+        "2": { "name": "string.quoted.double.galacean-shader" }
       }
     },
     {
       "comment": "Editor Header Constructor",
       "match": "\\b(Header)\\b\\s*(\\()",
       "captures": {
-        "1": { "name": "entity.name.function.shaderlab" },
-        "2": { "name": "punctuation.section.group.begin.shaderlab" }
+        "1": { "name": "entity.name.function.galacean-shader" },
+        "2": { "name": "punctuation.section.group.begin.galacean-shader" }
       }
     },
     {
       "comment": "PREPROCESSOR",
-      "name": "meta.preprocessor.shaderlab",
+      "name": "meta.preprocessor.galacean-shader",
       "match": "#.*?($|(?=(\\/\\/|\\/\\*)))"
     },
     {
       "comment": "BOOL LITERAL",
-      "name": "constant.language.shaderlab",
+      "name": "constant.language.galacean-shader",
       "match": "\\b(true|false)\\b"
     },
     {
@@ -62,53 +62,53 @@
       "patterns": [
         {
           "comment": "FLOATING POINT NUMBER",
-          "name": "constant.numeric.shaderlab",
+          "name": "constant.numeric.galacean-shader",
           "match": "(((\\d+\\.\\d+)|(\\d+\\.)|(\\.\\d+))([eE][+-]?\\d+)?|\\d+([eE][+-]?\\d+))[fF]?"
         },
         {
           "comment": "FIXED POINT NUMBER",
-          "name": "constant.numeric.shaderlab",
+          "name": "constant.numeric.galacean-shader",
           "match": "([1-9]\\d*|0[0-7]*|0[xX](\\d|[a-fA-F])+)[uU]?"
         }
       ]
     },
     {
       "comment": "OPERATOR",
-      "name": "keyword.operator.shaderlab",
+      "name": "keyword.operator.galacean-shader",
       "match": "[.+\\-*/%<>^|&~=!:,?\\[\\]]"
     },
     {
       "comment": "KEYWORD",
-      "name": "keyword.control.shaderlab",
+      "name": "keyword.control.galacean-shader",
       "match": "\\b(discard|return|break|continue|do|for|while|switch|case|default|if|else|Shader|SubShader|Pass|UsePass|Editor|Properties|Macros|UIScript|Tags|VertexShader|FragmentShader|RenderQueueType|BlendState|DepthState|StencilState|RasterState)\\b"
     },
     {
       "comment": "QUALIFIER",
-      "name": "storage.modifier.shaderlab",
+      "name": "storage.modifier.galacean-shader",
       "match": "\\b(attribute|varying|const|uniform|layout|centroid|flat|smooth|in|out|inout|invariant|lowp|mediump|highp|precision)\\b"
     },
     {
       "comment": "SHADERLAB ENGINE ENUM TYPE",
-      "name": "support.type.shaderlab",
+      "name": "support.type.galacean-shader",
       "match": "\\b(BlendFactor|BlendOperation|CompareFunction|StencilOperation|CullMode|FillMode|ColorWriteMask|RenderQueueType|Bool|Number|Color)\\b"
     },
     {
       "comment": "SHADERLAB ENUM MEMBER ACCESS",
       "match": "\\b(BlendFactor|BlendOperation|CompareFunction|StencilOperation|CullMode|FillMode|ColorWriteMask|RenderQueueType)\\b(\\.)([_a-zA-Z]\\w*)",
       "captures": {
-        "1": { "name": "support.type.shaderlab" },
-        "2": { "name": "keyword.operator.shaderlab" },
-        "3": { "name": "constant.other.shaderlab" }
+        "1": { "name": "support.type.galacean-shader" },
+        "2": { "name": "keyword.operator.galacean-shader" },
+        "3": { "name": "constant.other.galacean-shader" }
       }
     },
     {
       "comment": "RENDER STATE FIELD",
-      "name": "support.variable.shaderlab",
+      "name": "support.variable.galacean-shader",
       "match": "\\b(Enabled|ColorBlendOperation|AlphaBlendOperation|SourceColorBlendFactor|SourceAlphaBlendFactor|DestinationColorBlendFactor|DestinationAlphaBlendFactor|ColorWriteMask|BlendColor|AlphaToCoverage|WriteEnabled|CompareFunction|ReferenceValue|Mask|WriteMask|CompareFunctionFront|CompareFunctionBack|PassOperationFront|PassOperationBack|FailOperationFront|FailOperationBack|ZFailOperationFront|ZFailOperationBack|CullMode|FillMode|DepthBias|SlopeScaledDepthBias|VertexShader|FragmentShader|RenderQueueType)\\b"
     },
     {
       "comment": "EDITOR PROPERTY TYPE",
-      "name": "support.class.shaderlab",
+      "name": "support.class.galacean-shader",
       "match": "\\b(Boolean|Int|Float|Range|Color|HDRColor|Vector2|Vector3|Vector4|Texture2D|TextureCube|Enum)\\b"
     },
     {
@@ -116,7 +116,7 @@
       "match": "([_a-zA-Z]\\w*)((\\s|(\\[[^\\[]*?\\])|(\\/\\*.*?\\*\\/))*)(?=\\()",
       "captures": {
         "1": {
-          "name": "entity.name.function.shaderlab"
+          "name": "entity.name.function.galacean-shader"
         },
         "2": {
           "patterns": [
@@ -132,12 +132,12 @@
       "patterns": [
         {
           "comment": "BUILTIN TRANSPARENT OR OPAQUE TYPE",
-          "name": "storage.type.shaderlab",
+          "name": "storage.type.galacean-shader",
           "match": "\\b(void|float|int|bool|mat2|mat3|mat4|mat2x2|mat2x3|mat2x4|mat3x2|mat3x3|mat3x4|mat4x2|mat4x3|mat4x4|vec2|vec3|vec4|ivec2|ivec3|ivec4|bvec2|bvec3|bvec4|uint|uvec2|uvec3|uvec4|sampler2D|sampler3D|samplerCube|sampler2DShadow|samplerCubeShadow|sampler2DArray|sampler2DArrayShadow|isampler2D|isampler3D|isamplerCube|isampler2DArray|usampler2D|usampler3D|usamplerCube|usampler2DArray)\\b"
         },
         {
           "comment": "BUILTIN STRUCT TYPE",
-          "name": "storage.type.shaderlab",
+          "name": "storage.type.galacean-shader",
           "match": "\\b(gl_[a-zA-Z_]\\w*)\\b"
         }
       ]
@@ -147,21 +147,21 @@
       "match": "(struct)(\\s|(/\\*.*?\\*/))*([_a-zA-Z]\\w*)?",
       "captures": {
         "1": {
-          "name": "storage.type.shaderlab"
+          "name": "storage.type.galacean-shader"
         },
         "3": {
-          "name": "comment.block.shaderlab"
+          "name": "comment.block.galacean-shader"
         },
         "4": {
           "patterns": [
             {
               "comment": "BUILTIN STRUCT TYPE",
-              "name": "storage.type.shaderlab",
+              "name": "storage.type.galacean-shader",
               "match": "\\b(gl_[a-zA-Z_]\\w*)\\b"
             },
             {
               "comment": "USER STRUCT TYPE",
-              "name": "entity.name.type.shaderlab",
+              "name": "entity.name.type.galacean-shader",
               "match": "[_a-zA-Z]\\w*"
             }
           ]
@@ -173,7 +173,7 @@
       "match": "(([_a-zA-Z]\\w*)((\\s|(\\[.*?\\])|(\\/\\*.*?\\*\\/))+))?([_a-zA-Z]\\w*)((\\s|(\\/\\*.*?\\*\\/))*)(?=\\()",
       "captures": {
         "2": {
-          "name": "entity.name.type.shaderlab"
+          "name": "entity.name.type.galacean-shader"
         },
         "3": {
           "patterns": [
@@ -183,7 +183,7 @@
           ]
         },
         "7": {
-          "name": "entity.name.function.shaderlab"
+          "name": "entity.name.function.galacean-shader"
         },
         "8": {
           "patterns": [
@@ -196,7 +196,7 @@
     },
     {
       "comment": "IDENTIFIER",
-      "name": "variable.shaderlab",
+      "name": "variable.galacean-shader",
       "match": "\\b([a-zA-Z_]\\w*)\\b"
     }
   ]

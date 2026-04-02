@@ -1,7 +1,7 @@
 {
-  "name": "galacean-shaderlab",
-  "displayName": "Galacean ShaderLab",
-  "description": "ShaderLab language support for Galacean Engine",
+  "name": "galacean-shader",
+  "displayName": "Galacean Shader",
+  "description": "Shader language support for Galacean Engine",
   "version": "0.1.0",
   "author": "mrkou47",
   "icon": "icons/logo.jpg",
@@ -28,28 +28,28 @@
   "contributes": {
     "languages": [
       {
-        "id": "galacean-shaderlab",
+        "id": "galacean-shader",
         "extensions": [
           ".gsl",
           ".gs"
         ],
         "configuration": "./language-configuration.json",
         "icon": {
-          "light": "./client/res/icons/shader.svg",
-          "dark": "./client/res/icons/shader.svg"
+          "light": "./client/res/icons/shader.png",
+          "dark": "./client/res/icons/shader.png"
         }
       }
     ],
     "grammars": [
       {
-        "language": "galacean-shaderlab",
-        "scopeName": "source.shaderlab",
+        "language": "galacean-shader",
+        "scopeName": "source.galacean-shader",
         "path": "./shaderlab.language.json"
       }
     ],
     "snippets": [
       {
-        "language": "galacean-shaderlab",
+        "language": "galacean-shader",
         "path": "./snippets.json"
       }
     ]
@@ -70,7 +70,7 @@
     "release": "standard-version && npm run package:vsix"
   },
   "activationEvents": [
-    "onLanguage:galacean-shaderlab"
+    "onLanguage:galacean-shader"
   ],
   "dependencies": {
     "@galacean/engine": "1.6.13",

@@ -1,6 +1,6 @@
-# Galacean ShaderLab
+# Galacean Shader
 
-ShaderLab language support for Galacean Engine in Visual Studio Code.
+Shader language support for Galacean Engine in Visual Studio Code.
 
 ## Features
 
