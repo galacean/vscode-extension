@@ -61,6 +61,8 @@
     "rebuild": "npm run clear && npm run compile",
     "watch": "webpack --watch",
     "bundle": "webpack --mode production --devtool hidden-source-map",
+    "publish:marketplace": "vsce publish --no-dependencies",
+    "publish:marketplace:pre": "vsce publish --pre-release --no-dependencies",
     "package:vsix": "vsce package --no-dependencies",
     "clean": "rm -rf ./node_modules",
     "build": "webpack",
