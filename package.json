@@ -2,7 +2,7 @@
   "name": "galacean-shader",
   "displayName": "Galacean Shader",
   "description": "Shader language support for Galacean Engine",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "mrkou47",
   "icon": "icons/logo.jpg",
   "publisher": "galacean",
